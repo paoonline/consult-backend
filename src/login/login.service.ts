@@ -5,9 +5,12 @@ import * as bcrypt from 'bcrypt';
 import { Injectable } from '@nestjs/common';
 import { Login } from './login.entity';
 import { Users } from 'src/user/user.entity';
+import { JwtPayload } from 'jsonwebtoken';
+import * as jwt from 'jsonwebtoken';
 
 @Injectable()
-export class LoginService {
+export class AuthService {
+  private readonly jwtSecret = process.env.JWT_SECRET || 'your-secret-key';
   constructor(
     @InjectRepository(Login)
     private loginRepository: Repository<Login>,
@@ -16,11 +19,19 @@ export class LoginService {
     private userRepository: Repository<Users>,
   ) {}
 
+  async createJwtToken(user: Users): Promise<string> {
+    const payload: JwtPayload = {
+      userId: user.id,
+      email: user.email,
+      role: user.role,
+    };
 
-  async loginValidate(email: string, password: string): Promise<Login | null> {
+    return jwt.sign(payload, this.jwtSecret, { expiresIn: '1h' }); // Token expires in 1 hour
+  }
+
+  async login(email: string, password: string): Promise<string> {
     // Find the user by email
     const user = await this.userRepository.findOne({ where: { email } });
-    console.log(user)
     if (!user) {
       throw new Error('Invalid credentials');
     }
@@ -33,7 +44,9 @@ export class LoginService {
 
     // Create a login record
     const loginEntry = this.loginRepository.create({ user });
-    return this.loginRepository.save(loginEntry);
+    this.loginRepository.save(loginEntry);
+
+    return this.createJwtToken(user); 
   }
 
 }
