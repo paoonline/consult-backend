@@ -4,9 +4,9 @@ import { Room } from './room.entity';
 import { RoomService } from './room.service';
 import { RoomController } from './room.controller';
 import { JwtStrategy } from 'src/validate/jwt.strategy';
-import { RoomDetail } from './roomDetail.entity';
+import { RoomDetail } from './room-detail.entity';
 import { UserModule } from 'src/user/user.module';
-import { RoomDetailService } from './roomDetail.service';
+import { RoomDetailService } from './room-detail.service';
 
 @Module({
   imports: [TypeOrmModule.forFeature([Room, RoomDetail]), UserModule],

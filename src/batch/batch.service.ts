@@ -2,7 +2,7 @@ import { Injectable, Logger } from '@nestjs/common';
 import { Cron } from '@nestjs/schedule';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Room } from 'src/room/room.entity';
-import { RoomDetail } from 'src/room/roomDetail.entity';
+import { RoomDetail } from 'src/room/room-detail.entity';
 import { LessThan, Repository } from 'typeorm';
 
 @Injectable()

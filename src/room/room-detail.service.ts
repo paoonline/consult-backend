@@ -1,8 +1,8 @@
 import { Repository } from "typeorm";
-import { RoomDetail } from "./roomDetail.entity";
+import { RoomDetail } from "./room-detail.entity";
 import { InjectRepository } from "@nestjs/typeorm";
 import { Injectable } from "@nestjs/common";
-import { CreateRoomDetailDto } from "./roomDetail.dto";
+import { CreateRoomDetailDto } from "./room-detail.dto";
 
 @Injectable()
 export class RoomDetailService {

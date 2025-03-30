@@ -8,7 +8,7 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { roomModule } from './room/room.module';
 import { BatchService } from './batch/batch.service';
 import { ScheduleModule } from '@nestjs/schedule';
-import { RoomDetail } from './room/roomDetail.entity';
+import { RoomDetail } from './room/room-detail.entity';
 import { Room } from './room/room.entity';
 
 @Module({

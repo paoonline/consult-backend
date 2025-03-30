@@ -1,5 +1,5 @@
 import { IsDate, IsNotEmpty, ValidateNested, } from "class-validator";
-import { CreateRoomDetailDto } from "./roomDetail.dto";
+import { CreateRoomDetailDto } from "./room-detail.dto";
 
 export class CreateRoomDto {
   @ValidateNested()

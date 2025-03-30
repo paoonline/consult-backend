@@ -13,7 +13,7 @@ import { Response } from 'express';
 import { JwtAuthGuard } from 'src/validate/jwt-auth.guard';
 import { CreateRoomDto } from './room.dto';
 import { RoomService } from './room.service';
-import { RoomDetailService } from './roomDetail.service';
+import { RoomDetailService } from './room-detail.service';
 @Controller('room')
 export class RoomController {
   constructor(

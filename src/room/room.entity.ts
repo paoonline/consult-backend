@@ -1,6 +1,6 @@
 import { IsNotEmpty } from 'class-validator';
 import { Column, CreateDateColumn, Entity, JoinColumn, OneToOne, PrimaryGeneratedColumn } from 'typeorm';
-import { RoomDetail } from './roomDetail.entity';
+import { RoomDetail } from './room-detail.entity';
 
 @Entity()
 export class Room {
