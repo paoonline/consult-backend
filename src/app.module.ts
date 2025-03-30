@@ -5,6 +5,7 @@ import { LoginModule } from './login/login.module';
 import { UserModule } from './user/user.module';
 import { ConfigModule } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
+import { roomModule } from './room/room.module';
 
 @Module({
   imports: 
@@ -20,6 +21,7 @@ import { TypeOrmModule } from '@nestjs/typeorm';
       autoLoadEntities: true,
       synchronize: true,  // Use only in development
     }),
+    roomModule,
     LoginModule, 
     UserModule],
   controllers: [AppController],
