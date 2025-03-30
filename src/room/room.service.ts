@@ -58,11 +58,7 @@ export class RoomService {
 
        this.roomDetailRepository.save(roomDetail); // Save the updated RoomDetail entity separately
     }
-
-  //  await this.roomRepository.update("2e5e778c-a60c-4c83-a6d0-2ab053f89762", {
-  //     book_time: new Date(),  // Update only the necessary fields
-  //   });
-
+    await this.roomRepository.save(room);
     return this.roomRepository.findOne({ where: { room_detail: { id } }, relations: ['room_detail'] });
   }
 

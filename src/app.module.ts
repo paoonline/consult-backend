@@ -6,10 +6,15 @@ import { UserModule } from './user/user.module';
 import { ConfigModule } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { roomModule } from './room/room.module';
+import { BatchService } from './batch/batch.service';
+import { ScheduleModule } from '@nestjs/schedule';
+import { RoomDetail } from './room/roomDetail.entity';
+import { Room } from './room/room.entity';
 
 @Module({
   imports: 
   [
+    ScheduleModule.forRoot(),
     ConfigModule.forRoot(),
     TypeOrmModule.forRoot({
       type: 'postgres',
@@ -21,10 +26,11 @@ import { roomModule } from './room/room.module';
       autoLoadEntities: true,
       synchronize: true,  // Use only in development
     }),
+    TypeOrmModule.forFeature([Room, RoomDetail]),
     roomModule,
     LoginModule, 
     UserModule],
   controllers: [AppController],
-  providers: [AppService],
+  providers: [AppService, BatchService],
 })
 export class AppModule {}

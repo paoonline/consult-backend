@@ -979,6 +979,13 @@
     "path-to-regexp" "8.2.0"
     "tslib" "2.8.1"
 
+"@nestjs/schedule@^5.0.1":
+  "integrity" "sha512-kFoel84I4RyS2LNPH6yHYTKxB16tb3auAEciFuc788C3ph6nABkUfzX5IE+unjVaRX+3GuruJwurNepMlHXpQg=="
+  "resolved" "https://registry.npmjs.org/@nestjs/schedule/-/schedule-5.0.1.tgz"
+  "version" "5.0.1"
+  dependencies:
+    "cron" "3.5.0"
+
 "@nestjs/schematics@^11.0.0", "@nestjs/schematics@^11.0.1":
   "integrity" "sha512-C4KM3BHBG6tRX8t5UrHdUq8Y49asEfJUora/fBXge3UTAnxKGlXc20p5s2Q0Q1+l+1YaXqTrKGSIbYXdPX8r9g=="
   "resolved" "https://registry.npmjs.org/@nestjs/schematics/-/schematics-11.0.2.tgz"
@@ -1313,6 +1320,11 @@
   "version" "9.0.7"
   dependencies:
     "@types/node" "*"
+
+"@types/luxon@~3.4.0":
+  "integrity" "sha512-TifLZlFudklWlMBfhubvgqTXRzLDI5pCbGa4P8a3wPyUQSW+1xQ5eDsreP9DWHX3tjq1ke96uYG/nwundroWcA=="
+  "resolved" "https://registry.npmjs.org/@types/luxon/-/luxon-3.4.2.tgz"
+  "version" "3.4.2"
 
 "@types/methods@^1.1.4":
   "integrity" "sha512-ymXWVrDiCxTBE3+RIrrP533E70eA+9qu7zdWoHuOmGujkYtzf4HQF96b8nwHLqhuf4ykX61IGRIB38CC6/sImQ=="
@@ -2504,6 +2516,14 @@
   "integrity" "sha512-dcKFX3jn0MpIaXjisoRvexIJVEKzaq7z2rZKxf+MSr9TkdmHmsU4m2lcLojrj/FHl8mk5VxMmYA+ftRkP/3oKQ=="
   "resolved" "https://registry.npmjs.org/create-require/-/create-require-1.1.1.tgz"
   "version" "1.1.1"
+
+"cron@3.5.0":
+  "integrity" "sha512-0eYZqCnapmxYcV06uktql93wNWdlTmmBFP2iYz+JPVcQqlyFYcn1lFuIk4R54pkOmE7mcldTAPZv6X5XA4Q46A=="
+  "resolved" "https://registry.npmjs.org/cron/-/cron-3.5.0.tgz"
+  "version" "3.5.0"
+  dependencies:
+    "@types/luxon" "~3.4.0"
+    "luxon" "~3.5.0"
 
 "cross-spawn@^7.0.3", "cross-spawn@^7.0.6":
   "integrity" "sha512-uV2QOWP2nWzsy2aMp8aRibhi9dlzF5Hgh5SHaB9OiTGEyDTiJJyx0uy51QXdyWbtAHNua4XJzUKca3OzKUd3vA=="
@@ -4339,6 +4359,11 @@
   "version" "5.1.1"
   dependencies:
     "yallist" "^3.0.2"
+
+"luxon@~3.5.0":
+  "integrity" "sha512-rh+Zjr6DNfUYR3bPwJEnuwDdqMbxZW7LOQfUN4B54+Cl+0o5zaU9RJ6bcidfDtC1cWCZXQ+nvX8bf6bAji37QQ=="
+  "resolved" "https://registry.npmjs.org/luxon/-/luxon-3.5.0.tgz"
+  "version" "3.5.0"
 
 "magic-string@0.30.17":
   "integrity" "sha512-sNPKHvyjVf7gyjwS4xGTaW/mCnF8wnjtifKBEhxfZ7E/S8tQ0rssrwGNn6q8JH/ohItJfSQp9mBtQYuTlH5QnA=="
