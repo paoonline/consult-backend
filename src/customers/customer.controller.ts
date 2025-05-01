@@ -6,6 +6,7 @@ import {
   Param,
   UseGuards,
   Res,
+  Delete,
 } from '@nestjs/common';
 
 import { JwtAuthGuard } from 'src/validate/jwt-auth.guard';
@@ -69,6 +70,28 @@ export class CustomerController {
   ): Promise<Response<any, Record<string, any>>> {
     try {
       const customer = await this.customerService.findOne(id);
+      return res.status(200).json({
+        status: 200,
+        message: 'successful',
+        data: customer,
+      });
+    } catch (error) {
+      return res.status(401).json({
+        status: 401,
+        message: error.message,
+        data: '',
+      });
+    }
+  }
+
+  @Delete(':id')
+  @UseGuards(JwtAuthGuard)
+  async deleteCustomerById(
+    @Res() res: Response,
+    @Param('id') id: string,
+  ): Promise<Response<any, Record<string, any>>> {
+    try {
+      const customer = await this.customerService.delete(id);
       return res.status(200).json({
         status: 200,
         message: 'successful',
