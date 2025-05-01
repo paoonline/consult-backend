@@ -10,6 +10,7 @@ import { BatchService } from './batch/batch.service';
 import { ScheduleModule } from '@nestjs/schedule';
 import { RoomDetail } from './room/room-detail.entity';
 import { Room } from './room/room.entity';
+import { CustomerModule } from './customers/customer.module';
 
 @Module({
   imports: 
@@ -21,14 +22,15 @@ import { Room } from './room/room.entity';
       host: process.env.DB_HOST || 'localhost',
       port: parseInt(process.env.DB_PORT ?? '5432', 10),
       username: process.env.DB_USER || 'postgres',
-      password: process.env.DB_PASS || '1234',
-      database: process.env.DB_NAME || 'demo',
+      password: process.env.DB_PASS || '123456',
+      database: process.env.DB_NAME || 'hotel_management',
       autoLoadEntities: true,
       synchronize: true,  // Use only in development
     }),
     TypeOrmModule.forFeature([Room, RoomDetail]),
     roomModule,
     LoginModule, 
+    CustomerModule,
     UserModule],
   controllers: [AppController],
   providers: [AppService, BatchService],

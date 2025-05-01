@@ -1,5 +1,5 @@
 import { IsNotEmpty } from 'class-validator';
-import { Column, CreateDateColumn, Entity, JoinColumn, OneToOne, PrimaryGeneratedColumn } from 'typeorm';
+import { CreateDateColumn, Entity, JoinColumn, OneToOne, PrimaryGeneratedColumn } from 'typeorm';
 import { RoomDetail } from './room-detail.entity';
 
 @Entity()
