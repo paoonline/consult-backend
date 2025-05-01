@@ -4,10 +4,14 @@ import { Repository } from 'typeorm';
 import { Room } from './room.entity';
 import { CreateRoomDto } from './room.dto';
 import { RoomDetail } from './room-detail.entity';
+import { Customer } from 'src/customers/customer.entity';
 
 @Injectable()
 export class RoomService {
   constructor(
+    @InjectRepository(Customer)
+    private readonly customerRepository: Repository<Customer>,
+
     @InjectRepository(Room)
     private readonly roomRepository: Repository<Room>,
     @InjectRepository(RoomDetail)
@@ -20,13 +24,13 @@ export class RoomService {
   }
 
   async findAll(): Promise<Room[]> {
-    return this.roomRepository.find({ relations: ['room_detail'] });
+    return this.roomRepository.find({ relations: ['room_detail', 'customer'] });
   }
 
   async findOne(id: string): Promise<Room | null> {
     return this.roomRepository.findOne({
       where: { id },
-      relations: ['room_detail'],
+      relations: ['room_detail', 'customer'],
     });
   }
 
@@ -35,9 +39,9 @@ export class RoomService {
     updateRoomDto: Partial<CreateRoomDto>,
   ): Promise<Room | null> {
     // First, find the room by its ID and load the related RoomDetail
-    const room = await this.roomRepository.findOne({
-      where: { room_detail: { id } },
-      relations: ['room_detail'], // Ensure room_detail is loaded
+    let room = await this.roomRepository.findOne({
+      where: { id },
+      relations: ['room_detail', 'customer'], // Ensure room_detail is loaded
     });
     if (!room) {
       return null; // Return null if the room isn't found
@@ -47,6 +51,7 @@ export class RoomService {
     if (updateRoomDto.room_detail) {
       // Update the room_detail part
       const roomDetail = room.room_detail;
+
 
       // Update only the fields that are provided in the request
       if (updateRoomDto.room_detail.room_number) {
@@ -58,8 +63,26 @@ export class RoomService {
 
        this.roomDetailRepository.save(roomDetail); // Save the updated RoomDetail entity separately
     }
+
+    if (updateRoomDto.customer_id) {
+      const customer = await this.customerRepository.findOne({
+        where: { id: updateRoomDto.customer_id },
+      });
+
+      if (customer) {
+        room.customer = customer;
+      }
+    } else {
+      room.customer = null
+    }
+
+    if (updateRoomDto.end_time || updateRoomDto.book_time) {
+      room.book_time = updateRoomDto.book_time ?? null
+      room.end_time = updateRoomDto.end_time ?? null
+    }
+
     await this.roomRepository.save(room);
-    return this.roomRepository.findOne({ where: { room_detail: { id } }, relations: ['room_detail'] });
+    return this.roomRepository.findOne({ where: { id: room.id }, relations: ['room_detail', 'customer'] });
   }
 
   async delete(id: string): Promise<void> {

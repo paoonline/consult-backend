@@ -41,6 +41,9 @@ export class BatchService {
         await this.roomDetailRepository.save(room.room_detail);
 
         // After updating the room_detail, save the entire room entity (which contains the updated room_detail)
+        room.customer = null
+        room.book_time = null
+        room.end_time = null
         await this.roomRepository.save(room);
 
         this.logger.log(`Room ${room.id} status updated to Available.`);
@@ -48,7 +51,5 @@ export class BatchService {
     } else {
       this.logger.log('No rooms with expired end_time found.');
     }
-
-    // Your batch logic here
   }
 }

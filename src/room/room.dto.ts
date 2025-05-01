@@ -7,9 +7,12 @@ export class CreateRoomDto {
 
   @IsDate()
   @IsNotEmpty()
-  book_time: Date;
+  book_time?: Date;
 
   @IsDate()
   @IsNotEmpty()
-  end_time: Date;
+  end_time?: Date;
+
+  @IsNotEmpty()
+  customer_id: string;
 }

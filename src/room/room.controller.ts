@@ -14,6 +14,8 @@ import { JwtAuthGuard } from 'src/validate/jwt-auth.guard';
 import { CreateRoomDto } from './room.dto';
 import { RoomService } from './room.service';
 import { RoomDetailService } from './room-detail.service';
+
+type UpdateRoomDto = CreateRoomDto
 @Controller('room')
 export class RoomController {
   constructor(
@@ -71,12 +73,14 @@ export class RoomController {
     }
   }
 
+
+  // booking hotel
   @Patch(':id')
   @UseGuards(JwtAuthGuard)
   async updatedRoom(
     @Param('id') id: string,
     @Res() res: Response,
-    @Body() updateRoomDto: Partial<CreateRoomDto>,
+    @Body() updateRoomDto: Partial<UpdateRoomDto>,
   ): Promise<Response<any, Record<string, any>>> {
     try {
       const updatedRoom = await this.roomService.update(id, updateRoomDto);
