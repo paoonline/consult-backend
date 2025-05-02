@@ -11,7 +11,7 @@ import { ScheduleModule } from '@nestjs/schedule';
 import { RoomDetail } from './room/room-detail.entity';
 import { Room } from './room/room.entity';
 import { CustomerModule } from './customers/customer.module';
-
+require('dotenv').config();
 @Module({
   imports: 
   [
@@ -26,6 +26,12 @@ import { CustomerModule } from './customers/customer.module';
       database: process.env.DB_NAME || 'hotel_management',
       autoLoadEntities: true,
       synchronize: true,  // Use only in development
+      ssl: process.env.DB_SSL === 'true',
+      extra: {
+        ssl: {
+          rejectUnauthorized: false, // allow self-signed cert (dev)
+        },
+      }
     }),
     TypeOrmModule.forFeature([Room, RoomDetail]),
     roomModule,
