@@ -26,7 +26,7 @@ export class CustomerController {
   async createCustomer(
     @Res() res: Response,
     @Body() createCustomerDto: CreateCustomerDto,
-    @UploadedFile() file: Express.Multer.File,
+    @UploadedFile() file?: Express.Multer.File,
   ): Promise<Response<any, Record<string, any>>> {
     try {
       const customer = await this.customerService.create(createCustomerDto, file);

@@ -3,7 +3,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { DeleteResult, Repository } from 'typeorm';
 import { CreateCustomerDto } from './customer.dto';
 import { Customer } from './customer.entity';
-import { S3Service } from 'src/utils/s3.service';
+import { S3Service } from 'src/services/s3.service';
 
 @Injectable()
 export class CustomerService {
@@ -15,9 +15,17 @@ export class CustomerService {
 
   async create(
     dto: CreateCustomerDto,
-    file: Express.Multer.File,
-  ): Promise<Customer> {
+    file?: Express.Multer.File,
+  ): Promise<Customer | string> {
     let imagePath = '';
+
+    let customersDuplicate = await this.customerRepository.findOne({
+      where: { name: dto.name },
+    });
+    if (customersDuplicate) {
+      throw new Error('Account duplicate');
+    }
+
     if (file) {
       imagePath = await this.s3Service.uploadFile(file);
     }

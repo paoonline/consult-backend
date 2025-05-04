@@ -3,6 +3,7 @@ import { CustomerService } from './customer.service';
 import { Customer } from './customer.entity';
 import { getRepositoryToken } from '@nestjs/typeorm';
 import { Repository, DeleteResult } from 'typeorm';
+import { S3Service } from 'src/services/s3.service';
 
 describe('CustomerService', () => {
   let service: CustomerService;
@@ -14,6 +15,7 @@ describe('CustomerService', () => {
       email: 'john@example.com',
       description: '',
       phone_number: '',
+      image_path: '',
       rooms: []
   };
 
@@ -21,6 +23,7 @@ describe('CustomerService', () => {
     const module: TestingModule = await Test.createTestingModule({
       providers: [
         CustomerService,
+        S3Service,
         {
           provide: getRepositoryToken(Customer),
           useValue: {
@@ -46,7 +49,7 @@ describe('CustomerService', () => {
     repo.create.mockReturnValue(mockCustomer);
     repo.save.mockResolvedValue(mockCustomer);
 
-    const result = await service.create(mockCustomer);
+    const result = await service.create(mockCustomer,);
     expect(repo.create).toHaveBeenCalledWith(mockCustomer);
     expect(repo.save).toHaveBeenCalledWith(mockCustomer);
     expect(result).toEqual(mockCustomer);
