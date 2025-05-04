@@ -26,5 +26,8 @@ export class Customer {
   phone_number: string;
 
   @OneToMany(() => Room, (room) => room.customer)
-  rooms: Room[];
+  rooms?: Room[];
+
+  @Column({ nullable: true })
+  image_path?: string
 }

@@ -2,7 +2,6 @@ import { IsEmail, IsNotEmpty, MaxLength } from 'class-validator';
 import { Column } from 'typeorm';
 
 export class CreateCustomerDto {
-
   @IsNotEmpty()
   @MaxLength(100)
   name: string;
@@ -19,4 +18,7 @@ export class CreateCustomerDto {
   @Column({ nullable: true })
   @MaxLength(20)
   phone_number: string;
+
+  @Column({ nullable: true })
+  image?: Express.Multer.File; 
 }

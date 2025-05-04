@@ -3,40 +3,53 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { DeleteResult, Repository } from 'typeorm';
 import { CreateCustomerDto } from './customer.dto';
 import { Customer } from './customer.entity';
+import { S3Service } from 'src/utils/s3.service';
 
 @Injectable()
 export class CustomerService {
   constructor(
     @InjectRepository(Customer)
     private readonly customerRepository: Repository<Customer>,
+    private readonly s3Service: S3Service,
   ) {}
 
-  async create(createCustomerDto: CreateCustomerDto): Promise<Customer> {
-    const customer = this.customerRepository.create(createCustomerDto);
+  async create(
+    dto: CreateCustomerDto,
+    file: Express.Multer.File,
+  ): Promise<Customer> {
+    let imagePath = '';
+    if (file) {
+      imagePath = await this.s3Service.uploadFile(file);
+    }
+
+    const customer = this.customerRepository.create({
+      ...dto,
+      image_path: imagePath ?? undefined,
+    });
     return this.customerRepository.save(customer);
   }
 
   async findAll(): Promise<Customer[]> {
-    return this.customerRepository.find()
+    return this.customerRepository.find();
   }
 
   async findOne(id: string): Promise<Customer | null> {
     return this.customerRepository.findOne({
-        where: { id },
-      });
+      where: { id },
+    });
   }
 
   async update(
     id: string,
     updateCustomerDto: Partial<CreateCustomerDto>,
   ): Promise<Customer | null> {
-    const findCustomer = this.findOne(id)
+    const findCustomer = this.findOne(id);
     if (!findCustomer) {
-        return null; // Return null if the room isn't found
+      return null; // Return null if the room isn't found
     }
 
     await this.customerRepository.save(updateCustomerDto);
-    return this.findOne(id)
+    return this.findOne(id);
   }
 
   async delete(id: string): Promise<DeleteResult> {

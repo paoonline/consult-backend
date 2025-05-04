@@ -7,24 +7,29 @@ import {
   UseGuards,
   Res,
   Delete,
+  UseInterceptors,
+  UploadedFile,
 } from '@nestjs/common';
 
 import { JwtAuthGuard } from 'src/validate/jwt-auth.guard';
 import { Response } from 'express';
 import { CustomerService } from './customer.service';
 import { CreateCustomerDto } from './customer.dto';
+import { FileInterceptor } from '@nestjs/platform-express';
 @Controller('customers')
 export class CustomerController {
   constructor(private readonly customerService: CustomerService) {}
 
+  @UseInterceptors(FileInterceptor('image'))
   @Post()
   @UseGuards(JwtAuthGuard)
   async createCustomer(
     @Res() res: Response,
     @Body() createCustomerDto: CreateCustomerDto,
+    @UploadedFile() file: Express.Multer.File,
   ): Promise<Response<any, Record<string, any>>> {
     try {
-      const customer = await this.customerService.create(createCustomerDto);
+      const customer = await this.customerService.create(createCustomerDto, file);
 
       return res.status(200).json({
         status: 200,
