@@ -1,0 +1,47 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model login {
+  id         String   @id @default(uuid())
+  email_id   String
+  login_date DateTime? @default(now())
+}
+
+model Customer {
+  id          String    @id @default(uuid())
+  email       String    @unique @db.VarChar(20) 
+  password    String    @db.VarChar(255)
+  job         String    @db.VarChar(50)
+  address     String    @db.VarChar(255)
+  skill       String    @db.VarChar(255)
+  phone_number String    @db.VarChar(10)
+  description  String    @db.VarChar(255)
+  customer_type CustomerType
+  created_at  DateTime   @default(now())
+  updated_at  DateTime   @updatedAt
+  profile_image String @db.VarChar(100)
+  customer_detail CustomerDetail? @relation("CustomerToDetail")
+}
+
+model CustomerDetail {
+  id            String  @id @default(uuid())
+  online_status Boolean  @default(false)
+  rate          Int
+  price         Float
+  book_time    DateTime
+  customer     Customer @relation(fields: [customer_id], references: [id], name: "CustomerToDetail")
+  customer_id String @unique
+}
+
+enum CustomerType {
+  CONSULT
+  CUSTOMER
+}
+
+
