@@ -11,6 +11,7 @@ import { ScheduleModule } from '@nestjs/schedule';
 import { RoomDetail } from './room/room-detail.entity';
 import { Room } from './room/room.entity';
 import { CustomerModule } from './customers/customer.module';
+import { EmailModule } from './email/email.module';
 require('dotenv').config();
 @Module({
   imports: 
@@ -39,6 +40,7 @@ require('dotenv').config();
     roomModule,
     LoginModule, 
     CustomerModule,
+    EmailModule,
     UserModule],
   controllers: [AppController],
   providers: [AppService, BatchService],

@@ -7,7 +7,6 @@ import { JwtStrategy } from "src/validate/jwt.strategy";
 import { UserModule } from "src/user/user.module";
 import { S3Service } from "src/services/s3.service";
 
-
 @Module({
   imports: [TypeOrmModule.forFeature([Customer]), UserModule],
   controllers: [CustomerController],

@@ -7,6 +7,7 @@ import { Login } from './login.entity';
 import { Users } from 'src/user/user.entity';
 import { JwtPayload } from 'jsonwebtoken';
 import * as jwt from 'jsonwebtoken';
+import { RedisService } from 'src/services/Redis/redis.service';
 
 @Injectable()
 export class AuthService {
@@ -17,6 +18,7 @@ export class AuthService {
 
     @InjectRepository(Users)
     private userRepository: Repository<Users>,
+    private redisService: RedisService
   ) {}
 
   async createJwtToken(user: Users): Promise<string> {
@@ -30,6 +32,17 @@ export class AuthService {
   }
 
   async login(email: string, password: string): Promise<string> {
+    // check attemp count from redis
+    const getCurrentUserAttemp = await this.redisService.getValue(email)
+    if (getCurrentUserAttemp?.attempts > 5 || new Date(getCurrentUserAttemp?.loginTime).getTime() > 60000) {
+      await this.redisService.setValue(email, { attempts: 1 , loginTime: new Date() });
+      throw new Error('Account limit 5 times');
+    }
+  
+    if (!getCurrentUserAttemp || getCurrentUserAttemp?.loginTime && new Date(getCurrentUserAttemp?.loginTime).getTime()  - Date.now() <= 60000){
+      await this.redisService.setValue(email, { attempts: getCurrentUserAttemp?.attempts + 1 || 1, loginTime: getCurrentUserAttemp?.loginTime ?? new Date() });
+    }
+
     // Find the user by email
     const user = await this.userRepository.findOne({ where: { email } });
     if (!user) {
