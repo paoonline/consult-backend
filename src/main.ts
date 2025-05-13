@@ -13,7 +13,7 @@ async function bootstrap() {
   // app.use(AuthMiddleware); // Apply middleware globally
 
   // uncomment for used the prefix api
-  // app.setGlobalPrefix('api');
+  app.setGlobalPrefix('api');
   await app.listen(process.env.PORT ?? 3000);
 }
 bootstrap();

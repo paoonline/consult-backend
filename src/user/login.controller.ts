@@ -7,12 +7,12 @@ class LoginDto {
   @MaxLength(100)
   email_id: string;
 }
-@Controller('/login')
+@Controller('/user')
 export class LoginController {
   constructor(private readonly loginService: LoginService) {}
 
   @Post()
-  async login(
+  async createUser(
     @Res() res: Response,
     @Body() data: LoginDto,
   ): Promise<Response<any, Record<string, any>>> {

@@ -1,17 +1,11 @@
 import { Module } from '@nestjs/common';
-import { AppController } from './app.controller';
-import { AppService } from './app.service';
-import { LoginModule } from './login/login.module';
-import { UserModule } from './user/user.module';
 import { ConfigModule } from '@nestjs/config';
-import { TypeOrmModule } from '@nestjs/typeorm';
-import { roomModule } from './room/room.module';
-import { BatchService } from './batch/batch.service';
+// import { TypeOrmModule } from '@nestjs/typeorm';
 import { ScheduleModule } from '@nestjs/schedule';
-import { RoomDetail } from './room/room-detail.entity';
-import { Room } from './room/room.entity';
-import { CustomerModule } from './customers/customer.module';
-import { EmailModule } from './email/email.module';
+import { BatchService } from './batch/batch.service';
+import { PrismaModule } from '../prisma/prisma.module';
+import { LoginModule } from './login/login.module';
+
 require('dotenv').config();
 @Module({
   imports: 
@@ -20,29 +14,11 @@ require('dotenv').config();
     ConfigModule.forRoot({
       isGlobal: true,
     }),
-    TypeOrmModule.forRoot({
-      type: 'postgres',
-      host: process.env.DB_HOST || 'localhost',
-      port: parseInt(process.env.DB_PORT ?? '5432', 10),
-      username: process.env.DB_USER || 'postgres',
-      password: process.env.DB_PASS || '123456',
-      database: process.env.DB_NAME || 'hotel_management',
-      autoLoadEntities: true,
-      synchronize: true,  // Use only in development
-      ssl: process.env.DB_SSL === 'true',
-      extra: {
-        ssl: {
-          rejectUnauthorized: false, // allow self-signed cert (dev)
-        },
-      }
-    }),
-    TypeOrmModule.forFeature([Room, RoomDetail]),
-    roomModule,
-    LoginModule, 
-    CustomerModule,
-    EmailModule,
-    UserModule],
-  controllers: [AppController],
-  providers: [AppService, BatchService],
+    PrismaModule,
+    LoginModule
+    // TypeOrmModule.forFeature([Room, RoomDetail]),
+    // LoginModule,
+  ],
+  providers: [BatchService],
 })
 export class AppModule {}

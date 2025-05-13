@@ -5,3 +5,5 @@ coverage
 .env
 .dockerignore
 *.tar
+
+generated/prisma
