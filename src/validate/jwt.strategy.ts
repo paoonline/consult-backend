@@ -3,11 +3,12 @@ import { PassportStrategy } from '@nestjs/passport';
 import { JwtPayload } from 'jsonwebtoken';
 
 import { Strategy, ExtractJwt } from 'passport-jwt';
-// import { UserService } from 'src/user/user.service';
+import { PrismaService } from 'prisma/prisma.service';
+
 
 @Injectable()
 export class JwtStrategy extends PassportStrategy(Strategy) {
-  constructor(private readonly usersService: any) {
+  constructor(private readonly  prisma: PrismaService) {
     super({
       jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
       secretOrKey: process.env.JWT_SECRET || 'your-secret-key',
@@ -15,10 +16,10 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
   }
 
   async validate(payload: JwtPayload) {
-    // const user = await this.usersService.findOne(payload.userId);
-    // if (!user) {
-    //   throw new Error('User not found');
-    // }
-    // return user; // Attach the user to the request
+    const customer = await this.prisma.customer.findUnique({where : {id: payload.userId}});
+    if (!customer) {
+      throw new Error('Customer not found');
+    }
+    return true; // Attach the user to the request
   }
 }

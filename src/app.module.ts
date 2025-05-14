@@ -1,10 +1,10 @@
 import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
-// import { TypeOrmModule } from '@nestjs/typeorm';
 import { ScheduleModule } from '@nestjs/schedule';
 import { BatchService } from './batch/batch.service';
 import { PrismaModule } from '../prisma/prisma.module';
 import { LoginModule } from './login/login.module';
+import { CustomerModule } from './customer/customer.module';
 
 require('dotenv').config();
 @Module({
@@ -15,9 +15,8 @@ require('dotenv').config();
       isGlobal: true,
     }),
     PrismaModule,
-    LoginModule
-    // TypeOrmModule.forFeature([Room, RoomDetail]),
-    // LoginModule,
+    LoginModule,
+    CustomerModule
   ],
   providers: [BatchService],
 })

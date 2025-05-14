@@ -1,0 +1,4 @@
+-- AlterTable
+ALTER TABLE "Customer" ALTER COLUMN "password" SET DATA TYPE VARCHAR(255),
+ALTER COLUMN "profile_image" DROP NOT NULL,
+ALTER COLUMN "profile_image" SET DATA TYPE VARCHAR(255);
