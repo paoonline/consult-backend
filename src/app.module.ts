@@ -5,6 +5,8 @@ import { BatchService } from './batch/batch.service';
 import { PrismaModule } from '../prisma/prisma.module';
 import { LoginModule } from './login/login.module';
 import { CustomerModule } from './customer/customer.module';
+import { ConsultModule } from './consult/consult.module';
+import { JwtStrategy } from './validate/jwt.strategy';
 
 require('dotenv').config();
 @Module({
@@ -16,8 +18,9 @@ require('dotenv').config();
     }),
     PrismaModule,
     LoginModule,
-    CustomerModule
+    CustomerModule,
+    ConsultModule
   ],
-  providers: [BatchService],
+  providers: [BatchService, JwtStrategy],
 })
 export class AppModule {}

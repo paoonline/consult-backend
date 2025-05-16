@@ -5,7 +5,6 @@ import {
   IsEmail,
   IsEnum,
   MaxLength,
-  ArrayNotEmpty,
   IsArray,
 } from 'class-validator';
 import { CustomerType } from '@prisma/client';
@@ -28,9 +27,8 @@ export class CustomerDto {
   address: string;
 
   @IsArray()
-  @ArrayNotEmpty()
   @IsString({ each: true })
-  skill?: string[];
+  skills: string[];
 
   @IsString()
   @MaxLength(10)
@@ -46,4 +44,7 @@ export class CustomerDto {
   @IsString()
   @MaxLength(100)
   profileImage?: string;
+
+  @MaxLength(100)
+  price: number
 }

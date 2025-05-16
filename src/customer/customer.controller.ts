@@ -1,8 +1,7 @@
 import { Body, Controller, Delete, Get, HttpStatus, Param, Patch, Post, Res, UseGuards } from '@nestjs/common';
 import {  Response } from 'express';
 import { CustomerService } from './customer.service';
-
-import { CustomerDto } from './dto/customer.dto';
+import { CustomerDto } from './customer.dto';
 import { JwtAuthGuard } from 'src/validate/jwt-auth.guard';
 
 @Controller('/customer')
@@ -103,7 +102,7 @@ export class CustomerController {
   async updatCustomer(
     @Param('id') id: string,
     @Res() res: Response,
-    @Body() customerDto: Omit<CustomerDto, 'password'| 'email'>,
+    @Body() customerDto: CustomerDto
   ): Promise<Response<any, Record<string, any>>> {
     try {
       const safeData = {
@@ -127,8 +126,8 @@ export class CustomerController {
         data: updatedCustomer,
       });
     } catch (error) {
-      return res.status(401).json({
-        status: 401,
+      return res.status(400).json({
+        status: 400,
         message: error.message,
         data: '',
       });

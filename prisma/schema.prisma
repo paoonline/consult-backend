@@ -7,7 +7,7 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-model login {
+model login { 
   id         String   @id @default(uuid())
   email_id   String 
   login_date DateTime? @default(now())
@@ -28,6 +28,36 @@ model Customer {
   profile_image String? @db.VarChar(255)
   customer_detail CustomerDetail? @relation("CustomerToDetail")
   skills Skill[]
+  online_status Boolean  @default(false)
+  verify_email Boolean  @default(false)
+
+   // 👇 back-relations
+  clientTransactions     ConsultTransaction[] @relation("CustomerIsClient")
+  consultantTransactions ConsultTransaction[] @relation("CustomerIsConsultant")
+
+  price         Float @default(0.00)
+}
+
+model ConsultTransaction {
+  @@map("consult_transaction")
+  id               String          @id @default(uuid())
+  customer     Customer  @relation("CustomerIsClient", fields: [customer_id], references: [id])
+  customer_id  String    @db.VarChar(100)
+  consult      Customer  @relation("CustomerIsConsultant", fields: [consult_id], references: [id])
+  consult_id   String    @db.VarChar(100)
+
+  time_list  TimeLimitType
+  end_date             DateTime
+  start_date           DateTime
+}
+
+model CustomerDetail {
+  @@map("customer_detail") 
+  id            String  @id @default(uuid())
+  rate          Int? @default(0)
+  customer     Customer @relation(fields: [customer_id], references: [id], name: "CustomerToDetail")
+  customer_id String @unique
+  bookings    Booking[]
 }
 
 model Skill {
@@ -37,19 +67,8 @@ model Skill {
   customers   Customer[]
 }
 
-model CustomerDetail {
-  @@map("customer_detail") 
-  id            String  @id @default(uuid())
-  online_status Boolean  @default(false)
-  rate          Int
-  price         Float
-  customer     Customer @relation(fields: [customer_id], references: [id], name: "CustomerToDetail")
-  customer_id String @unique
-  bookings    Booking[]
-}
-
 model Booking {
-   @@map("booking")
+  @@map("booking")
   id               String          @id @default(uuid())
   time             DateTime
   customer_detail   CustomerDetail @relation(fields: [customer_detail_id], references: [id])
@@ -59,6 +78,11 @@ model Booking {
 enum CustomerType {
   CONSULT
   CUSTOMER
+}
+
+enum TimeLimitType {
+  ONE_HR
+  TWO_HR
 }
 
 

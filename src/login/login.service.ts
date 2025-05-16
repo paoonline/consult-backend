@@ -9,12 +9,17 @@ export class LoginService {
   private readonly jwtSecret = process.env.JWT_SECRET || 'your-secret-key';
   constructor(private readonly prisma: PrismaService) {}
 
-  createLog(emailId: string) {
-    this.prisma.login.create({
-      data: {
-        email_id: emailId
-      },
-    });
+  async createLog(emailId: string) {
+    try {
+      const result = await this.prisma.login.create({
+        data: {
+          email_id: emailId,
+        },
+      });
+      console.log('Saved login:', result);
+    } catch (error) {
+      console.error('Error saving login:', error);
+    }
   }
 
   async login(email: string, password: string): Promise<string> {
@@ -32,7 +37,7 @@ export class LoginService {
     }
 
     // Create a login record
-    this.createLog(customer.id);
+    this.createLog(customer.id)
 
     return this.createJwtToken(customer);
   }
@@ -43,7 +48,7 @@ export class LoginService {
       email: customer.email,
     };
 
-    return jwt.sign(payload, this.jwtSecret, { expiresIn: '1h' }); // Token expires in 1 hour
+    return jwt.sign(payload, this.jwtSecret, { expiresIn: '3h' }); // Token expires in 1 hour
   }
 
   findAll(): Promise<login[]> {
