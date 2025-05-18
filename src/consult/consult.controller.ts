@@ -1,7 +1,6 @@
 import {
   Body,
   Controller,
-  Delete,
   Get,
   Param,
   Patch,
@@ -14,10 +13,20 @@ import { Response } from 'express';
 import { JwtAuthGuard } from 'src/validate/jwt-auth.guard';
 import { ConsultDto } from './consult.dto';
 import { ConsultService } from './consult.service';
+import { ConsultNoteService } from './services/consult.note.service';
+import { ConsultNotification, Prisma } from '.prisma/client';
+import { ConsultCommentService } from './services/consult.comment.service';
+import { ConsultNotiService } from './services/consult.noti.service';
 
 @Controller('/consult')
 export class ConsultController {
-  constructor(private readonly consultService: ConsultService) {}
+  constructor(
+    private readonly consultService: ConsultService,
+    private readonly noteService: ConsultNoteService,
+    private readonly commentService: ConsultCommentService,
+    private readonly consultNotiService: ConsultNotiService
+  ) 
+  {}
 
   @Post()
   @UseGuards(JwtAuthGuard)
@@ -64,7 +73,7 @@ export class ConsultController {
     }
   }
 
-  @Get(':customerId/:consultId')
+  @Get('/consult-all/:customerId/:consultId')
   @UseGuards(JwtAuthGuard)
   async getCounsultTransactionById(
     @Res() res: Response,
@@ -104,6 +113,208 @@ export class ConsultController {
       });
     } catch (error) {
       // Handle errors, for example, invalid credentials
+      return res.status(400).json({
+        status: 400,
+        message: error.message,
+        data: '',
+      });
+    }
+  }
+
+  @Get('/note')
+  @UseGuards(JwtAuthGuard)
+  async getAllNotes(
+    @Res() res: Response,
+  ): Promise<Response<any, Record<string, any>>> {
+    try {
+      const note = await this.noteService.findAll();
+      return res.status(200).json({
+        status: 200,
+        message: 'successful',
+        data: note,
+      });
+    } catch (error) {
+      return res.status(400).json({
+        status: 400,
+        message: error.message,
+        data: '',
+      });
+    }
+  }
+
+  @Get('/note/:noteId')
+  @UseGuards(JwtAuthGuard)
+  async getNoteByid(
+    @Res() res: Response,
+    @Param('noteId') noteId: string,
+  ): Promise<Response<any, Record<string, any>>> {
+    try {
+      const note = await this.noteService.findByNoteId(noteId);
+      return res.status(200).json({
+        status: 200,
+        message: 'successful',
+        data: note,
+      });
+    } catch (error) {
+      return res.status(400).json({
+        status: 400,
+        message: error.message,
+        data: '',
+      });
+    }
+  }
+
+  @Post('/note')
+  @UseGuards(JwtAuthGuard)
+  async createNote(
+    @Res() res: Response,
+    @Body() data: Prisma.NoteCreateInput,
+  ): Promise<Response<any, Record<string, any>>> {
+    try {
+      const note = await this.noteService.createNote(data);
+      // Send a successful response with the token
+      return res.status(200).json({
+        status: 200,
+        message: 'Create successful',
+        data: note,
+      });
+    } catch (error) {
+      // Handle errors, for example, invalid credentials
+      return res.status(400).json({
+        status: 400,
+        message: error.message,
+        data: '',
+      });
+    }
+  }
+
+
+  @Get('/comment')
+  @UseGuards(JwtAuthGuard)
+  async getAllComment(
+    @Res() res: Response,
+  ): Promise<Response<any, Record<string, any>>> {
+    try {
+      const comment = await this.commentService.findAll();
+      return res.status(200).json({
+        status: 200,
+        message: 'successful',
+        data: comment,
+      });
+    } catch (error) {
+      return res.status(400).json({
+        status: 400,
+        message: error.message,
+        data: '',
+      });
+    }
+  }
+
+  @Get('/comment/:commentId')
+  @UseGuards(JwtAuthGuard)
+  async getCommentByid(
+    @Res() res: Response,
+    @Param('commentId') commentId: string,
+  ): Promise<Response<any, Record<string, any>>> {
+    try {
+      const comment = await this.commentService.findByCommentId(commentId);
+      return res.status(200).json({
+        status: 200,
+        message: 'successful',
+        data: comment,
+      });
+    } catch (error) {
+      return res.status(400).json({
+        status: 400,
+        message: error.message,
+        data: '',
+      });
+    }
+  }
+
+  @Post('/comment')
+  @UseGuards(JwtAuthGuard)
+  async createComment(
+    @Res() res: Response,
+    @Body() data: Prisma.ConsultCommentCreateInput,
+  ): Promise<Response<any, Record<string, any>>> {
+    try {
+      const comment = await this.commentService.createComment(data);
+      // Send a successful response with the token
+      return res.status(200).json({
+        status: 200,
+        message: 'Create successful',
+        data: comment,
+      });
+    } catch (error) {
+      // Handle errors, for example, invalid credentials
+      return res.status(400).json({
+        status: 400,
+        message: error.message,
+        data: '',
+      });
+    }
+  }
+
+  @Post('/notification')
+  @UseGuards(JwtAuthGuard)
+  async createNotification(
+    @Res() res: Response,
+    @Body() data: ConsultNotification,
+  ): Promise<Response<any, Record<string, any>>> {
+    try {
+      const notification = await this.consultNotiService.createNoti(data);
+      // Send a successful response with the token
+      return res.status(200).json({
+        status: 200,
+        message: 'Create successful',
+        data: notification,
+      });
+    } catch (error) {
+      // Handle errors, for example, invalid credentials
+      return res.status(400).json({
+        status: 400,
+        message: error.message,
+        data: '',
+      });
+    }
+  }
+
+  @Get('/notification/:notificationId')
+  @UseGuards(JwtAuthGuard)
+  async getNotificationByid(
+    @Res() res: Response,
+    @Param('notificationId') notificationId: string,
+  ): Promise<Response<any, Record<string, any>>> {
+    try {
+      const notification = await this.consultNotiService.findByNotificationId(notificationId);
+      return res.status(200).json({
+        status: 200,
+        message: 'successful',
+        data: notification,
+      });
+    } catch (error) {
+      return res.status(400).json({
+        status: 400,
+        message: error.message,
+        data: '',
+      });
+    }
+  }
+
+  @Get('/notification')
+  @UseGuards(JwtAuthGuard)
+  async getAllNotification(
+    @Res() res: Response,
+  ): Promise<Response<any, Record<string, any>>> {
+    try {
+      const notification = await this.consultNotiService.findAll();
+      return res.status(200).json({
+        status: 200,
+        message: 'successful',
+        data: notification,
+      });
+    } catch (error) {
       return res.status(400).json({
         status: 400,
         message: error.message,

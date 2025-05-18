@@ -7,87 +7,134 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-model login { 
-  id         String   @id @default(uuid())
-  email_id   String 
+model login {
+  id         String    @id @default(uuid())
+  email_id   String
   login_date DateTime? @default(now())
 }
 
 model Customer {
-   @@map("customer") 
-  id          String    @id @default(uuid())
-  email       String    @unique @db.VarChar(20) 
-  password    String    @db.VarChar(100)
-  job         String    @db.VarChar(50)
-  address     String    @db.VarChar(255)
-  phone_number String    @db.VarChar(10)
-  description  String    @db.VarChar(255)
-  customer_type CustomerType
-  created_at  DateTime   @default(now())
-  updated_at  DateTime   @updatedAt
-  profile_image String? @db.VarChar(255)
+  id              String          @id @default(uuid())
+  email           String          @unique @db.VarChar(20)
+  password        String          @db.VarChar(100)
+  job             String          @db.VarChar(50)
+  address         String          @db.VarChar(255)
+  phone_number    String          @db.VarChar(10)
+  description     String          @db.VarChar(255)
+  customer_type   CustomerType
+  created_at      DateTime        @default(now())
+  updated_at      DateTime        @updatedAt
+  profile_image   String?         @db.VarChar(255)
   customer_detail CustomerDetail? @relation("CustomerToDetail")
-  skills Skill[]
-  online_status Boolean  @default(false)
-  verify_email Boolean  @default(false)
+  skills          Skill[]
+  online_status   Boolean         @default(false)
+  verify_email    Boolean         @default(false)
 
-   // 👇 back-relations
+  // 👇 back-relations
   clientTransactions     ConsultTransaction[] @relation("CustomerIsClient")
   consultantTransactions ConsultTransaction[] @relation("CustomerIsConsultant")
 
+  @@map("customer")
 }
 
 model ConsultTransaction {
-  @@map("consult_transaction")
-  id               String          @id @default(uuid())
-  customer     Customer  @relation("CustomerIsClient", fields: [customer_id], references: [id])
-  customer_id  String    @db.VarChar(100)
-  consult      Customer  @relation("CustomerIsConsultant", fields: [consult_id], references: [id])
-  consult_id   String    @db.VarChar(100)
+  id          String   @id @default(uuid())
+  customer    Customer @relation("CustomerIsClient", fields: [customer_id], references: [id])
+  customer_id String   @db.VarChar(100)
+  consult     Customer @relation("CustomerIsConsultant", fields: [consult_id], references: [id])
+  consult_id  String   @db.VarChar(100)
 
   time_list  TimeLimitType
-  end_date             DateTime
-  start_date           DateTime
+  end_date   DateTime
+  start_date DateTime
 
-   paymentTransaction PaymentTransaction?
+  paymentTransaction PaymentTransaction?
+  note               Note?
+  comment            ConsultComment?
+  consultNotification       ConsultNotification? @relation("TransactionToNotification")
 
   @@index([customer_id, consult_id])
+  @@map("consult_transaction")
+}
+
+model ConsultNotification {
+  id String @id @default(uuid())
+
+  title String   @db.VarChar(100)
+  description String   @db.VarChar(255)
+  noti_date   DateTime @default(now())
+  is_push_noti Boolean @default(false)
+  consult_transaction_id String             @unique
+  consultTransaction       ConsultTransaction  @relation("TransactionToNotification", fields: [consult_transaction_id], references: [id])
+
+  @@map("consult_notification")
 }
 
 model PaymentTransaction {
-  @@map("payment_transaction") 
-  id               String          @id @default(uuid())
+  id String @id @default(uuid())
 
-  price         Float @default(0.00)
-  payment_date           DateTime @default(now())
+  price        Float    @default(0.00)
+  payment_date DateTime @default(now())
 
-  consult_transaction_id  String              @unique
-  consultTransaction      ConsultTransaction  @relation(fields: [consult_transaction_id], references: [id])
+  consult_transaction_id String             @unique
+  consultTransaction     ConsultTransaction @relation(fields: [consult_transaction_id], references: [id])
+
+  @@map("payment_transaction")
+}
+
+model Note {
+  id String @id @default(uuid())
+
+  description String   @db.VarChar(255)
+  note_date   DateTime @default(now())
+
+  consult_transaction_id String             @unique
+  consultTransaction     ConsultTransaction @relation(fields: [consult_transaction_id], references: [id])
+
+  @@map("note")
 }
 
 model CustomerDetail {
-  @@map("customer_detail") 
-  id            String  @id @default(uuid())
-  rate          Int? @default(0)
-  customer     Customer @relation(fields: [customer_id], references: [id], name: "CustomerToDetail") //should remove when need to use microservice
-  customer_id String @unique
+  id          String    @id @default(uuid())
+  rate        Int?      @default(0)
+  customer    Customer  @relation(fields: [customer_id], references: [id], name: "CustomerToDetail") //should remove when need to use microservice
+  customer_id String    @unique
   bookings    Booking[]
-  price         Float @default(0.00)
+  price       Float     @default(0.00)
+  comments    ConsultComment[]
+
+  @@map("customer_detail")
 }
 
-model Skill {
-  @@map("skill") 
-  id               String          @id @default(uuid())
-  name             String         @unique @db.VarChar(100)
-  customers   Customer[]
-}
+model ConsultComment {
+  id String @id @default(uuid())
 
-model Booking {
-  @@map("booking")
-  id               String          @id @default(uuid())
-  time             DateTime
-  customer_detail   CustomerDetail @relation(fields: [customer_detail_id], references: [id])
+  description  String   @db.VarChar(255)
+  comment_date DateTime @default(now())
+  rate         Int
+
+  consult_transaction_id String             @unique
+  consultTransaction     ConsultTransaction @relation(fields: [consult_transaction_id], references: [id])
+
   customer_detail_id String
+  customerDetail     CustomerDetail @relation(fields: [customer_detail_id], references: [id])
+
+  @@map("consult_comment")
+}
+model Skill {
+  id        String     @id @default(uuid())
+  name      String     @unique @db.VarChar(100)
+  customers Customer[]
+
+  @@map("skill")
+}
+model Booking {
+  id                 String         @id @default(uuid())
+  time               DateTime
+  customer_detail    CustomerDetail @relation(fields: [customer_detail_id], references: [id])
+  customer_detail_id String
+
+  @@map("booking")
 }
 
 enum CustomerType {
@@ -99,5 +146,3 @@ enum TimeLimitType {
   ONE_HR
   TWO_HR
 }
-
-
