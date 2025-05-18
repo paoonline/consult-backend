@@ -1,6 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { login } from '@prisma/client';
 import bcrypt from 'bcryptjs';
+import camelcaseKeys from 'camelcase-keys';
 import * as jwt from 'jsonwebtoken';
 import { JwtPayload } from 'jsonwebtoken';
 import { PrismaService } from 'prisma/prisma.service';
@@ -51,11 +52,14 @@ export class LoginService {
     return jwt.sign(payload, this.jwtSecret, { expiresIn: '3h' }); // Token expires in 1 hour
   }
 
-  findAll(): Promise<login[]> {
-    return this.prisma.login.findMany();
+  async findAll(): Promise<login[]> {
+    let result  = await this.prisma.login.findMany()
+    return camelcaseKeys(result) as unknown as login[];
   }
 
-  findByLogin(id: string): Promise<login | null> {
-    return this.prisma.login.findFirst({ where: { id } });
+  async findByLogin(id: string): Promise<login | null> {
+    let result  = await this.prisma.login.findFirst({ where: { id } })
+
+    return camelcaseKeys(result as login) as unknown as login;
   }
 }

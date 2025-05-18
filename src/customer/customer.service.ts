@@ -5,7 +5,7 @@ import { CustomerDto } from './customer.dto';
 import { instanceToPlain } from 'class-transformer';
 import snakecaseKeys from 'snakecase-keys';
 import bcrypt from 'bcryptjs';
-
+import camelcaseKeys from 'camelcase-keys';
 @Injectable()
 export class CustomerService {
   constructor(private readonly prisma: PrismaService) {}
@@ -29,6 +29,7 @@ export class CustomerService {
     const newData = {
       ...data,
       skills: undefined,
+      price: undefined
     };
     const plainData = instanceToPlain(newData);
     const snakeData = snakecaseKeys(plainData) as Prisma.CustomerCreateInput;
@@ -58,13 +59,13 @@ export class CustomerService {
     await this.prisma.customerDetail.create({
       data: {
         customer_id: customer.id,
+        price: data.price,
       },
     });
     return customer;
   }
-
-  findAll(): Promise<Customer[]> {
-    return this.prisma.customer.findMany({
+  async findAll(): Promise<Customer[]> {
+    const result = await this.prisma.customer.findMany({
       include: {
         skills: true,
         customer_detail: {
@@ -73,11 +74,18 @@ export class CustomerService {
           },
         },
       },
+      omit: {
+        password: true,
+      },
     });
+
+    return result.map((r) =>
+      camelcaseKeys(r, { deep: true }),
+    ) as unknown as Customer[];
   }
 
-  findByCustomer(id: string): Promise<Customer | null> {
-    return this.prisma.customer.findUnique({
+  async findByCustomer(id: string): Promise<Customer | null> {
+    const result = await this.prisma.customer.findUnique({
       where: { id },
       include: {
         skills: true,
@@ -87,7 +95,13 @@ export class CustomerService {
           },
         },
       },
+      omit: {
+        password: true,
+      },
     });
+    return camelcaseKeys(
+      result as Omit<Customer, 'password'>,
+    ) as unknown as Customer;
   }
 
   delete(id: string): Promise<Customer> {
@@ -96,11 +110,12 @@ export class CustomerService {
 
   async updateCustomer(
     id: string,
-    data: Omit<CustomerDto, 'password' | 'email'>,
-  ): Promise<Customer | null> {
+    data: Omit<CustomerDto, 'email'>,
+  ): Promise<Omit<Customer, 'password'> | null> {
     const newData = {
       ...data,
       skills: undefined,
+      price: undefined
     };
     const plainData = instanceToPlain(newData);
     const snakeData = snakecaseKeys(plainData);
@@ -112,15 +127,28 @@ export class CustomerService {
       return null; // Return null if the customer isn't found
     }
     const skills = await this.skillMap(data.skills);
+    let hashedPassword;
+    if (data.password) {
+      hashedPassword = await bcrypt.hash(data.password, 10);
+    }
 
-    return this.prisma.customer.update({
+    const updated = await this.prisma.customer.update({
       where: { id },
       data: {
         ...snakeData,
+        password: hashedPassword,
         skills: {
-          set: skills, // List of Skill IDs
+          set: skills,
         },
+        customer_detail: {
+          update: {
+            price: data.price
+          },
+        }
       },
     });
+    
+    const { password, ...safeData } = updated;
+    return safeData;
   }
 }

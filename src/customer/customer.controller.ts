@@ -3,7 +3,6 @@ import {  Response } from 'express';
 import { CustomerService } from './customer.service';
 import { CustomerDto } from './customer.dto';
 import { JwtAuthGuard } from 'src/validate/jwt-auth.guard';
-
 @Controller('/customer')
 export class CustomerController {
   constructor(private readonly customerService: CustomerService) {}
@@ -51,7 +50,6 @@ export class CustomerController {
       });
     }
   }
-
 
   @Get(':id')
   @UseGuards(JwtAuthGuard)
@@ -107,8 +105,7 @@ export class CustomerController {
     try {
       const safeData = {
         ...customerDto,
-        password: undefined,
-        email: undefined
+        email: undefined,
       };
       const updatedCustomer = await this.customerService.updateCustomer(id, safeData);
 

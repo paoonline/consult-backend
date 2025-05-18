@@ -35,7 +35,6 @@ model Customer {
   clientTransactions     ConsultTransaction[] @relation("CustomerIsClient")
   consultantTransactions ConsultTransaction[] @relation("CustomerIsConsultant")
 
-  price         Float @default(0.00)
 }
 
 model ConsultTransaction {
@@ -49,15 +48,31 @@ model ConsultTransaction {
   time_list  TimeLimitType
   end_date             DateTime
   start_date           DateTime
+
+   paymentTransaction PaymentTransaction?
+
+  @@index([customer_id, consult_id])
+}
+
+model PaymentTransaction {
+  @@map("payment_transaction") 
+  id               String          @id @default(uuid())
+
+  price         Float @default(0.00)
+  payment_date           DateTime @default(now())
+
+  consult_transaction_id  String              @unique
+  consultTransaction      ConsultTransaction  @relation(fields: [consult_transaction_id], references: [id])
 }
 
 model CustomerDetail {
   @@map("customer_detail") 
   id            String  @id @default(uuid())
   rate          Int? @default(0)
-  customer     Customer @relation(fields: [customer_id], references: [id], name: "CustomerToDetail")
+  customer     Customer @relation(fields: [customer_id], references: [id], name: "CustomerToDetail") //should remove when need to use microservice
   customer_id String @unique
   bookings    Booking[]
+  price         Float @default(0.00)
 }
 
 model Skill {

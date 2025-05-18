@@ -1,8 +1,10 @@
 import {
   Body,
   Controller,
+  Delete,
   Get,
   Param,
+  Patch,
   Post,
   Res,
   UseGuards,
@@ -62,20 +64,46 @@ export class ConsultController {
     }
   }
 
-  @Get(':id')
+  @Get(':customerId/:consultId')
   @UseGuards(JwtAuthGuard)
   async getCounsultTransactionById(
     @Res() res: Response,
-    @Param('id') id: string,
+    @Param('customerId') customerId: string,
+    @Param('consultId') consultId: string,
   ): Promise<Response<any, Record<string, any>>> {
     try {
-      const consult = await this.consultService.findByConsultTransaction(id);
+      const consult = await this.consultService.findByConsultTransaction(customerId, consultId);
       return res.status(200).json({
         status: 200,
         message: 'successful',
         data: consult,
       });
     } catch (error) {
+      return res.status(400).json({
+        status: 400,
+        message: error.message,
+        data: '',
+      });
+    }
+  }
+
+  @Patch(':customerId/:consultId')
+  @UseGuards(JwtAuthGuard)
+  async meeting(
+    @Res() res: Response,
+    @Param('customerId') customerId: string,
+    @Param('consultId') consultId: string,
+  ): Promise<Response<any, Record<string, any>>> {
+    try {
+      const meeting = await this.consultService.meeting(customerId, consultId);
+      // Send a successful response with the token
+      return res.status(200).json({
+        status: 200,
+        message: 'Meeting successful',
+        data: meeting,
+      });
+    } catch (error) {
+      // Handle errors, for example, invalid credentials
       return res.status(400).json({
         status: 400,
         message: error.message,
