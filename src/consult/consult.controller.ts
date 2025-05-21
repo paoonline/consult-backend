@@ -11,12 +11,14 @@ import {
 import { Response } from 'express';
 
 import { JwtAuthGuard } from 'src/validate/jwt-auth.guard';
-import { ConsultDto } from './consult.dto';
-import { ConsultService } from './consult.service';
-import { ConsultNoteService } from './services/consult.note.service';
-import { ConsultNotification, Prisma } from '.prisma/client';
+import { ConsultCommentDto } from './dto/consult.comment';
+import { ConsultDto } from './dto/consult.dto';
+import { ConsultNoteDto } from './dto/consult.note';
+import { ConsultNotificationDto } from './dto/consult.noti.dto';
 import { ConsultCommentService } from './services/consult.comment.service';
+import { ConsultNoteService } from './services/consult.note.service';
 import { ConsultNotiService } from './services/consult.noti.service';
+import { ConsultService } from './services/consult.service';
 
 @Controller('/consult')
 export class ConsultController {
@@ -168,7 +170,7 @@ export class ConsultController {
   @UseGuards(JwtAuthGuard)
   async createNote(
     @Res() res: Response,
-    @Body() data: Prisma.NoteCreateInput,
+    @Body() data: ConsultNoteDto,
   ): Promise<Response<any, Record<string, any>>> {
     try {
       const note = await this.noteService.createNote(data);
@@ -236,7 +238,7 @@ export class ConsultController {
   @UseGuards(JwtAuthGuard)
   async createComment(
     @Res() res: Response,
-    @Body() data: Prisma.ConsultCommentCreateInput,
+    @Body() data: ConsultCommentDto,
   ): Promise<Response<any, Record<string, any>>> {
     try {
       const comment = await this.commentService.createComment(data);
@@ -260,7 +262,7 @@ export class ConsultController {
   @UseGuards(JwtAuthGuard)
   async createNotification(
     @Res() res: Response,
-    @Body() data: ConsultNotification,
+    @Body() data: ConsultNotificationDto,
   ): Promise<Response<any, Record<string, any>>> {
     try {
       const notification = await this.consultNotiService.createNoti(data);
@@ -288,6 +290,7 @@ export class ConsultController {
   ): Promise<Response<any, Record<string, any>>> {
     try {
       const notification = await this.consultNotiService.findByNotificationId(notificationId);
+      // const notification = await this.consultNotiService.pushNoti();
       return res.status(200).json({
         status: 200,
         message: 'successful',

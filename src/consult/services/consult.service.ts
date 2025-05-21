@@ -1,14 +1,18 @@
 import { Injectable } from '@nestjs/common';
 import { ConsultTransaction, Prisma } from '@prisma/client';
+import camelcaseKeys from 'camelcase-keys';
 import { instanceToPlain } from 'class-transformer';
 import { PrismaService } from 'prisma/prisma.service';
 import snakecaseKeys from 'snakecase-keys';
-import { ConsultDto } from './consult.dto';
-import camelcaseKeys from 'camelcase-keys';
+import { ConsultDto } from '../dto/consult.dto';
+import { ConsultNotiService } from './consult.noti.service';
 
 @Injectable()
 export class ConsultService {
-  constructor(private readonly prisma: PrismaService) {}
+  constructor(
+    private readonly prisma: PrismaService,
+    private readonly consultNoti: ConsultNotiService
+  ) {}
   async createConsult(data: ConsultDto): Promise<ConsultTransaction | null> {
     const plainData = instanceToPlain(data);
     const snakeData = snakecaseKeys(
@@ -54,6 +58,15 @@ export class ConsultService {
         consult_transaction_id: consult.id
       }
     })
+
+    await this.consultNoti.createNoti(
+      {
+        consultTransactionId : consult.id,
+        description: "test",
+        title: "test",
+        deviceToken: '1',
+      }
+    )
     return consult;
   }
 
@@ -81,6 +94,7 @@ export class ConsultService {
         id: { in: [customerId, consultId] },
       },
     });
+
     return 'Success'
   }
 }

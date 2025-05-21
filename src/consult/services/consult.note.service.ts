@@ -5,11 +5,12 @@ import { instanceToPlain } from 'class-transformer';
 
 import { PrismaService } from 'prisma/prisma.service';
 import snakecaseKeys from 'snakecase-keys';
+import { ConsultNoteDto } from '../dto/consult.note';
 
 @Injectable()
 export class ConsultNoteService {
   constructor(private readonly prisma: PrismaService) {}
-  createNote(data: Prisma.NoteCreateInput): Promise<Note | null> {
+  createNote(data: ConsultNoteDto): Promise<Note | null> {
     const plainData = instanceToPlain(data);
     const snakeData = snakecaseKeys(plainData) as Prisma.NoteCreateInput;
 

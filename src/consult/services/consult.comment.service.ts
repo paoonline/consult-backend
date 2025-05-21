@@ -4,13 +4,14 @@ import camelcaseKeys from 'camelcase-keys';
 import { instanceToPlain } from 'class-transformer';
 import { PrismaService } from 'prisma/prisma.service';
 import snakecaseKeys from 'snakecase-keys';
+import { ConsultCommentDto } from '../dto/consult.comment';
 
 @Injectable()
 export class ConsultCommentService {
     constructor(private readonly prisma: PrismaService) { }
 
     async createComment(
-        data: Prisma.ConsultCommentCreateInput,
+        data: ConsultCommentDto,
     ): Promise<ConsultComment | null> {
         const plainData = instanceToPlain(data);
         const snakeData = snakecaseKeys(plainData) as Prisma.ConsultCommentCreateInput;
