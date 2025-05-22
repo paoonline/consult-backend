@@ -20,4 +20,23 @@ export class RedisService {
   async setValue(key: string, value: Record<string, any>) {
     await this.redis.set(key,  JSON.stringify(value));
   }
+
+  async setValueString(key: string, value: string, typeTime: 'EX', expire: number) {
+    this.redis.set(key,  JSON.stringify(value), typeTime, expire);
+  }
+
+  async getAllKey():Promise<Record<string, any>> {
+    const stream = this.redis.scanStream({
+      match: 'online:*',
+    });
+    let keys: Record<string, any> = {};
+    stream.on('data', (resultKeys: string[]) => {
+      for (const key of resultKeys) {
+        keys[key.replace(/online:/, '')] = 'true'
+      }
+
+    });
+    await new Promise((resolve) => stream.on('end', resolve));
+    return keys
+  }
 }

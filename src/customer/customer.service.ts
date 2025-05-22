@@ -6,9 +6,13 @@ import { instanceToPlain } from 'class-transformer';
 import snakecaseKeys from 'snakecase-keys';
 import bcrypt from 'bcryptjs';
 import camelcaseKeys from 'camelcase-keys';
+import { RedisService } from 'src/services/Redis/redis.service';
 @Injectable()
 export class CustomerService {
-  constructor(private readonly prisma: PrismaService) {}
+  constructor(
+    private readonly prisma: PrismaService,
+    private readonly redisService: RedisService,
+  ) {}
 
   async skillMap(skillsList: string[]) {
     const skills = await this.prisma.skill.findMany({
@@ -29,7 +33,7 @@ export class CustomerService {
     const newData = {
       ...data,
       skills: undefined,
-      price: undefined
+      price: undefined,
     };
     const plainData = instanceToPlain(newData);
     const snakeData = snakecaseKeys(plainData) as Prisma.CustomerCreateInput;
@@ -79,8 +83,15 @@ export class CustomerService {
       },
     });
 
-    return result.map((r) =>
-      camelcaseKeys(r, { deep: true }),
+    const userKey = await this.redisService.getAllKey()
+
+    return result.map((r) => {
+      const online = userKey[r.email]
+      return  {
+        ...camelcaseKeys(r, { deep: true }),
+        onlineStatus: !!online,
+      }
+     }
     ) as unknown as Customer[];
   }
 
@@ -115,7 +126,7 @@ export class CustomerService {
     const newData = {
       ...data,
       skills: undefined,
-      price: undefined
+      price: undefined,
     };
     const plainData = instanceToPlain(newData);
     const snakeData = snakecaseKeys(plainData);
@@ -142,12 +153,12 @@ export class CustomerService {
         },
         customer_detail: {
           update: {
-            price: data.price
+            price: data.price,
           },
-        }
+        },
       },
     });
-    
+
     const { password, ...safeData } = updated;
     return safeData;
   }
