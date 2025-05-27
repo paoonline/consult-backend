@@ -1,5 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { RedisService } from '../Redis/redis.service';
+import bcrypt from 'bcryptjs';
 
 @Injectable()
 export class SessionService {
@@ -9,11 +10,19 @@ export class SessionService {
     this.redisService.removeKey(key);
   }
 
-  async checkUserOnline(email: string): Promise<string> {
+  checkUserOnline(email: string): Promise<string> {
     return this.redisService.getValue(`online:${email}`);
   }
 
-  async setUserOnline(
+  getAllUserOnline(key:string):Promise<Record<string, any>> {
+    return this.redisService.getAllKey(key)
+  }
+
+  validatePassword(userPassword: string, customerPassword: string) {
+    return bcrypt.compare(userPassword, customerPassword)
+  }
+
+  setUserOnline(
     email: string
   ) {
     this.redisService.setValueString(

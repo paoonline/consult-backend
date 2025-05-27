@@ -1,20 +1,19 @@
 import { Injectable } from '@nestjs/common';
-import { login } from '@prisma/client';
-import bcrypt from 'bcryptjs';
-import { PrismaService } from 'prisma/prisma.service';
+import { CustomerService } from 'src/customer/application/customer.service';
 import { JwtService } from 'src/services/Jwt/jwt.service';
-import { LoginRepository } from '../infrastructure/login.repository';
-import { LoginEntity } from '../domain/login.entity';
-import { emailValue } from '../domain/email.vo';
 import { SessionService } from 'src/services/Session/session.service';
-
+import { emailValue } from '../domain/email.vo';
+import { LoginEntity } from '../domain/login.entity';
+import { LoginRepository } from '../infrastructure/login.repository';
+import { loginLogDto } from './login.dto';
+import { IRepository } from 'src/utils/respository';
 @Injectable()
-export class LoginService {
+export class LoginService implements Omit<IRepository<loginLogDto, string>, 'delete'> {
   constructor(
-    private readonly prisma: PrismaService,
     private readonly loginRepository: LoginRepository,
     private readonly jwtService: JwtService,
-    private readonly sessionService: SessionService
+    private readonly sessionService: SessionService,
+    private readonly customerService: CustomerService
   ) {}
 
   createFactory(emailId: string): LoginEntity {
@@ -22,25 +21,27 @@ export class LoginService {
       new emailValue(emailId)
     );
   }
+  
+  async create(id: string): Promise<void> {
+    this.loginRepository.create(this.createFactory(id));
+  }
 
   async login(email: string, password: string): Promise<string> {
     // find user online
-    const online = await this.sessionService.checkUserOnline(`online:${email}`)
+    const alreadyOnline = await this.sessionService.checkUserOnline(`${email}`)
  
-    if(online) {
+    if(alreadyOnline) {
       throw new Error('Session was duplicated')
     }
 
     // Find the user by email
-    const customer = await this.prisma.customer.findUnique({
-      where: { email },
-    });
-    if (!customer) {
+    const customer = await this.customerService.findUnique(email)
+    if (!customer || !customer.password) {
       throw new Error('Invalid credentials');
     }
 
     // Compare the password with the hashed password
-    const isPasswordValid = await bcrypt.compare(password, customer.password);
+    const isPasswordValid = await this.sessionService.validatePassword(password, customer.password);
     if (!isPasswordValid) {
       throw new Error('Invalid credentials');
     }
@@ -52,15 +53,15 @@ export class LoginService {
     return this.jwtService.createJwtToken(customer);
   }
 
-  findAll(): Promise<login[]> {
+  findAll(): Promise<loginLogDto[]> {
     return this.loginRepository.findAll()
   }
 
-  findOne(id: string): Promise<login | null> {
+  findOne(id: string): Promise<loginLogDto | null> {
     return this.loginRepository.findOne(id)
   }
 
   async logout(key: string):Promise<void> {
-    this.loginRepository.logout(key)
+    this.sessionService.logout(key)
   }
 }

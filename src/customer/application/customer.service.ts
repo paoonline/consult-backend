@@ -1,17 +1,19 @@
 import { Injectable } from '@nestjs/common';
 import { Customer, Prisma } from '@prisma/client';
-import { PrismaService } from 'prisma/prisma.service';
-import { CustomerDto } from './customer.dto';
-import { instanceToPlain } from 'class-transformer';
-import snakecaseKeys from 'snakecase-keys';
 import bcrypt from 'bcryptjs';
 import camelcaseKeys from 'camelcase-keys';
-import { RedisService } from 'src/services/Redis/redis.service';
+import { instanceToPlain } from 'class-transformer';
+import { PrismaService } from 'prisma/prisma.service';
+import snakecaseKeys from 'snakecase-keys';
+import { SessionService } from 'src/services/Session/session.service';
+import { CustomerDto, CustomerDtoResponse } from './customer.dto';
+import { CustomerRepository } from '../infrastructure/customer.repository';
 @Injectable()
 export class CustomerService {
   constructor(
     private readonly prisma: PrismaService,
-    private readonly redisService: RedisService,
+    private readonly sessionService: SessionService,
+    private readonly customerRepository: CustomerRepository
   ) {}
 
   async skillMap(skillsList: string[]) {
@@ -68,55 +70,29 @@ export class CustomerService {
     });
     return customer;
   }
-  async findAll(): Promise<Customer[]> {
-    const result = await this.prisma.customer.findMany({
-      include: {
-        skills: true,
-        customer_detail: {
-          include: {
-            bookings: true,
-          },
-        },
-      },
-      omit: {
-        password: true,
-      },
-    });
+  async findAll(): Promise<CustomerDtoResponse[]> {
+    const result = await this.customerRepository.findAll()
+    const userKey = await this.sessionService.getAllUserOnline('online')
 
-    const userKey = await this.redisService.getAllKey('online')
-
-    return result.map((r) => {
-      const online = userKey[r.email]
-      return  {
-        ...camelcaseKeys(r, { deep: true }),
-        onlineStatus: !!online,
+    return result.map((res) => {
+      const online = userKey[res.email]
+      return {
+        ...res,
+        onlineStatus: !!online
       }
-     }
-    ) as unknown as Customer[];
+    })
   }
 
-  async findByCustomer(id: string): Promise<Customer | null> {
-    const result = await this.prisma.customer.findUnique({
-      where: { id },
-      include: {
-        skills: true,
-        customer_detail: {
-          include: {
-            bookings: true,
-          },
-        },
-      },
-      omit: {
-        password: true,
-      },
-    });
-    return camelcaseKeys(
-      result as Omit<Customer, 'password'>,
-    ) as unknown as Customer;
+  async findByCustomer(email: string): Promise<CustomerDtoResponse | null> {
+    return await this.customerRepository.findOne(email)
+  }
+
+  async findUnique(email: string): Promise<CustomerDtoResponse> {
+    return await this.customerRepository.findUnique(email)
   }
 
   delete(id: string): Promise<Customer> {
-    return this.prisma.customer.delete({ where: { id } });
+    return this.customerRepository.delete(id)
   }
 
   async updateCustomer(

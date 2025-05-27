@@ -59,6 +59,7 @@ export class ConsultService {
       }
     })
 
+    // hard for for noti
     await this.consultNoti.createNoti(
       {
         consultTransactionId : consult.id,

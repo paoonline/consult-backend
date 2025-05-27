@@ -10,12 +10,12 @@ export class JwtService {
   async createJwtToken(customer: {
     id: string;
     email: string;
-    customer_type: CustomerType;
+    customerType: CustomerType;
   }): Promise<string> {
     const payload: JwtPayload = {
       userId: customer.id,
       email: customer.email,
-      customerType: customer.customer_type,
+      customerType: customer.customerType,
     };
     return jwt.sign(payload, this.jwtSecret, { expiresIn: '2h' }); // Token expires in 1 hour
   }
