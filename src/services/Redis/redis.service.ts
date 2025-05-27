@@ -6,7 +6,6 @@ export class RedisService {
   constructor(@Inject('REDIS_CLIENT') private readonly redis: Redis.Redis) {}
   async getValue(key: string) {
     const raw = await this.redis.get(key); // string
-
     try {
       const parsed = JSON.parse(raw || '');
       console.log('Parsed object:', parsed);
@@ -18,21 +17,27 @@ export class RedisService {
   }
 
   async setValue(key: string, value: Record<string, any>) {
-    await this.redis.set(key,  JSON.stringify(value));
+    await this.redis.set(key, JSON.stringify(value));
   }
 
   async setValueString(key: string, value: string, typeTime: 'EX', expire: number) {
     this.redis.set(key,  JSON.stringify(value), typeTime, expire);
   }
 
-  async getAllKey():Promise<Record<string, any>> {
+  async removeKey(key: string) {
+    await this.redis.del(key)
+  }
+
+  async getAllKey(key:string):Promise<Record<string, any>> {
     const stream = this.redis.scanStream({
-      match: 'online:*',
+      match: `${key}:*`,
     });
     let keys: Record<string, any> = {};
+
+    let newRegEx = `/${key}:/`
     stream.on('data', (resultKeys: string[]) => {
       for (const key of resultKeys) {
-        keys[key.replace(/online:/, '')] = 'true'
+        keys[key.replace(newRegEx, '')] = 'true'
       }
 
     });

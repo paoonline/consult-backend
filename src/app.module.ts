@@ -7,6 +7,9 @@ import { LoginModule } from './login/login.module';
 import { CustomerModule } from './customer/customer.module';
 import { ConsultModule } from './consult/consult.module';
 import { JwtStrategy } from './validate/jwt.strategy';
+import { PrismaService } from 'prisma/prisma.service';
+import { RedisModule } from './services/Redis/redis.module';
+import { SessionModule } from './services/Session/session.module';
 
 require('dotenv').config();
 @Module({
@@ -19,7 +22,8 @@ require('dotenv').config();
     PrismaModule,
     LoginModule,
     CustomerModule,
-    ConsultModule
+    ConsultModule,
+    SessionModule,
   ],
   providers: [BatchService, JwtStrategy],
 })

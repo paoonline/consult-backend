@@ -83,7 +83,7 @@ export class CustomerService {
       },
     });
 
-    const userKey = await this.redisService.getAllKey()
+    const userKey = await this.redisService.getAllKey('online')
 
     return result.map((r) => {
       const online = userKey[r.email]
