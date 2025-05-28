@@ -2,11 +2,12 @@ import { Injectable } from '@nestjs/common';
 import { CustomerService } from 'src/customer/application/customer.service';
 import { JwtService } from 'src/services/Jwt/jwt.service';
 import { SessionService } from 'src/services/Session/session.service';
-import { emailValue } from '../domain/email.vo';
-import { LoginEntity } from '../domain/login.entity';
+import { IRepository } from 'src/utils/respository';
 import { LoginRepository } from '../infrastructure/login.repository';
 import { loginLogDto } from './login.dto';
-import { IRepository } from 'src/utils/respository';
+import { createFactory } from './login.factory';
+import camelcaseKeys from 'camelcase-keys';
+import { login } from '.prisma/client';
 @Injectable()
 export class LoginService implements Omit<IRepository<loginLogDto, string>, 'delete'> {
   constructor(
@@ -15,15 +16,9 @@ export class LoginService implements Omit<IRepository<loginLogDto, string>, 'del
     private readonly sessionService: SessionService,
     private readonly customerService: CustomerService
   ) {}
-
-  createFactory(emailId: string): LoginEntity {
-    return new LoginEntity(
-      new emailValue(emailId)
-    );
-  }
   
   async create(id: string): Promise<void> {
-    this.loginRepository.create(this.createFactory(id));
+    this.loginRepository.create(createFactory(id));
   }
 
   async login(email: string, password: string): Promise<string> {
@@ -47,18 +42,20 @@ export class LoginService implements Omit<IRepository<loginLogDto, string>, 'del
     }
 
     // Create a login record
-    this.loginRepository.create(this.createFactory(customer.id));
+    this.create(customer.id)
     this.sessionService.setUserOnline(email)
 
     return this.jwtService.createJwtToken(customer);
   }
 
-  findAll(): Promise<loginLogDto[]> {
-    return this.loginRepository.findAll()
+  async findAll(): Promise<loginLogDto[]> {
+    const result = await this.loginRepository.findAll()
+    return camelcaseKeys(result) as loginLogDto[];
   }
 
-  findOne(id: string): Promise<loginLogDto | null> {
-    return this.loginRepository.findOne(id)
+  async findOne(id: string): Promise<loginLogDto | null> {
+    const result = await this.loginRepository.findOne(id)
+    return camelcaseKeys(result as login) as loginLogDto
   }
 
   async logout(key: string):Promise<void> {

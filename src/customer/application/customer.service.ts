@@ -74,21 +74,24 @@ export class CustomerService {
     const result = await this.customerRepository.findAll()
     const userKey = await this.sessionService.getAllUserOnline('online')
 
-    return result.map((res) => {
+    const resultMap = result.map((res) => {
       const online = userKey[res.email]
       return {
         ...res,
         onlineStatus: !!online
       }
     })
+    return resultMap.map((r) => camelcaseKeys(r)) as CustomerDtoResponse[]
   }
 
   async findByCustomer(email: string): Promise<CustomerDtoResponse | null> {
-    return await this.customerRepository.findOne(email)
+    const result = await this.customerRepository.findOne(email) 
+    return camelcaseKeys(result) as CustomerDtoResponse
   }
 
   async findUnique(email: string): Promise<CustomerDtoResponse> {
-    return await this.customerRepository.findUnique(email)
+    const result = await this.customerRepository.findUnique(email)
+    return camelcaseKeys(result) as CustomerDtoResponse
   }
 
   delete(id: string): Promise<Customer> {

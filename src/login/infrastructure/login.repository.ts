@@ -1,9 +1,7 @@
 import { Injectable } from "@nestjs/common";
 import { login } from "@prisma/client";
-import camelcaseKeys from "camelcase-keys";
 import { PrismaService } from "prisma/prisma.service";
 import { IRepository } from "src/utils/respository";
-import { loginLogDto } from "../application/login.dto";
 import { LoginEntity } from "../domain/login.entity";
 // src/
 //   └── user/
@@ -26,15 +24,14 @@ import { LoginEntity } from "../domain/login.entity";
 // }
 
 @Injectable()
-export class LoginRepository implements Omit<IRepository<loginLogDto, LoginEntity>, 'delete'> {
+export class LoginRepository implements Omit<IRepository<login, LoginEntity>, 'delete'> {
   constructor(
     private readonly prisma: PrismaService,
   ) 
     {}
 
-  async findAll(): Promise<loginLogDto[]> {
-    let result = await this.prisma.login.findMany();
-    return camelcaseKeys(result) as loginLogDto[];
+  async findAll(): Promise<login[]> {
+    return await this.prisma.login.findMany();
   }
 
   async create(data: LoginEntity) {
@@ -43,8 +40,7 @@ export class LoginRepository implements Omit<IRepository<loginLogDto, LoginEntit
     });
   }
 
-  async findOne(id: string): Promise<loginLogDto | null> {
-    let result = await this.prisma.login.findFirst({ where: { id } });
-    return camelcaseKeys(result as login) as loginLogDto;
+  async findOne(id: string): Promise<login | null> {
+    return await this.prisma.login.findFirst({ where: { id } });
   }
 }

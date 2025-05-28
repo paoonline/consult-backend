@@ -1,19 +1,18 @@
 import { Injectable } from '@nestjs/common';
 import { Customer } from '@prisma/client';
-import camelcaseKeys from 'camelcase-keys';
 import { PrismaService } from 'prisma/prisma.service';
 import { IRepository } from 'src/utils/respository';
-import { CustomerDtoResponse } from '../application/customer.dto';
 
+type CustomerProps = Omit<Customer, 'password'>
 @Injectable()
 export class CustomerRepository
-  implements Omit<IRepository<CustomerDtoResponse, any>, 'logout'|'delete'>
+  implements Omit<IRepository<CustomerProps, any>, 'logout'|'delete'>
 {
   constructor(
     private readonly prisma: PrismaService,
   ) {}
 
-  async findAll(): Promise<CustomerDtoResponse[]> {
+  async findAll(): Promise<CustomerProps[]> {
     const result = await this.prisma.customer.findMany({
       include: {
         skills: true,
@@ -28,7 +27,7 @@ export class CustomerRepository
         password: true,
       },
     });
-    return result.map((r) => camelcaseKeys(r)) as CustomerDtoResponse[]
+    return result
   }
 
   async create(data: any) {
@@ -37,7 +36,7 @@ export class CustomerRepository
     // });
   }
 
-  async findOne(id: string): Promise<CustomerDtoResponse> {
+  async findOne(id: string): Promise<CustomerProps> {
     const result = await this.prisma.customer.findUnique({
       where: { id },
       include: {
@@ -52,14 +51,14 @@ export class CustomerRepository
         password: true,
       },
     });
-    return camelcaseKeys(result as Omit<Customer, 'skills'|'password'>) as CustomerDtoResponse
+    return result as CustomerProps
   }
 
-  async findUnique(email: string): Promise<CustomerDtoResponse>{
+  async findUnique(email: string): Promise<CustomerProps>{
     const customer = await this.prisma.customer.findUnique({
       where: { email },
     });
-    return camelcaseKeys(customer as Customer) as CustomerDtoResponse
+    return customer as CustomerProps
   }
 
   delete(id: string): Promise<Customer> {
