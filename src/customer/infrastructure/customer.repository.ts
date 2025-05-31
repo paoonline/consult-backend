@@ -85,13 +85,13 @@ export class CustomerRepository
     });
   }
 
-  async updateDetailCustomer(customerId: string, avg: number) {
+  async updateDetailCustomer(customerId: string, rate: number) {
     await this.prisma.customerDetail.update({
       where: {
         id: customerId,
       },
       data: {
-        rate: Math.round(avg),
+        rate: Math.round(rate),
       },
     });
   }

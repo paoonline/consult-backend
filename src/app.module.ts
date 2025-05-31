@@ -2,7 +2,7 @@ import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 import { ScheduleModule } from '@nestjs/schedule';
 import { PrismaModule } from '../prisma/prisma.module';
-import { BatchService } from './batch/batch.service';
+import { BatchNotiService } from './batch/batch.noti.service';
 import { ConsultModule } from './consult/consult.module';
 import { CustomerModule } from './customer/customer.module';
 import { LoginModule } from './login/login.module';
@@ -23,6 +23,6 @@ require('dotenv').config();
     ConsultModule,
     SessionModule,
   ],
-  providers: [BatchService, JwtStrategy],
+  providers: [BatchNotiService, JwtStrategy],
 })
 export class AppModule {}

@@ -241,7 +241,7 @@ export class ConsultController {
     @Body() data: ConsultCommentDto,
   ): Promise<Response<any, Record<string, any>>> {
     try {
-      const comment = await this.commentService.createComment(data);
+      const comment = await this.commentService.create(data);
       // Send a successful response with the token
       return res.status(200).json({
         status: 200,

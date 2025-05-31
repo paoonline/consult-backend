@@ -8,6 +8,8 @@ import { ConsultNotiService } from './services/consult.noti.service';
 import { RedisModule } from 'src/services/Redis/redis.module';
 import { FirebaseService } from 'src/services/Firebase/firebase.service';
 import { CommentRepository } from './infrastructure/comment.repository';
+import { CustomerQueue } from './application/queue/customer.queue';
+
 @Module({
   imports: [RedisModule],
   controllers: [ConsultController],
@@ -18,7 +20,8 @@ import { CommentRepository } from './infrastructure/comment.repository';
     ConsultCommentService,
     ConsultNotiService,
     FirebaseService,
-    CommentRepository
+    CommentRepository,
+    CustomerQueue
   ],
   exports: [ConsultNotiService],
 })

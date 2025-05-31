@@ -6,31 +6,27 @@ import { PrismaService } from 'prisma/prisma.service';
 import snakecaseKeys from 'snakecase-keys';
 import { ConsultCommentDto } from '../application/consult.comment.dto';
 import { CommentRepository } from '../infrastructure/comment.repository';
+import { CustomerQueue } from '../application/queue/customer.queue';
+import { IRepository } from 'src/utils/respository';
 
 @Injectable()
-export class ConsultCommentService {
+export class ConsultCommentService implements IRepository<ConsultCommentDto, ConsultCommentDto, null, null, ConsultComment> {
     constructor(
-        private readonly prisma: PrismaService,
-        private readonly commentRepository: CommentRepository
+        private readonly commentRepository: CommentRepository,
+        private readonly customerQueue: CustomerQueue
     ) { }
 
-    async createComment(
+    async create(
         data: ConsultCommentDto,
-    ): Promise<ConsultComment | null> {
+    ): Promise<ConsultComment> {
         const plainData = instanceToPlain(data);
         const snakeData = snakecaseKeys(plainData) as ConsultComment;
+        
         const comment = await this.commentRepository.create(snakeData)
         const avgResult = await this.commentRepository.aggregate(comment.customer_detail_id)
 
         // event driven to update rate
-        await this.prisma.customerDetail.update({
-            where: {
-                id: comment.customer_detail_id,
-            },
-            data: {
-                rate: Math.round(avgResult ?? 0),
-            },
-        });
+        this.customerQueue.addCustomerDetailJob({id: comment.customer_detail_id, rate:avgResult})
         return comment
     }
 

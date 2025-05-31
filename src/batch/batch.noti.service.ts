@@ -2,8 +2,8 @@ import { Injectable, Logger } from '@nestjs/common';
 import { Cron } from '@nestjs/schedule';
 import { ConsultNotiService } from 'src/consult/services/consult.noti.service';
 @Injectable()
-export class BatchService {
-  private readonly logger = new Logger(BatchService.name);
+export class BatchNotiService {
+  private readonly logger = new Logger(BatchNotiService.name);
   constructor(
     private readonly consultNotiService: ConsultNotiService
 
