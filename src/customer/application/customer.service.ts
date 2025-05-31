@@ -1,18 +1,13 @@
 import { Injectable } from '@nestjs/common';
-import { Customer, Prisma } from '@prisma/client';
+import { Prisma } from '@prisma/client';
 import camelcaseKeys from 'camelcase-keys';
 import { SessionService } from 'src/services/Session/session.service';
-import { SkillService } from 'src/Skill/skill.service';
+import { SkillService } from 'src/skill/skill.service';
 import { formatSnakeCase } from 'src/utils/format';
+import { IRepository } from 'src/utils/respository';
 import { CustomerRepo, CustomerRepository } from '../infrastructure/customer.repository';
 import { CustomerDto, CustomerDtoResponse } from './customer.dto';
-import { IRepository } from 'src/utils/respository';
 
-export interface IUpdateCustomer {
-  skills: { id: string }[]
-  price: number,
-  password: string
-}
 @Injectable()
 export class CustomerService  implements IRepository<CustomerRepo | CustomerDtoResponse | null, CustomerDto, CustomerDto, null, CustomerRepo> {
   constructor(

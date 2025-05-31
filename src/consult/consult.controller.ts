@@ -13,7 +13,7 @@ import { Response } from 'express';
 import { JwtAuthGuard } from 'src/validate/jwt-auth.guard';
 import { ConsultCommentDto } from './dto/consult.comment';
 import { ConsultDto } from './dto/consult.dto';
-import { ConsultNoteDto } from './dto/consult.note';
+import { ConsultNoteDto } from './dto/consult.note.dto';
 import { ConsultNotificationDto } from './dto/consult.noti.dto';
 import { ConsultCommentService } from './services/consult.comment.service';
 import { ConsultNoteService } from './services/consult.note.service';

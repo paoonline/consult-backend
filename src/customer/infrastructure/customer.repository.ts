@@ -3,7 +3,13 @@ import { Customer, Prisma } from '@prisma/client';
 import { PrismaService } from 'prisma/prisma.service';
 import { IRepository } from 'src/utils/respository';
 import { CreateCustomerDto } from '../application/customer.create.dto';
-import { IUpdateCustomer } from '../application/customer.service';
+import { CustomerEntity } from '../domain/customer.entity';
+
+export interface IUpdateCustomer {
+  skills: { id: string }[]
+  price: number,
+  password: string
+}
 
 export type CustomerRepo = Omit<Customer, 'password'>;
 type createDetailCustomerRepo = {

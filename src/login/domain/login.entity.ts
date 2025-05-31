@@ -2,7 +2,7 @@ import { emailValue } from "./email.vo";
 
 export class LoginEntity {
     constructor(
-      public readonly emailId: emailValue,
+      private readonly emailId: emailValue,
     ) {
      
     }
