@@ -1,75 +1,54 @@
 import { Injectable } from '@nestjs/common';
 import { Customer, Prisma } from '@prisma/client';
-import bcrypt from 'bcryptjs';
 import camelcaseKeys from 'camelcase-keys';
-import { instanceToPlain } from 'class-transformer';
-import { PrismaService } from 'prisma/prisma.service';
-import snakecaseKeys from 'snakecase-keys';
 import { SessionService } from 'src/services/Session/session.service';
+import { SkillService } from 'src/Skill/skill.service';
+import { formatSnakeCase } from 'src/utils/format';
+import { CustomerRepo, CustomerRepository } from '../infrastructure/customer.repository';
 import { CustomerDto, CustomerDtoResponse } from './customer.dto';
-import { CustomerRepository } from '../infrastructure/customer.repository';
+import { IRepository } from 'src/utils/respository';
+
+export interface IUpdateCustomer {
+  skills: { id: string }[]
+  price: number,
+  password: string
+}
 @Injectable()
-export class CustomerService {
+export class CustomerService  implements IRepository<CustomerRepo | CustomerDtoResponse | null, CustomerDto, CustomerDto, null, CustomerRepo> {
   constructor(
-    private readonly prisma: PrismaService,
     private readonly sessionService: SessionService,
-    private readonly customerRepository: CustomerRepository
-  ) {}
-
-  async skillMap(skillsList: string[]) {
-    const skills = await this.prisma.skill.findMany({
-      where: {
-        name: {
-          in: skillsList,
-        },
-      },
-      select: {
-        id: true,
-      },
-    });
-    const skillIds = skills.map((skill) => skill.id);
-    return skillIds.map((id) => ({ id }));
-  }
-
-  async createCustomer(data: CustomerDto): Promise<Customer | null> {
+    private readonly customerRepository: CustomerRepository,
+    private readonly skillService: SkillService
+  ) { }
+    async create(data: CustomerDto): Promise<CustomerRepo> {
     const newData = {
       ...data,
       skills: undefined,
       price: undefined,
     };
-    const plainData = instanceToPlain(newData);
-    const snakeData = snakecaseKeys(plainData) as Prisma.CustomerCreateInput;
-    const hashedPassword = await bcrypt.hash(data.password, 10);
 
-    const skills = await this.skillMap(data.skills);
+    const snakeData = formatSnakeCase<Omit<CustomerDto, 'skills' | 'price'>, Prisma.CustomerCreateInput>(newData)
+    const hashedPassword = await this.sessionService.hashPassword(data.password, 10)
 
-    await this.prisma.customer.create({
-      data: {
-        ...snakeData,
-        password: hashedPassword,
-        skills: {
-          connect: skills, // List of Skill IDs
-        },
-      },
-    });
+    const skills = await this.skillService.skillMap(data.skills);
 
-    const customer = await this.prisma.customer.findFirst({
-      where: { email: data.email },
-    });
+    await this.customerRepository.create({
+      data: snakeData,
+      password: hashedPassword,
+      skills
+    })
+
+    const customer = await this.customerRepository.findFirst(data.email)
 
     if (!customer) {
       throw new Error('Customer not found for this email');
     }
 
     //saveCustomerIdToCustomerDetail
-    await this.prisma.customerDetail.create({
-      data: {
-        customer_id: customer.id,
-        price: data.price,
-      },
-    });
-    return customer;
+    await this.customerRepository.createDetailCustomer(customer.id, data.price)
+    return customer 
   }
+
   async findAll(): Promise<CustomerDtoResponse[]> {
     const result = await this.customerRepository.findAll()
     const userKey = await this.sessionService.getAllUserOnline('online')
@@ -84,61 +63,49 @@ export class CustomerService {
     return resultMap.map((r) => camelcaseKeys(r)) as CustomerDtoResponse[]
   }
 
-  async findByCustomer(email: string): Promise<CustomerDtoResponse | null> {
-    const result = await this.customerRepository.findOne(email) 
+  async findOne(email: string): Promise<CustomerDtoResponse> {
+    const result = await this.customerRepository.findOne(email)
     return camelcaseKeys(result) as CustomerDtoResponse
   }
 
-  async findUnique(email: string): Promise<CustomerDtoResponse> {
-    const result = await this.customerRepository.findUnique(email)
+  async findFirst(email: string): Promise<CustomerDtoResponse> {
+    const result = await this.customerRepository.findFirst(email)
     return camelcaseKeys(result) as CustomerDtoResponse
   }
 
-  delete(id: string): Promise<Customer> {
+  delete(id: string): Promise<CustomerRepo> {
     return this.customerRepository.delete(id)
   }
 
-  async updateCustomer(
+  async update(
     id: string,
     data: Omit<CustomerDto, 'email'>,
-  ): Promise<Omit<Customer, 'password'> | null> {
+  ): Promise<CustomerRepo | null> {
     const newData = {
       ...data,
       skills: undefined,
       price: undefined,
     };
-    const plainData = instanceToPlain(newData);
-    const snakeData = snakecaseKeys(plainData);
-    const customer = await this.prisma.customer.findUnique({
-      where: { id },
-    });
+    const snakeData = formatSnakeCase<Omit<CustomerDto, 'email' | 'skills' | 'price'>, Prisma.CustomerCreateInput>(newData)
+    const customer = await this.customerRepository.findFirst(id);
 
     if (!customer) {
       return null; // Return null if the customer isn't found
     }
-    const skills = await this.skillMap(data.skills);
+    const skills = await this.skillService.skillMap(data.skills);
     let hashedPassword;
-    if (data.password) {
-      hashedPassword = await bcrypt.hash(data.password, 10);
+    if (data?.password) {
+      hashedPassword = await this.sessionService.hashPassword(data.password, 10)
     }
 
-    const updated = await this.prisma.customer.update({
-      where: { id },
-      data: {
-        ...snakeData,
-        password: hashedPassword,
-        skills: {
-          set: skills,
-        },
-        customer_detail: {
-          update: {
-            price: data.price,
-          },
-        },
-      },
-    });
+    const updated = await this.customerRepository.update(id, snakeData,
+      {
+        password: hashedPassword || '',
+        skills,
+        price: data.price
+      })
 
-    const { password, ...safeData } = updated;
-    return safeData;
+    return updated;
   }
 }
+

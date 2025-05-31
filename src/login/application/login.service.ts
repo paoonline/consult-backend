@@ -30,7 +30,7 @@ export class LoginService implements Omit<IRepository<loginLogDto, string>, 'del
     }
 
     // Find the user by email
-    const customer = await this.customerService.findUnique(email)
+    const customer = await this.customerService.findFirst(email)
     if (!customer || !customer.password) {
       throw new Error('Invalid credentials');
     }

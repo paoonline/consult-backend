@@ -22,6 +22,11 @@ export class SessionService {
     return bcrypt.compare(userPassword, customerPassword)
   }
 
+  async hashPassword(password: string, length: number): Promise<string> {
+    const hash =await  bcrypt.hash(password, length);
+    return hash
+  }
+
   setUserOnline(
     email: string
   ) {

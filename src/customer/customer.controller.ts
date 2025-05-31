@@ -13,7 +13,7 @@ export class CustomerController {
     @Body() data: CustomerDto,
   ): Promise<Response<any, Record<string, any>>> {
     try {
-      const customer = await this.customerService.createCustomer(data);
+      const customer = await this.customerService.create(data);
       // Send a successful response with the token
       return res.status(200).json({
         status: 200,
@@ -58,7 +58,7 @@ export class CustomerController {
     @Param('id') id: string,
   ): Promise<Response<any, Record<string, any>>> {
     try {
-      const customer = await this.customerService.findByCustomer(id);
+      const customer = await this.customerService.findOne(id);
       return res.status(200).json({
         status: 200,
         message: 'successful',
@@ -107,7 +107,7 @@ export class CustomerController {
         ...customerDto,
         email: undefined,
       };
-      const updatedCustomer = await this.customerService.updateCustomer(id, safeData);
+      const updatedCustomer = await this.customerService.update(id, safeData);
 
       if (!updatedCustomer) {
         return res.status(HttpStatus.NOT_FOUND).json({
