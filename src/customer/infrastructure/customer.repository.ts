@@ -1,25 +1,22 @@
 import { Injectable } from '@nestjs/common';
-import { Customer, Prisma } from '@prisma/client';
+import { Prisma } from '@prisma/client';
 import { PrismaService } from 'prisma/prisma.service';
 import { IRepository } from 'src/utils/respository';
 import { CreateCustomerDto } from '../application/customer.create.dto';
-import { CustomerEntity } from '../domain/customer.entity';
-
-export interface IUpdateCustomer {
-  skills: { id: string }[]
-  price: number,
-  password: string
-}
-
-export type CustomerRepo = Omit<Customer, 'password'>;
-type createDetailCustomerRepo = {
-  createDetailCustomer(customerId: string, price: number): Promise<void>;
-};
+import { CustomerRepo, IUpdateCustomer, createDetailCustomerRepo } from '../domain/customer.repository.interface';
 
 @Injectable()
 export class CustomerRepository
   implements
-    Omit<IRepository<CustomerRepo, CreateCustomerDto, Prisma.CustomerCreateInput, IUpdateCustomer>, 'logout' | 'delete'>,
+    Omit<
+      IRepository<
+        CustomerRepo,
+        CreateCustomerDto,
+        Prisma.CustomerCreateInput,
+        IUpdateCustomer
+      >,
+      'logout' | 'delete'
+    >,
     createDetailCustomerRepo
 {
   constructor(private readonly prisma: PrismaService) {}
@@ -57,10 +54,9 @@ export class CustomerRepository
 
   async update(
     id: string,
-    data:  Prisma.CustomerCreateInput,
-    other: IUpdateCustomer
+    data: Prisma.CustomerCreateInput,
+    other: IUpdateCustomer,
   ): Promise<CustomerRepo> {
-
     const updated = await this.prisma.customer.update({
       where: { id },
       data: {
@@ -76,7 +72,7 @@ export class CustomerRepository
         },
       },
     });
-    
+
     return updated;
   }
 
@@ -85,6 +81,17 @@ export class CustomerRepository
       data: {
         customer_id: customerId,
         price,
+      },
+    });
+  }
+
+  async updateDetailCustomer(customerId: string, avg: number) {
+    await this.prisma.customerDetail.update({
+      where: {
+        id: customerId,
+      },
+      data: {
+        rate: Math.round(avg),
       },
     });
   }

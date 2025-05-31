@@ -4,7 +4,7 @@ import camelcaseKeys from 'camelcase-keys';
 import { instanceToPlain } from 'class-transformer';
 import { PrismaService } from 'prisma/prisma.service';
 import snakecaseKeys from 'snakecase-keys';
-import { ConsultNotificationDto } from '../dto/consult.noti.dto';
+import { ConsultNotificationDto } from '../application/consult.noti.dto';
 import { FirebaseService } from 'src/services/Firebase/firebase.service';
 import { chunkArray } from 'src/utils/array';
 @Injectable()

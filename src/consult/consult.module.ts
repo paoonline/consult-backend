@@ -7,6 +7,7 @@ import { ConsultCommentService } from './services/consult.comment.service';
 import { ConsultNotiService } from './services/consult.noti.service';
 import { RedisModule } from 'src/services/Redis/redis.module';
 import { FirebaseService } from 'src/services/Firebase/firebase.service';
+import { CommentRepository } from './infrastructure/comment.repository';
 @Module({
   imports: [RedisModule],
   controllers: [ConsultController],
@@ -17,6 +18,7 @@ import { FirebaseService } from 'src/services/Firebase/firebase.service';
     ConsultCommentService,
     ConsultNotiService,
     FirebaseService,
+    CommentRepository
   ],
   exports: [ConsultNotiService],
 })

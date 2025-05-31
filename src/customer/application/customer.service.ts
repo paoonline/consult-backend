@@ -5,8 +5,9 @@ import { SessionService } from 'src/services/Session/session.service';
 import { SkillService } from 'src/skill/skill.service';
 import { formatSnakeCase } from 'src/utils/format';
 import { IRepository } from 'src/utils/respository';
-import { CustomerRepo, CustomerRepository } from '../infrastructure/customer.repository';
+import { CustomerRepository } from '../infrastructure/customer.repository';
 import { CustomerDto, CustomerDtoResponse } from './customer.dto';
+import { CustomerRepo } from '../domain/customer.repository.interface';
 
 @Injectable()
 export class CustomerService  implements IRepository<CustomerRepo | CustomerDtoResponse | null, CustomerDto, CustomerDto, null, CustomerRepo> {

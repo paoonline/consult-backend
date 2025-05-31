@@ -19,3 +19,24 @@ export class ConsultCommentDto {
   customerDetailId: string
 
 }
+
+
+export class ConsultCommentDtoRepository {
+  @IsNotEmpty()
+  @MaxLength(100)
+  consult_transaction_id: string
+
+  @IsNotEmpty()
+  @MaxLength(255)
+  description: string
+
+  @IsNotEmpty()
+  @MaxLength(1)
+  rate: number
+
+  @IsNotEmpty()
+  @MaxLength(100)
+  customer_detail_id: string
+
+  comment_date: Date
+}

@@ -5,7 +5,7 @@ import { instanceToPlain } from 'class-transformer';
 
 import { PrismaService } from 'prisma/prisma.service';
 import snakecaseKeys from 'snakecase-keys';
-import { ConsultNoteDto } from '../dto/consult.note.dto';
+import { ConsultNoteDto } from '../application/consult.note.dto';
 
 @Injectable()
 export class ConsultNoteService {

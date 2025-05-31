@@ -4,7 +4,7 @@ import camelcaseKeys from 'camelcase-keys';
 import { instanceToPlain } from 'class-transformer';
 import { PrismaService } from 'prisma/prisma.service';
 import snakecaseKeys from 'snakecase-keys';
-import { ConsultDto } from '../dto/consult.dto';
+import { ConsultDto } from '../application/consult.dto';
 import { ConsultNotiService } from './consult.noti.service';
 
 @Injectable()

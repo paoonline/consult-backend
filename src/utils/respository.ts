@@ -1,4 +1,4 @@
-export interface IRepository<T, P, U= unknown, O=unknown, C=void> {
+export interface IRepository<T, P, U= unknown, O=unknown, C=void, A=0> {
     create(props: P): Promise<C>;
     findAll(): Promise<T[]>;
     findUnique?(id: string): Promise<T | null>
@@ -9,4 +9,5 @@ export interface IRepository<T, P, U= unknown, O=unknown, C=void> {
     logout?(key: string):Promise<void>
     login?(email: string, password: string): Promise<string>
     findList?(list: string[]): Promise<T>;
+    aggregate?(id: string): Promise<A>
 }

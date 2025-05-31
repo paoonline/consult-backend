@@ -11,10 +11,10 @@ import {
 import { Response } from 'express';
 
 import { JwtAuthGuard } from 'src/validate/jwt-auth.guard';
-import { ConsultCommentDto } from './dto/consult.comment';
-import { ConsultDto } from './dto/consult.dto';
-import { ConsultNoteDto } from './dto/consult.note.dto';
-import { ConsultNotificationDto } from './dto/consult.noti.dto';
+import { ConsultCommentDto } from './application/consult.comment.dto';
+import { ConsultDto } from './application/consult.dto';
+import { ConsultNoteDto } from './application/consult.note.dto';
+import { ConsultNotificationDto } from './application/consult.noti.dto';
 import { ConsultCommentService } from './services/consult.comment.service';
 import { ConsultNoteService } from './services/consult.note.service';
 import { ConsultNotiService } from './services/consult.noti.service';
@@ -219,7 +219,7 @@ export class ConsultController {
     @Param('commentId') commentId: string,
   ): Promise<Response<any, Record<string, any>>> {
     try {
-      const comment = await this.commentService.findByCommentId(commentId);
+      const comment = await this.commentService.findOne(commentId);
       return res.status(200).json({
         status: 200,
         message: 'successful',
