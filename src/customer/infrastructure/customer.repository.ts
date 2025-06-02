@@ -2,24 +2,20 @@ import { Injectable } from '@nestjs/common';
 import { Prisma } from '@prisma/client';
 import { PrismaService } from 'prisma/prisma.service';
 import { IRepository } from 'src/utils/respository';
-import { CreateCustomerDto } from '../application/customer.create.dto';
+import { CreateCustomerDto } from '../application/dto/customer.create.dto';
 import { CustomerRepo, IUpdateCustomer, createDetailCustomerRepo } from '../domain/customer.repository.interface';
 
 @Injectable()
 export class CustomerRepository
   implements
-    Omit<
-      IRepository<
-        CustomerRepo,
-        CreateCustomerDto,
-        Prisma.CustomerCreateInput,
-        IUpdateCustomer
-      >,
-      'logout' | 'delete'
-    >,
-    createDetailCustomerRepo
-{
-  constructor(private readonly prisma: PrismaService) {}
+  IRepository<
+    CustomerRepo,
+    CreateCustomerDto,
+    Prisma.CustomerCreateInput,
+    IUpdateCustomer
+  >,
+  createDetailCustomerRepo {
+  constructor(private readonly prisma: PrismaService) { }
   customerId: string;
   price: number;
 

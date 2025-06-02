@@ -2,12 +2,11 @@ import { ConsultComment } from '.prisma/client';
 import { Injectable } from '@nestjs/common';
 import camelcaseKeys from 'camelcase-keys';
 import { instanceToPlain } from 'class-transformer';
-import { PrismaService } from 'prisma/prisma.service';
 import snakecaseKeys from 'snakecase-keys';
-import { ConsultCommentDto } from '../application/consult.comment.dto';
-import { CommentRepository } from '../infrastructure/comment.repository';
-import { CustomerQueue } from '../application/queue/customer.queue';
 import { IRepository } from 'src/utils/respository';
+import { ConsultCommentDto } from '../application/dto/consult.comment.dto';
+import { CustomerQueue } from '../application/queue/customer.queue';
+import { CommentRepository } from '../infrastructure/comment.repository';
 
 @Injectable()
 export class ConsultCommentService implements IRepository<ConsultCommentDto, ConsultCommentDto, null, null, ConsultComment> {

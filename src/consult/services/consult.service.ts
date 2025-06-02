@@ -4,7 +4,7 @@ import camelcaseKeys from 'camelcase-keys';
 import { instanceToPlain } from 'class-transformer';
 import { PrismaService } from 'prisma/prisma.service';
 import snakecaseKeys from 'snakecase-keys';
-import { ConsultDto } from '../application/consult.dto';
+import { ConsultDto } from '../application/dto/consult.dto';
 import { ConsultNotiService } from './consult.noti.service';
 
 @Injectable()
@@ -60,7 +60,7 @@ export class ConsultService {
     })
 
     // hard for for noti
-    await this.consultNoti.createNoti(
+    await this.consultNoti.create(
       {
         consultTransactionId : consult.id,
         description: "test",

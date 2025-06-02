@@ -4,7 +4,7 @@ import camelcaseKeys from 'camelcase-keys';
 import { instanceToPlain } from 'class-transformer';
 import { PrismaService } from 'prisma/prisma.service';
 import snakecaseKeys from 'snakecase-keys';
-import { ConsultNotificationDto } from '../application/consult.noti.dto';
+import { ConsultNotificationDto } from '../application/dto/consult.noti.dto';
 import { FirebaseService } from 'src/services/Firebase/firebase.service';
 import { chunkArray } from 'src/utils/array';
 @Injectable()
@@ -13,7 +13,7 @@ export class ConsultNotiService {
     private readonly prisma: PrismaService,
     private readonly firebaseService: FirebaseService) { }
 
-  async createNoti(
+  async create(
     data: ConsultNotificationDto,
   ): Promise<ConsultNotification | null> {
     const plainData = instanceToPlain(data);

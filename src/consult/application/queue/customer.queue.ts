@@ -17,6 +17,8 @@ export class CustomerQueue {
 
   async addCustomerDetailJob(data:{id: string, rate: number}) {
     await this.queue.add('sendCustomerDetail', data, {
+      attempts: 3,  // Retry up to 3 times
+      backoff: 5000, // Wait 5s between retries
       removeOnComplete: true,        // ✅ Auto-delete completed jobs
       removeOnFail: { count: 5 }, // ❌ Keep only last 5 failed attempts
     });

@@ -8,27 +8,34 @@ import { CustomerRepository } from '../infrastructure/customer.repository';
 //consumer
 @Injectable()
 export class CustomerWorker implements OnModuleInit {
+  private worker: Worker;
   constructor(
     @Inject(REDIS_CLIENT) private readonly redis: Redis,
     private readonly customerRepository: CustomerRepository
   ) {}
 
   onModuleInit() {
-    const worker = new Worker(
+    this.worker = new Worker(
       'customerDetailQueue',
       async (job) => {
         const { id, rate } = job.data;
-        this.customerRepository.updateDetailCustomer(id, rate)
+        await this.customerRepository.updateDetailCustomer(id, rate)
       },
       { connection: this.redis },
     );
 
-    worker.on('completed', (job) => {
+    this.worker.on('completed', (job) => {
       console.log(`✅ Job ${job.id} completed`);
     });
 
-    worker.on('failed', (job, err) => {
+    this.worker.on('failed', (job, err) => {
       console.error(`❌ Job ${job?.id} failed:`, err.message);
     });
+  }
+
+  async onModuleDestroy() {
+    if (this.worker) {
+      await this.worker.close();
+    }
   }
 }

@@ -11,10 +11,10 @@ import {
 import { Response } from 'express';
 
 import { JwtAuthGuard } from 'src/validate/jwt-auth.guard';
-import { ConsultCommentDto } from './application/consult.comment.dto';
-import { ConsultDto } from './application/consult.dto';
-import { ConsultNoteDto } from './application/consult.note.dto';
-import { ConsultNotificationDto } from './application/consult.noti.dto';
+import { ConsultCommentDto } from './application/dto/consult.comment.dto';
+import { ConsultDto } from './application/dto/consult.dto';
+import { ConsultNoteDto } from './application/dto/consult.note.dto';
+import { ConsultNotificationDto } from './application/dto/consult.noti.dto';
 import { ConsultCommentService } from './services/consult.comment.service';
 import { ConsultNoteService } from './services/consult.note.service';
 import { ConsultNotiService } from './services/consult.noti.service';
@@ -151,7 +151,7 @@ export class ConsultController {
     @Param('noteId') noteId: string,
   ): Promise<Response<any, Record<string, any>>> {
     try {
-      const note = await this.noteService.findByNoteId(noteId);
+      const note = await this.noteService.findOne(noteId);
       return res.status(200).json({
         status: 200,
         message: 'successful',
@@ -173,7 +173,7 @@ export class ConsultController {
     @Body() data: ConsultNoteDto,
   ): Promise<Response<any, Record<string, any>>> {
     try {
-      const note = await this.noteService.createNote(data);
+      const note = await this.noteService.create(data);
       // Send a successful response with the token
       return res.status(200).json({
         status: 200,
@@ -265,7 +265,7 @@ export class ConsultController {
     @Body() data: ConsultNotificationDto,
   ): Promise<Response<any, Record<string, any>>> {
     try {
-      const notification = await this.consultNotiService.createNoti(data);
+      const notification = await this.consultNotiService.create(data);
       // Send a successful response with the token
       return res.status(200).json({
         status: 200,

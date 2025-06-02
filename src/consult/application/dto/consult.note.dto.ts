@@ -11,3 +11,16 @@ export class ConsultNoteDto {
   description: string
 
 }
+
+
+export class ConsultNoteResponseDto {
+
+  @IsNotEmpty()
+  @MaxLength(100)
+  consult_transaction_id: string
+
+  @IsNotEmpty()
+  @MaxLength(255)
+  description: string
+
+}

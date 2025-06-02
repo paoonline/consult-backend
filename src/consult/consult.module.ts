@@ -9,6 +9,7 @@ import { RedisModule } from 'src/services/Redis/redis.module';
 import { FirebaseService } from 'src/services/Firebase/firebase.service';
 import { CommentRepository } from './infrastructure/comment.repository';
 import { CustomerQueue } from './application/queue/customer.queue';
+import { NoteRepository } from './infrastructure/note.repository';
 
 @Module({
   imports: [RedisModule],
@@ -20,6 +21,7 @@ import { CustomerQueue } from './application/queue/customer.queue';
     ConsultCommentService,
     ConsultNotiService,
     FirebaseService,
+    NoteRepository,
     CommentRepository,
     CustomerQueue
   ],

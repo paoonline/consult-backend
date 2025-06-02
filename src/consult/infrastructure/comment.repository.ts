@@ -2,7 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { ConsultComment } from '@prisma/client';
 import { PrismaService } from 'prisma/prisma.service';
 import { IRepository } from 'src/utils/respository';
-import { ConsultCommentDtoRepository } from '../application/consult.comment.dto';
+import { ConsultCommentDtoRepository } from '../application/dto/consult.comment.dto';
 
 @Injectable()
 export class CommentRepository
@@ -30,7 +30,7 @@ export class CommentRepository
   }
 
   async findOne(id: string): Promise<ConsultComment> {
-    const comment = await this.prisma.consultComment.findUnique({
+    const comment = await this.prisma.consultComment.findFirst({
       where: { id },
     });
     return comment as ConsultComment;
