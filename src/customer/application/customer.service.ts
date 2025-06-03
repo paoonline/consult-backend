@@ -8,15 +8,15 @@ import { IRepository } from 'src/utils/respository';
 import { CustomerRepository } from '../infrastructure/customer.repository';
 import { CustomerDto, CustomerDtoResponse, ICustomerDetail } from './dto/customer.dto';
 import { CustomerRepo } from '../domain/customer.repository.interface';
-import { CustomerDetailRepository } from '../infrastructure/customer.detail.repository';
+import { CustomerDetailService } from './customerDetail.service';
 
 @Injectable()
 export class CustomerService implements IRepository<CustomerRepo | CustomerDtoResponse | null, CustomerDto, CustomerDto, null, CustomerRepo> {
   constructor(
     private readonly sessionService: SessionService,
     private readonly customerRepository: CustomerRepository,
-    private readonly customerDetailRepository: CustomerDetailRepository,
-    private readonly skillService: SkillService
+    private readonly skillService: SkillService,
+    private readonly customerDetailService: CustomerDetailService
   ) { }
   async create(data: CustomerDto): Promise<CustomerRepo> {
     const newData = {
@@ -43,12 +43,14 @@ export class CustomerService implements IRepository<CustomerRepo | CustomerDtoRe
     }
 
     //saveCustomerIdToCustomerDetail
-    await this.customerDetailRepository.create({customer_id: customer.id, price: data.price })
+    await this.customerDetailService.create({
+      customerId: customer.id, price: data.price
+    })
     return customer
   }
 
   async findCustomerDetail(id: string): Promise<ICustomerDetail | null> {
-    const result = await this.customerDetailRepository.findOne(id)
+    const result = await this.customerDetailService.findOne(id)
     return camelcaseKeys(result as CustomerDetail) as ICustomerDetail
   }
 

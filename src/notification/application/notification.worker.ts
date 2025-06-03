@@ -5,23 +5,25 @@ import { REDIS_CLIENT } from "src/services/Redis/redis.module";
 import { BaseWorker } from "src/services/Worker/BaseWorker";
 import { NotificationRepository } from "../infrastructure/notification.repository";
 import { ConsultNotification } from "@prisma/client";
+import { NotificationService } from "./notification.service";
+import { ConsultNotificationDto } from "src/consult/application/dto/consult.noti.dto";
 
 @Injectable()
 export class NotificationWorker extends BaseWorker implements OnModuleInit {
   constructor(
     @Inject(REDIS_CLIENT) redis: Redis,
-    private readonly notificationRepository: NotificationRepository,
+    private readonly notificationService: NotificationService
   ) {
     super('NotificationQueue', redis, async (job) => {
       const { id, description, title, device_token } = job.data;
 
       let data = {
-          consult_transaction_id: id,
+          consultTransactionId: id,
           description: description,
           title: title,
-          device_token: device_token
-      }  as ConsultNotification
-      await this.notificationRepository.create(data)
+          deviceToken: device_token
+      }  as ConsultNotificationDto
+      await this.notificationService.create(data)
     });
   }
 

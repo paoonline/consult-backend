@@ -102,6 +102,11 @@ export class CustomerDtoResponse {
 
 }
 
+export interface CustomerDetailDto {
+    customer_id: string,
+    price: number
+}
+
 export interface ICustomerDetail {
   rate?: number;
   customerId?: string;

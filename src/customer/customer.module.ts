@@ -10,6 +10,7 @@ import { CustomerRepository } from './infrastructure/customer.repository';
 import { SkillService } from 'src/skill/skill.service';
 import { CustomerWorker } from './application/customer.worker';
 import { CustomerDetailRepository } from './infrastructure/customer.detail.repository';
+import { CustomerDetailService } from './application/customerDetail.service';
 @Module({
   imports: [RedisModule, SkillModule],
   controllers: [CustomerController],
@@ -21,6 +22,7 @@ import { CustomerDetailRepository } from './infrastructure/customer.detail.repos
     SkillService,
     CustomerWorker,
     CustomerDetailRepository,
+    CustomerDetailService
   ],
   exports: [CustomerService],
 })
