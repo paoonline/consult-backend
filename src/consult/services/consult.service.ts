@@ -1,18 +1,22 @@
 import { Injectable } from '@nestjs/common';
-import { ConsultTransaction, Prisma } from '@prisma/client';
+import { ConsultTransaction, CustomerDetail, Prisma } from '@prisma/client';
 import camelcaseKeys from 'camelcase-keys';
 import { instanceToPlain } from 'class-transformer';
 import { PrismaService } from 'prisma/prisma.service';
 import snakecaseKeys from 'snakecase-keys';
-import { ConsultDto } from '../application/dto/consult.dto';
+import { ApiService } from 'src/services/Api/api';
 import { QueueJob } from 'src/services/Queue/queueJob';
+import { ConsultDto } from '../application/dto/consult.dto';
+
 @Injectable()
 export class ConsultService {
   constructor(
     private readonly prisma: PrismaService,
-        private readonly queueJob: QueueJob
+    private readonly queueJob: QueueJob,
+    private readonly apiService: ApiService
   ) { }
-  async createConsult(data: ConsultDto): Promise<ConsultTransaction | null> {
+  // refactor
+  async createConsult(data: ConsultDto, token: string): Promise<ConsultTransaction | null> {
     const plainData = instanceToPlain(data);
     const snakeData = snakecaseKeys(
       plainData,
@@ -22,13 +26,8 @@ export class ConsultService {
       data: snakeData,
     });
 
-    const customerDetail = await this.prisma.customerDetail.findUnique({
-      where: { customer_id: data.customerId },
-    });
-
-    const customerConsultDetail = await this.prisma.customerDetail.findUnique({
-      where: { customer_id: data.consultId },
-    });
+    const customerDetail = await this.apiService.getFromApi<{ data: CustomerDetail }>('/customer/detail/' + data.customerId, token)
+    const customerConsultDetail = await this.apiService.getFromApi<{ data: CustomerDetail }>('/customer/detail/' + data.consultId, token)
 
     if (!customerDetail) {
       throw new Error(`CustomerDetail not found for customerId: ${data.customerId}`);
@@ -41,11 +40,11 @@ export class ConsultService {
     await this.prisma.booking.createMany({
       data: [
         {
-          customer_detail_id: customerDetail.id,
+          customer_detail_id: customerDetail.data.id,
           time: data.startDate,
         },
         {
-          customer_detail_id: customerConsultDetail.id,
+          customer_detail_id: customerConsultDetail.data.id,
           time: data.startDate,
         },
       ],
@@ -53,13 +52,13 @@ export class ConsultService {
 
     await this.prisma.paymentTransaction.create({
       data: {
-        price: customerConsultDetail.price,
+        price: customerConsultDetail.data.price,
         consult_transaction_id: consult.id
       }
     })
 
     // job noti
-    await this.queueJob.addJob('NotificationQueue', 'sendNotification', { id: consult.id, description:"test", title: "test", device_token: "1" })
+    await this.queueJob.addJob('NotificationQueue', 'sendNotification', { id: consult.id, description: "test", title: "test", device_token: "1" })
     return consult;
   }
 

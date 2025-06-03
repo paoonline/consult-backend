@@ -99,7 +99,7 @@ model Note {
 model CustomerDetail {
   id          String    @id @default(uuid())
   rate        Int?      @default(0)
-  customer    Customer  @relation(fields: [customer_id], references: [id], name: "CustomerToDetail") //should remove when need to use microservice
+  customer    Customer  @relation(fields: [customer_id], references: [id], name: "CustomerToDetail", onDelete: Cascade) //should remove when need to use microservice
   customer_id String    @unique
   bookings    Booking[]
   price       Float     @default(0.00)

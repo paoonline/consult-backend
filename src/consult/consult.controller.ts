@@ -6,6 +6,7 @@ import {
   Patch,
   Post,
   Res,
+  Headers,
   UseGuards,
 } from '@nestjs/common';
 import { Response } from 'express';
@@ -33,11 +34,14 @@ export class ConsultController {
   @Post()
   @UseGuards(JwtAuthGuard)
   async create(
+    @Headers('authorization') authHeader: string,
     @Res() res: Response,
     @Body() data: ConsultDto,
   ): Promise<Response<any, Record<string, any>>> {
+ 
+    const token = authHeader?.replace('Bearer ', '');
     try {
-      const consult = await this.consultService.createConsult(data);
+      const consult = await this.consultService.createConsult(data, token);
       // Send a successful response with the token
       return res.status(200).json({
         status: 200,

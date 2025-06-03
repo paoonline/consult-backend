@@ -1,9 +1,9 @@
 import { Injectable } from '@nestjs/common';
-import { Prisma } from '@prisma/client';
+import { CustomerDetail, Prisma } from '@prisma/client';
 import { PrismaService } from 'prisma/prisma.service';
 import { IRepository } from 'src/utils/respository';
 import { CreateCustomerDto } from '../application/dto/customer.create.dto';
-import { CustomerRepo, IUpdateCustomer, createDetailCustomerRepo } from '../domain/customer.repository.interface';
+import { CustomerRepo, IUpdateCustomer } from '../domain/customer.repository.interface';
 
 @Injectable()
 export class CustomerRepository
@@ -13,8 +13,8 @@ export class CustomerRepository
     CreateCustomerDto,
     Prisma.CustomerCreateInput,
     IUpdateCustomer
-  >,
-  createDetailCustomerRepo {
+  >
+   {
   constructor(private readonly prisma: PrismaService) { }
   customerId: string;
   price: number;
@@ -70,26 +70,6 @@ export class CustomerRepository
     });
 
     return updated;
-  }
-
-  async createDetailCustomer(customerId: string, price: number) {
-    await this.prisma.customerDetail.create({
-      data: {
-        customer_id: customerId,
-        price,
-      },
-    });
-  }
-
-  async updateDetailCustomer(customerId: string, rate: number) {
-    await this.prisma.customerDetail.update({
-      where: {
-        id: customerId,
-      },
-      data: {
-        rate: Math.round(rate),
-      },
-    });
   }
 
   async findOne(id: string): Promise<CustomerRepo> {

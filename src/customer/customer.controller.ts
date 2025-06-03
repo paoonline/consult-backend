@@ -130,4 +130,26 @@ export class CustomerController {
       });
     }
   }
+
+  @Get('/detail/:id')
+  @UseGuards(JwtAuthGuard)
+  async findCustomerDetail(
+    @Res() res: Response,
+    @Param('id') id: string,
+  ): Promise<Response<any, Record<string, any>>> {
+    try {
+      const customer = await this.customerService.findCustomerDetail(id);
+      return res.status(200).json({
+        status: 200,
+        message: 'successful',
+        data: customer,
+      });
+    } catch (error) {
+      return res.status(400).json({
+        status: 400,
+        message: error.message,
+        data: '',
+      });
+    }
+  }
 }

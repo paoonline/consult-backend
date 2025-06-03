@@ -9,10 +9,19 @@ import { CustomerController } from './customer.controller';
 import { CustomerRepository } from './infrastructure/customer.repository';
 import { SkillService } from 'src/skill/skill.service';
 import { CustomerWorker } from './application/customer.worker';
+import { CustomerDetailRepository } from './infrastructure/customer.detail.repository';
 @Module({
   imports: [RedisModule, SkillModule],
   controllers: [CustomerController],
-  providers: [CustomerService, PrismaService, SessionService, CustomerRepository, SkillService, CustomerWorker],
-  exports: [CustomerService]
+  providers: [
+    CustomerService,
+    PrismaService,
+    SessionService,
+    CustomerRepository,
+    SkillService,
+    CustomerWorker,
+    CustomerDetailRepository,
+  ],
+  exports: [CustomerService],
 })
 export class CustomerModule {}

@@ -23,7 +23,7 @@ require('dotenv').config();
     CustomerModule,
     ConsultModule,
     SessionModule,
-    NotificationModule
+    NotificationModule,
   ],
   providers: [BatchNotificationService, JwtStrategy],
 })

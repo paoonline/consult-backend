@@ -9,9 +9,10 @@ import { NoteRepository } from './infrastructure/note.repository';
 import { ConsultCommentService } from './services/consult.comment.service';
 import { ConsultNoteService } from './services/consult.note.service';
 import { ConsultService } from './services/consult.service';
+import { ApiModule } from 'src/services/Api/api.module';
 
 @Module({
-  imports: [RedisModule],
+  imports: [RedisModule, ApiModule],
   controllers: [ConsultController],
   providers: [
     ConsultService,

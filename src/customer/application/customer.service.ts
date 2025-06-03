@@ -1,22 +1,24 @@
 import { Injectable } from '@nestjs/common';
-import { Prisma } from '@prisma/client';
+import { CustomerDetail, Prisma } from '@prisma/client';
 import camelcaseKeys from 'camelcase-keys';
 import { SessionService } from 'src/services/Session/session.service';
 import { SkillService } from 'src/skill/skill.service';
 import { formatSnakeCase } from 'src/utils/format';
 import { IRepository } from 'src/utils/respository';
 import { CustomerRepository } from '../infrastructure/customer.repository';
-import { CustomerDto, CustomerDtoResponse } from './dto/customer.dto';
+import { CustomerDto, CustomerDtoResponse, ICustomerDetail } from './dto/customer.dto';
 import { CustomerRepo } from '../domain/customer.repository.interface';
+import { CustomerDetailRepository } from '../infrastructure/customer.detail.repository';
 
 @Injectable()
-export class CustomerService  implements IRepository<CustomerRepo | CustomerDtoResponse | null, CustomerDto, CustomerDto, null, CustomerRepo> {
+export class CustomerService implements IRepository<CustomerRepo | CustomerDtoResponse | null, CustomerDto, CustomerDto, null, CustomerRepo> {
   constructor(
     private readonly sessionService: SessionService,
     private readonly customerRepository: CustomerRepository,
+    private readonly customerDetailRepository: CustomerDetailRepository,
     private readonly skillService: SkillService
   ) { }
-    async create(data: CustomerDto): Promise<CustomerRepo> {
+  async create(data: CustomerDto): Promise<CustomerRepo> {
     const newData = {
       ...data,
       skills: undefined,
@@ -41,8 +43,13 @@ export class CustomerService  implements IRepository<CustomerRepo | CustomerDtoR
     }
 
     //saveCustomerIdToCustomerDetail
-    await this.customerRepository.createDetailCustomer(customer.id, data.price)
-    return customer 
+    await this.customerDetailRepository.create({customer_id: customer.id, price: data.price })
+    return customer
+  }
+
+  async findCustomerDetail(id: string): Promise<ICustomerDetail | null> {
+    const result = await this.customerDetailRepository.findOne(id)
+    return camelcaseKeys(result as CustomerDetail) as ICustomerDetail
   }
 
   async findAll(): Promise<CustomerDtoResponse[]> {

@@ -8,11 +8,11 @@ import { NoteRepository } from '../infrastructure/note.repository';
 import { IRepository } from 'src/utils/respository';
 
 @Injectable()
-export class ConsultNoteService   implements
-  IRepository<ConsultNoteDto, ConsultNoteDto, null ,null, ConsultNoteDto> {
+export class ConsultNoteService implements
+  IRepository<ConsultNoteDto, ConsultNoteDto, null, null, ConsultNoteDto> {
   constructor(
     private readonly noteRepository: NoteRepository
-  ) {}
+  ) { }
   async create(data: ConsultNoteDto): Promise<ConsultNoteDto> {
     const plainData = instanceToPlain(data);
     const snakeData = snakecaseKeys(plainData) as Prisma.NoteCreateInput;
@@ -24,8 +24,8 @@ export class ConsultNoteService   implements
     const note = await this.noteRepository.findAll()
     return note.map((item) => camelcaseKeys(item)) as ConsultNoteDto[];
   }
-  
-  async findOne(id: string):Promise<ConsultNoteDto> {
+
+  async findOne(id: string): Promise<ConsultNoteDto> {
     const note = await this.noteRepository.findOne(id)
     return camelcaseKeys(note as Note) as ConsultNoteDto
   }

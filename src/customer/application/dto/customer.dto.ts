@@ -102,7 +102,7 @@ export class CustomerDtoResponse {
 
 }
 
-interface ICustomerDetail {
+export interface ICustomerDetail {
   rate?: number;
   customerId?: string;
   price: number;
