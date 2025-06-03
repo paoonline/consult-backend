@@ -1,11 +1,12 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { Cron } from '@nestjs/schedule';
-import { ConsultNotiService } from 'src/consult/services/consult.noti.service';
+import { NotificationService } from '../application/notification.service';
+
 @Injectable()
-export class BatchNotiService {
-  private readonly logger = new Logger(BatchNotiService.name);
+export class BatchNotificationService {
+  private readonly logger = new Logger(BatchNotificationService.name);
   constructor(
-    private readonly consultNotiService: ConsultNotiService
+    private readonly notiService: NotificationService
 
   ) {}
 
@@ -13,6 +14,6 @@ export class BatchNotiService {
   @Cron('55 * * * *')
   async handleBatchCheck() {
     this.logger.log('Running batch check  every at 55 minute ');
-    this.consultNotiService.pushNoti()
+    this.notiService.pushNoti()
   }
 }

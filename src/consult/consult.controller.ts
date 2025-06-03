@@ -17,7 +17,7 @@ import { ConsultNoteDto } from './application/dto/consult.note.dto';
 import { ConsultNotificationDto } from './application/dto/consult.noti.dto';
 import { ConsultCommentService } from './services/consult.comment.service';
 import { ConsultNoteService } from './services/consult.note.service';
-import { ConsultNotiService } from './services/consult.noti.service';
+// import { ConsultNotiService } from './services/consult.noti.service';
 import { ConsultService } from './services/consult.service';
 
 @Controller('/consult')
@@ -26,7 +26,7 @@ export class ConsultController {
     private readonly consultService: ConsultService,
     private readonly noteService: ConsultNoteService,
     private readonly commentService: ConsultCommentService,
-    private readonly consultNotiService: ConsultNotiService
+    // private readonly consultNotiService: ConsultNotiService
   ) 
   {}
 
@@ -258,70 +258,70 @@ export class ConsultController {
     }
   }
 
-  @Post('/notification')
-  @UseGuards(JwtAuthGuard)
-  async createNotification(
-    @Res() res: Response,
-    @Body() data: ConsultNotificationDto,
-  ): Promise<Response<any, Record<string, any>>> {
-    try {
-      const notification = await this.consultNotiService.create(data);
-      // Send a successful response with the token
-      return res.status(200).json({
-        status: 200,
-        message: 'Create successful',
-        data: notification,
-      });
-    } catch (error) {
-      // Handle errors, for example, invalid credentials
-      return res.status(400).json({
-        status: 400,
-        message: error.message,
-        data: '',
-      });
-    }
-  }
+  // @Post('/notification')
+  // @UseGuards(JwtAuthGuard)
+  // async createNotification(
+  //   @Res() res: Response,
+  //   @Body() data: ConsultNotificationDto,
+  // ): Promise<Response<any, Record<string, any>>> {
+  //   try {
+  //     const notification = await this.consultNotiService.create(data);
+  //     // Send a successful response with the token
+  //     return res.status(200).json({
+  //       status: 200,
+  //       message: 'Create successful',
+  //       data: notification,
+  //     });
+  //   } catch (error) {
+  //     // Handle errors, for example, invalid credentials
+  //     return res.status(400).json({
+  //       status: 400,
+  //       message: error.message,
+  //       data: '',
+  //     });
+  //   }
+  // }
 
-  @Get('/notification/:notificationId')
-  @UseGuards(JwtAuthGuard)
-  async getNotificationByid(
-    @Res() res: Response,
-    @Param('notificationId') notificationId: string,
-  ): Promise<Response<any, Record<string, any>>> {
-    try {
-      const notification = await this.consultNotiService.findByNotificationId(notificationId);
-      return res.status(200).json({
-        status: 200,
-        message: 'successful',
-        data: notification,
-      });
-    } catch (error) {
-      return res.status(400).json({
-        status: 400,
-        message: error.message,
-        data: '',
-      });
-    }
-  }
+  // @Get('/notification/:notificationId')
+  // @UseGuards(JwtAuthGuard)
+  // async getNotificationByid(
+  //   @Res() res: Response,
+  //   @Param('notificationId') notificationId: string,
+  // ): Promise<Response<any, Record<string, any>>> {
+  //   try {
+  //     const notification = await this.consultNotiService.findByNotificationId(notificationId);
+  //     return res.status(200).json({
+  //       status: 200,
+  //       message: 'successful',
+  //       data: notification,
+  //     });
+  //   } catch (error) {
+  //     return res.status(400).json({
+  //       status: 400,
+  //       message: error.message,
+  //       data: '',
+  //     });
+  //   }
+  // }
 
-  @Get('/notification')
-  @UseGuards(JwtAuthGuard)
-  async getAllNotification(
-    @Res() res: Response,
-  ): Promise<Response<any, Record<string, any>>> {
-    try {
-      const notification = await this.consultNotiService.findAll();
-      return res.status(200).json({
-        status: 200,
-        message: 'successful',
-        data: notification,
-      });
-    } catch (error) {
-      return res.status(400).json({
-        status: 400,
-        message: error.message,
-        data: '',
-      });
-    }
-  }
+  // @Get('/notification')
+  // @UseGuards(JwtAuthGuard)
+  // async getAllNotification(
+  //   @Res() res: Response,
+  // ): Promise<Response<any, Record<string, any>>> {
+  //   try {
+  //     const notification = await this.consultNotiService.findAll();
+  //     return res.status(200).json({
+  //       status: 200,
+  //       message: 'successful',
+  //       data: notification,
+  //     });
+  //   } catch (error) {
+  //     return res.status(400).json({
+  //       status: 400,
+  //       message: error.message,
+  //       data: '',
+  //     });
+  //   }
+  // }
 }

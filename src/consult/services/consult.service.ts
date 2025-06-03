@@ -5,14 +5,13 @@ import { instanceToPlain } from 'class-transformer';
 import { PrismaService } from 'prisma/prisma.service';
 import snakecaseKeys from 'snakecase-keys';
 import { ConsultDto } from '../application/dto/consult.dto';
-import { ConsultNotiService } from './consult.noti.service';
-
+import { QueueJob } from 'src/services/Queue/queueJob';
 @Injectable()
 export class ConsultService {
   constructor(
     private readonly prisma: PrismaService,
-    private readonly consultNoti: ConsultNotiService
-  ) {}
+        private readonly queueJob: QueueJob
+  ) { }
   async createConsult(data: ConsultDto): Promise<ConsultTransaction | null> {
     const plainData = instanceToPlain(data);
     const snakeData = snakecaseKeys(
@@ -34,7 +33,7 @@ export class ConsultService {
     if (!customerDetail) {
       throw new Error(`CustomerDetail not found for customerId: ${data.customerId}`);
     }
-  
+
     if (!customerConsultDetail) {
       throw new Error(`CustomerDetail not found for consultId: ${data.consultId}`);
     }
@@ -59,15 +58,8 @@ export class ConsultService {
       }
     })
 
-    // hard for for noti
-    await this.consultNoti.create(
-      {
-        consultTransactionId : consult.id,
-        description: "test",
-        title: "test",
-        deviceToken: '1',
-      }
-    )
+    // job noti
+    await this.queueJob.addJob('NotificationQueue', 'sendNotification', { id: consult.id, description:"test", title: "test", device_token: "1" })
     return consult;
   }
 
@@ -89,7 +81,7 @@ export class ConsultService {
     return camelcaseKeys(transactions)
   }
 
-  async meeting (customerId: string, consultId: string):Promise<string> {
+  async meeting(customerId: string, consultId: string): Promise<string> {
     await this.prisma.booking.deleteMany({
       where: {
         id: { in: [customerId, consultId] },

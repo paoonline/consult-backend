@@ -1,0 +1,60 @@
+import { Injectable } from '@nestjs/common';
+import { ConsultNotification } from '@prisma/client';
+import { PrismaService } from 'prisma/prisma.service';
+import { IRepository } from 'src/utils/respository';
+
+@Injectable()
+export class NotificationRepository
+  implements
+  IRepository<
+    ConsultNotification, //return
+    ConsultNotification, //params
+   null,
+   null,
+   ConsultNotification //create return
+  > {
+  constructor(private readonly prisma: PrismaService) { }
+
+  async findAll(): Promise<ConsultNotification[]> {
+    const notification = await this.prisma.consultNotification.findMany({
+        include: {
+          consultTransaction: true,
+        },
+      });
+    return notification;
+  }
+
+  async create(data: ConsultNotification): Promise<ConsultNotification> {
+    return this.prisma.consultNotification.create({
+        data,
+      });
+  }
+
+   async findOne(id: string): Promise<ConsultNotification> {
+      const notification = await this.prisma.consultNotification.findFirst({
+        where: {
+          id,
+        },
+        include: {
+          consultTransaction: true,
+        },
+      });
+      return notification as ConsultNotification
+    }
+
+    async findMany(): Promise<ConsultNotification[]> {
+      const noti = await this.prisma.consultNotification.findMany({
+        where: { is_push_noti: false }, select: { device_token: true },
+      });
+      return noti  as ConsultNotification[]
+    
+    }
+
+    async updateMany(): Promise<number> {
+      const noti = await this.prisma.consultNotification.updateMany({
+        where: { is_push_noti: false },
+        data: { is_push_noti: true },
+      })
+      return noti.count
+    }
+}

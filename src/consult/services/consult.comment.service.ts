@@ -3,16 +3,16 @@ import { Injectable } from '@nestjs/common';
 import camelcaseKeys from 'camelcase-keys';
 import { instanceToPlain } from 'class-transformer';
 import snakecaseKeys from 'snakecase-keys';
+import { QueueJob } from 'src/services/Queue/queueJob';
 import { IRepository } from 'src/utils/respository';
 import { ConsultCommentDto } from '../application/dto/consult.comment.dto';
-import { CustomerQueue } from '../application/queue/customer.queue';
 import { CommentRepository } from '../infrastructure/comment.repository';
 
 @Injectable()
 export class ConsultCommentService implements IRepository<ConsultCommentDto, ConsultCommentDto, null, null, ConsultComment> {
     constructor(
         private readonly commentRepository: CommentRepository,
-        private readonly customerQueue: CustomerQueue
+        private readonly queueJob: QueueJob
     ) { }
 
     async create(
@@ -20,12 +20,12 @@ export class ConsultCommentService implements IRepository<ConsultCommentDto, Con
     ): Promise<ConsultComment> {
         const plainData = instanceToPlain(data);
         const snakeData = snakecaseKeys(plainData) as ConsultComment;
-        
+
         const comment = await this.commentRepository.create(snakeData)
         const avgResult = await this.commentRepository.aggregate(comment.customer_detail_id)
 
         // event driven to update rate
-        this.customerQueue.addCustomerDetailJob({id: comment.customer_detail_id, rate:avgResult})
+        this.queueJob.addJob('customerDetailQueue', 'sendCustomerDetail', { id: comment.customer_detail_id, rate: avgResult })
         return comment
     }
 
