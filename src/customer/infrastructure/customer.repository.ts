@@ -1,18 +1,16 @@
 import { Injectable } from '@nestjs/common';
-import { CustomerDetail, Prisma } from '@prisma/client';
 import { PrismaService } from 'prisma/prisma.service';
 import { IRepository } from 'src/utils/respository';
-import { CreateCustomerDto } from '../application/dto/customer.create.dto';
-import { CustomerRepo, IUpdateCustomer } from '../domain/customer.repository.interface';
+import { CustomerEntity } from '../domain/customer.entity';
+import { CustomerRepo } from '../domain/customer.repository.interface';
 
 @Injectable()
 export class CustomerRepository
   implements
   IRepository<
     CustomerRepo,
-    CreateCustomerDto,
-    Prisma.CustomerCreateInput,
-    IUpdateCustomer
+    CustomerEntity,
+    CustomerEntity
   >
    {
   constructor(private readonly prisma: PrismaService) { }
@@ -36,13 +34,12 @@ export class CustomerRepository
     return result;
   }
 
-  async create(params: CreateCustomerDto) {
+  async create(params: CustomerEntity) {
     await this.prisma.customer.create({
       data: {
-        ...params.data,
-        password: params.password,
+        ...params.getData(),
         skills: {
-          connect: params.skills, // List of Skill IDs
+          connect: params.getSkills(), // List of Skill IDs
         },
       },
     });
@@ -50,20 +47,18 @@ export class CustomerRepository
 
   async update(
     id: string,
-    data: Prisma.CustomerCreateInput,
-    other: IUpdateCustomer,
+    data: CustomerEntity,
   ): Promise<CustomerRepo> {
     const updated = await this.prisma.customer.update({
       where: { id },
       data: {
-        ...data,
-        password: other.password,
+        ...data.getData(),
         skills: {
-          set: other.skills,
+          set: data.getSkills(),
         },
         customer_detail: {
           update: {
-            price: other.price,
+            price: data.getPrice(),
           },
         },
       },

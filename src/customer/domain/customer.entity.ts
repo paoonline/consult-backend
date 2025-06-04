@@ -1,40 +1,22 @@
-import { validateData } from "./data.vo";
+import { Prisma } from '@prisma/client';
+import { CustomerProps } from './data.vo';
 
-export class Email {
-    constructor(private readonly value: string) {
-      if (!value || !this.validate(value)) {
-        throw new Error('Invalid email address');
-      }
-    }
-  
-    private validate(email: string): boolean {
-      return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
-    }
-  
-    getValue(): string {
-      return this.value;
-    }
-  }
 export class CustomerEntity {
-    constructor(
-        private readonly data: validateData,
-    ) {
-     
-    }
+  constructor(
+    private readonly data: CustomerProps,
+    private readonly skills: { id: string }[],
+    private readonly price?: number,
+  ) {}
 
-
-    getRawPassword(): string {
-        this.data.getValue().email
-        return this.data.getValue().password;
-     }
-
-    getData() {
-        return this.data.getValue()
-    }
-
-    getSkills() {
-        return this.data.getValue().skills
-    }
-    
+  getPrice(): number | undefined {
+    return this.price;
   }
 
+  getData(): Prisma.CustomerCreateInput {
+    return this.data.getValue();
+  }
+
+  getSkills(): { id: string }[] {
+    return this.skills;
+  }
+}

@@ -1,10 +1,10 @@
 
 import { Prisma } from "@prisma/client";
 import { CustomerEntity } from "../../domain/customer.entity";
-import { validateData } from "../../domain/data.vo";
+import { CustomerProps } from "../../domain/data.vo";
 
- export const createFactory = (data: Prisma.CustomerCreateInput): CustomerEntity => {
-      return new CustomerEntity(
-        new validateData(data)
-      );
-    }
+export const createFactory = (data: Prisma.CustomerCreateInput, skills: { id: string }[], price?: number): CustomerEntity => {
+  return new CustomerEntity(
+    new CustomerProps(data), skills, price
+  );
+}

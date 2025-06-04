@@ -108,7 +108,7 @@ export class CustomerController {
         email: undefined,
       };
       const updatedCustomer = await this.customerService.update(id, safeData);
-
+      
       if (!updatedCustomer) {
         return res.status(HttpStatus.NOT_FOUND).json({
           status: HttpStatus.NOT_FOUND,

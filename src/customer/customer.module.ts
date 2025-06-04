@@ -22,7 +22,7 @@ import { CustomerDetailService } from './application/customerDetail.service';
     SkillService,
     CustomerWorker,
     CustomerDetailRepository,
-    CustomerDetailService
+    CustomerDetailService,
   ],
   exports: [CustomerService],
 })

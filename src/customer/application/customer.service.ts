@@ -5,10 +5,11 @@ import { SessionService } from 'src/services/Session/session.service';
 import { SkillService } from 'src/skill/application/skill.service';
 import { formatSnakeCase } from 'src/utils/format';
 import { IRepository } from 'src/utils/respository';
-import { CustomerRepository } from '../infrastructure/customer.repository';
-import { CustomerDto, CustomerDtoResponse, ICustomerDetail } from './dto/customer.dto';
 import { CustomerRepo } from '../domain/customer.repository.interface';
+import { CustomerRepository } from '../infrastructure/customer.repository';
 import { CustomerDetailService } from './customerDetail.service';
+import { CustomerDto, CustomerDtoResponse, ICustomerDetail } from './dto/customer.dto';
+import { createFactory } from './factory/customer.factory';
 
 @Injectable()
 export class CustomerService implements IRepository<CustomerRepo | CustomerDtoResponse | null, CustomerDto, CustomerDto, null, CustomerRepo> {
@@ -25,16 +26,12 @@ export class CustomerService implements IRepository<CustomerRepo | CustomerDtoRe
       price: undefined,
     };
 
-    const snakeData = formatSnakeCase<Omit<CustomerDto, 'skills' | 'price'>, Prisma.CustomerCreateInput>(newData)
     const hashedPassword = await this.sessionService.hashPassword(data.password, 10)
+    const snakeData = formatSnakeCase<Omit<CustomerDto, 'skills' | 'price'>, Prisma.CustomerCreateInput>(newData)
+    snakeData.password = hashedPassword
 
     const skills = await this.skillService.skillMap(data.skills);
-
-    await this.customerRepository.create({
-      data: snakeData,
-      password: hashedPassword,
-      skills
-    })
+    await this.customerRepository.create(createFactory(snakeData, skills))
 
     const customer = await this.customerRepository.findFirst(data.email)
 
@@ -92,7 +89,7 @@ export class CustomerService implements IRepository<CustomerRepo | CustomerDtoRe
       price: undefined,
     };
     const snakeData = formatSnakeCase<Omit<CustomerDto, 'email' | 'skills' | 'price'>, Prisma.CustomerCreateInput>(newData)
-    const customer = await this.customerRepository.findFirst(id);
+    const customer = await this.customerRepository.findOne(id);
 
     if (!customer) {
       return null; // Return null if the customer isn't found
@@ -101,16 +98,9 @@ export class CustomerService implements IRepository<CustomerRepo | CustomerDtoRe
     let hashedPassword;
     if (data?.password) {
       hashedPassword = await this.sessionService.hashPassword(data.password, 10)
+      snakeData.password = hashedPassword
     }
-
-    const updated = await this.customerRepository.update(id, snakeData,
-      {
-        password: hashedPassword || '',
-        skills,
-        price: data.price
-      })
-
-    return updated;
+    return this.customerRepository.update(id, createFactory(snakeData, skills, data.price));
   }
 }
 

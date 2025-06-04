@@ -1,6 +1,6 @@
 import { Prisma } from "@prisma/client";
 
-export class validateData {
+export class CustomerProps {
     constructor(
           private readonly data: Prisma.CustomerCreateInput,
       ) {
