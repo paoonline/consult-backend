@@ -6,7 +6,8 @@ import { PrismaService } from 'prisma/prisma.service';
 import snakecaseKeys from 'snakecase-keys';
 import { ApiService } from 'src/services/Api/api';
 import { QueueJob } from 'src/services/Queue/queueJob';
-import { ConsultDto } from '../application/dto/consult.dto';
+import { ConsultDto } from '../dto/consult.dto';
+
 
 @Injectable()
 export class ConsultService {

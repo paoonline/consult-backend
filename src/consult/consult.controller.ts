@@ -15,11 +15,11 @@ import { JwtAuthGuard } from 'src/validate/jwt-auth.guard';
 import { ConsultCommentDto } from './application/dto/consult.comment.dto';
 import { ConsultDto } from './application/dto/consult.dto';
 import { ConsultNoteDto } from './application/dto/consult.note.dto';
-import { ConsultNotificationDto } from './application/dto/consult.noti.dto';
-import { ConsultCommentService } from './services/consult.comment.service';
-import { ConsultNoteService } from './services/consult.note.service';
+// import { ConsultNotificationDto } from './application/dto/consult.noti.dto';
+import { ConsultCommentService } from './application/services/consult.comment.service';
+import { ConsultNoteService } from './application/services/consult.note.service';
 // import { ConsultNotiService } from './services/consult.noti.service';
-import { ConsultService } from './services/consult.service';
+import { ConsultService } from './application/services/consult.service';
 
 @Controller('/consult')
 export class ConsultController {

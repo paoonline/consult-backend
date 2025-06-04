@@ -6,9 +6,9 @@ import { RedisModule } from 'src/services/Redis/redis.module';
 import { ConsultController } from './consult.controller';
 import { CommentRepository } from './infrastructure/comment.repository';
 import { NoteRepository } from './infrastructure/note.repository';
-import { ConsultCommentService } from './services/consult.comment.service';
-import { ConsultNoteService } from './services/consult.note.service';
-import { ConsultService } from './services/consult.service';
+import { ConsultCommentService } from './application/services/consult.comment.service';
+import { ConsultNoteService } from './application/services/consult.note.service';
+import { ConsultService } from './application/services/consult.service';
 import { ApiModule } from 'src/services/Api/api.module';
 
 @Module({

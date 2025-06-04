@@ -7,7 +7,7 @@ import { SkillModule } from 'src/skill/skill.module';
 import { CustomerService } from './application/customer.service';
 import { CustomerController } from './customer.controller';
 import { CustomerRepository } from './infrastructure/customer.repository';
-import { SkillService } from 'src/skill/skill.service';
+import { SkillService } from 'src/skill/application/skill.service';
 import { CustomerWorker } from './application/customer.worker';
 import { CustomerDetailRepository } from './infrastructure/customer.detail.repository';
 import { CustomerDetailService } from './application/customerDetail.service';

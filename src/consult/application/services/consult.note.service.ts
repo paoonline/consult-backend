@@ -3,9 +3,10 @@ import { Injectable } from '@nestjs/common';
 import camelcaseKeys from 'camelcase-keys';
 import { instanceToPlain } from 'class-transformer';
 import snakecaseKeys from 'snakecase-keys';
-import { ConsultNoteDto } from '../application/dto/consult.note.dto';
-import { NoteRepository } from '../infrastructure/note.repository';
+import { NoteRepository } from 'src/consult/infrastructure/note.repository';
+
 import { IRepository } from 'src/utils/respository';
+import { ConsultNoteDto } from '../dto/consult.note.dto';
 
 @Injectable()
 export class ConsultNoteService implements

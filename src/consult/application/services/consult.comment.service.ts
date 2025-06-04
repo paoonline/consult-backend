@@ -3,10 +3,11 @@ import { Injectable } from '@nestjs/common';
 import camelcaseKeys from 'camelcase-keys';
 import { instanceToPlain } from 'class-transformer';
 import snakecaseKeys from 'snakecase-keys';
+import { CommentRepository } from 'src/consult/infrastructure/comment.repository';
 import { QueueJob } from 'src/services/Queue/queueJob';
 import { IRepository } from 'src/utils/respository';
-import { ConsultCommentDto } from '../application/dto/consult.comment.dto';
-import { CommentRepository } from '../infrastructure/comment.repository';
+import { ConsultCommentDto } from '../dto/consult.comment.dto';
+
 
 @Injectable()
 export class ConsultCommentService implements IRepository<ConsultCommentDto, ConsultCommentDto, null, null, ConsultComment> {
