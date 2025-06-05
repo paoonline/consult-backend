@@ -6,6 +6,8 @@ import { instanceToPlain } from 'class-transformer';
 import snakecaseKeys from 'snakecase-keys';
 import camelcaseKeys from 'camelcase-keys';
 import { CustomerDetail } from '@prisma/client';
+import { CustomerDetailEntity } from '../domain/customerDetail.entity';
+import { createFactory } from 'src/utils/factory';
 
 @Injectable()
 export class CustomerDetailService implements IRepository<ICustomerDetail, CustomerDetailDto, number, null, ICustomerDetail> {
@@ -16,7 +18,8 @@ export class CustomerDetailService implements IRepository<ICustomerDetail, Custo
     async create(data: ICustomerDetail): Promise<ICustomerDetail> {
         const plainData = instanceToPlain(data);
         const snakeData = snakecaseKeys(plainData) as CustomerDetailDto;
-        const result = await this.customerDetailRepository.create(snakeData)
+        const result = await this.customerDetailRepository.create(createFactory(snakeData, CustomerDetailEntity))
+
         return result as ICustomerDetail
     }
 
@@ -26,8 +29,12 @@ export class CustomerDetailService implements IRepository<ICustomerDetail, Custo
     }
 
     async update(id: string, rate: number): Promise<ICustomerDetail> {
-        const result = await this.customerDetailRepository.update(id, rate)
-        return camelcaseKeys(result as CustomerDetail ) as ICustomerDetail
+        let data = createFactory({
+            customer_id: id,
+            rate
+        }, CustomerDetailEntity)
+        const result = await this.customerDetailRepository.update(id, data)
+        return camelcaseKeys(result as CustomerDetail) as ICustomerDetail
     }
 }
 

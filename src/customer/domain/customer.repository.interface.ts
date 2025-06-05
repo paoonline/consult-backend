@@ -6,4 +6,10 @@ export interface IUpdateCustomer {
   password: string;
 }
 
+export interface ICustomerDetailEntity {
+  customer_id: string
+  price?: number
+  rate?: number
+}
+
 export type CustomerRepo = Omit<Customer, 'password'>;

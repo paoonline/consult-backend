@@ -1,22 +1,24 @@
 import { Prisma } from '@prisma/client';
-import { CustomerProps } from './data.vo';
 
 export class CustomerEntity {
   constructor(
-    private readonly data: CustomerProps,
-    private readonly skills: { id: string }[],
-    private readonly price?: number,
-  ) {}
+    private readonly data: Prisma.CustomerCreateInput & { skills: { id: string }[], price: number },
+  ) { }
 
   getPrice(): number | undefined {
-    return this.price;
+    return this.data.price;
   }
 
   getData(): Prisma.CustomerCreateInput {
-    return this.data.getValue();
+    const newData = {
+      ...this.data,
+      price: undefined,
+      skill: undefined
+    }
+    return newData
   }
 
   getSkills(): { id: string }[] {
-    return this.skills;
+    return this.data.skills;
   }
 }

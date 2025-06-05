@@ -5,9 +5,10 @@ import { SessionService } from 'src/services/Session/session.service';
 import { IRepository } from 'src/utils/respository';
 import { LoginRepository } from '../infrastructure/login.repository';
 import { loginLogDto } from './login.dto';
-import { createFactory } from './login.factory';
-import camelcaseKeys from 'camelcase-keys';
 import { login } from '.prisma/client';
+import camelcaseKeys from 'camelcase-keys';
+import { createFactory } from 'src/utils/factory';
+import { LoginEntity } from '../domain/login.entity';
 @Injectable()
 export class LoginService implements Omit<IRepository<loginLogDto, string>, 'delete'> {
   constructor(
@@ -18,7 +19,7 @@ export class LoginService implements Omit<IRepository<loginLogDto, string>, 'del
   ) {}
   
   async create(id: string): Promise<void> {
-    this.loginRepository.create(createFactory(id));
+    this.loginRepository.create(createFactory(id, LoginEntity));
   }
 
   async login(email: string, password: string): Promise<string> {

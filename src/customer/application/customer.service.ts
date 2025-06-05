@@ -9,7 +9,8 @@ import { CustomerRepo } from '../domain/customer.repository.interface';
 import { CustomerRepository } from '../infrastructure/customer.repository';
 import { CustomerDetailService } from './customerDetail.service';
 import { CustomerDto, CustomerDtoResponse, ICustomerDetail } from './dto/customer.dto';
-import { createFactory } from './factory/customer.factory';
+import { createFactory } from 'src/utils/factory';
+import { CustomerEntity } from '../domain/customer.entity';
 
 @Injectable()
 export class CustomerService implements IRepository<CustomerRepo | CustomerDtoResponse | null, CustomerDto, CustomerDto, null, CustomerRepo> {
@@ -27,12 +28,14 @@ export class CustomerService implements IRepository<CustomerRepo | CustomerDtoRe
     };
 
     const hashedPassword = await this.sessionService.hashPassword(data.password, 10)
-    const snakeData = formatSnakeCase<Omit<CustomerDto, 'skills' | 'price'>, Prisma.CustomerCreateInput>(newData)
+    const snakeData = formatSnakeCase<Omit<CustomerDto, 'skills' | 'price'>, Prisma.CustomerCreateInput & {price:number}>(newData)
     snakeData.password = hashedPassword
 
     const skills = await this.skillService.skillMap(data.skills);
-    await this.customerRepository.create(createFactory(snakeData, skills))
+    snakeData.skills = skills as Prisma.SkillCreateNestedManyWithoutCustomersInput
+    snakeData.price = data?.price
 
+    await this.customerRepository.create(createFactory(snakeData, CustomerEntity))
     const customer = await this.customerRepository.findFirst(data.email)
 
     if (!customer) {
@@ -41,7 +44,7 @@ export class CustomerService implements IRepository<CustomerRepo | CustomerDtoRe
 
     //saveCustomerIdToCustomerDetail
     await this.customerDetailService.create({
-      customerId: customer.id, price: data.price
+      customerId: customer.id, price: data?.price
     })
     return customer
   }
@@ -88,7 +91,7 @@ export class CustomerService implements IRepository<CustomerRepo | CustomerDtoRe
       skills: undefined,
       price: undefined,
     };
-    const snakeData = formatSnakeCase<Omit<CustomerDto, 'email' | 'skills' | 'price'>, Prisma.CustomerCreateInput>(newData)
+    const snakeData = formatSnakeCase<Omit<CustomerDto, 'email' | 'skills' | 'price'>, Prisma.CustomerCreateInput & {price:number}>(newData)
     const customer = await this.customerRepository.findOne(id);
 
     if (!customer) {
@@ -100,7 +103,10 @@ export class CustomerService implements IRepository<CustomerRepo | CustomerDtoRe
       hashedPassword = await this.sessionService.hashPassword(data.password, 10)
       snakeData.password = hashedPassword
     }
-    return this.customerRepository.update(id, createFactory(snakeData, skills, data.price));
+    snakeData.skills = skills as Prisma.SkillCreateNestedManyWithoutCustomersInput
+    snakeData.price = data?.price
+
+    return this.customerRepository.update(id, createFactory(snakeData, CustomerEntity))
   }
 }
 

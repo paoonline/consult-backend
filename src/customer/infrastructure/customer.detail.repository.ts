@@ -1,26 +1,24 @@
 import { Injectable } from '@nestjs/common';
-import { CustomerDetail, Prisma } from '@prisma/client';
+import { CustomerDetail } from '@prisma/client';
 import { PrismaService } from 'prisma/prisma.service';
 import { IRepository } from 'src/utils/respository';
-import { CustomerDetailDto } from '../application/dto/customer.dto';
+import { CustomerDetailEntity } from '../domain/customerDetail.entity';
 @Injectable()
 export class CustomerDetailRepository
   implements
   IRepository<
     CustomerDetail,
-    CustomerDetailDto,
-    number,
+    CustomerDetailEntity,
+    CustomerDetailEntity,
     null,
     CustomerDetail
   > {
   constructor(private readonly prisma: PrismaService) { }
 
-
-  async create(data: CustomerDetailDto): Promise<CustomerDetail> {
+  async create(data: CustomerDetailEntity): Promise<CustomerDetail> {
     return this.prisma.customerDetail.create({
       data: {
-        customer_id: data.customer_id,
-        price: data.price,
+        ...data.getData()
       }
     })
   }
@@ -31,13 +29,13 @@ export class CustomerDetailRepository
     });
   }
 
-  async update(id: string, rate: number): Promise<CustomerDetail> {
+  async update(id: string, data: CustomerDetailEntity): Promise<CustomerDetail> {
     return this.prisma.customerDetail.update({
       where: {
         id: id,
       },
       data: {
-        rate: Math.round(rate),
+        rate: Math.round(data.getData().rate ?? 0),
       },
     });
   }
