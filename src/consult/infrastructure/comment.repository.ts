@@ -3,13 +3,14 @@ import { ConsultComment } from '@prisma/client';
 import { PrismaService } from 'prisma/prisma.service';
 import { IRepository } from 'src/utils/respository';
 import { ConsultCommentDtoRepository } from '../application/dto/consult.comment.dto';
+import { CommentEntity } from '../domain/comment.entity';
 
 @Injectable()
 export class CommentRepository
   implements
   IRepository<
     ConsultComment,
-    ConsultCommentDtoRepository,
+    CommentEntity,
     null,
     null,
     ConsultComment,
@@ -22,9 +23,9 @@ export class CommentRepository
     return comment;
   }
 
-  async create(data: ConsultComment): Promise<ConsultComment> {
+  async create(data: CommentEntity): Promise<ConsultComment> {
     const comment = await this.prisma.consultComment.create({
-      data,
+      data:data.getData(),
     });
     return comment;
   }

@@ -7,6 +7,8 @@ import { NoteRepository } from 'src/consult/infrastructure/note.repository';
 
 import { IRepository } from 'src/utils/respository';
 import { ConsultNoteDto } from '../dto/consult.note.dto';
+import { createFactory } from 'src/utils/factory';
+import { NoteEntity } from 'src/consult/domain/note.entity';
 
 @Injectable()
 export class ConsultNoteService implements
@@ -17,7 +19,7 @@ export class ConsultNoteService implements
   async create(data: ConsultNoteDto): Promise<ConsultNoteDto> {
     const plainData = instanceToPlain(data);
     const snakeData = snakecaseKeys(plainData) as Prisma.NoteCreateInput;
-    const note = await this.noteRepository.create(snakeData)
+    const note = await this.noteRepository.create(    createFactory(snakeData, NoteEntity))
     return camelcaseKeys(note)
   }
 

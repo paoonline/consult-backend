@@ -1,23 +1,24 @@
 import { Injectable } from '@nestjs/common';
-import { Note, Prisma } from '@prisma/client';
+import { Note } from '@prisma/client';
 import { PrismaService } from 'prisma/prisma.service';
 import { IRepository } from 'src/utils/respository';
+import { NoteEntity } from '../domain/note.entity';
 
 @Injectable()
 export class NoteRepository
   implements
   IRepository<
     Note,
-    Prisma.NoteCreateInput,
+    NoteEntity,
     null,
     null,
     Note
   > {
   constructor(private readonly prisma: PrismaService) { }
 
-  async create(data: Prisma.NoteCreateInput): Promise<Note> {
+  async create(data: NoteEntity): Promise<Note> {
     return this.prisma.note.create({
-        data
+        data:data.getData()
       });
   }
 

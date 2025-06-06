@@ -3,8 +3,10 @@ import { Injectable } from '@nestjs/common';
 import camelcaseKeys from 'camelcase-keys';
 import { instanceToPlain } from 'class-transformer';
 import snakecaseKeys from 'snakecase-keys';
+import { CommentEntity } from 'src/consult/domain/comment.entity';
 import { CommentRepository } from 'src/consult/infrastructure/comment.repository';
 import { QueueJob } from 'src/services/Queue/queueJob';
+import { createFactory } from 'src/utils/factory';
 import { IRepository } from 'src/utils/respository';
 import { ConsultCommentDto } from '../dto/consult.comment.dto';
 
@@ -22,7 +24,7 @@ export class ConsultCommentService implements IRepository<ConsultCommentDto, Con
         const plainData = instanceToPlain(data);
         const snakeData = snakecaseKeys(plainData) as ConsultComment;
 
-        const comment = await this.commentRepository.create(snakeData)
+        const comment = await this.commentRepository.create(createFactory(snakeData, CommentEntity))
         const avgResult = await this.commentRepository.aggregate(comment.customer_detail_id)
 
         // event driven to update rate
