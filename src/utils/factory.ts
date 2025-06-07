@@ -1,6 +1,3 @@
-export const createFactory = <T, E extends new (...args: any[]) => any>(
-    data: T,
-    Entity: E
-  ): InstanceType<E> => {
-    return new Entity(data);
-};
+export function createFactory<T>(data: any, EntityClass: new (...args: any[]) => T, ...args: any[]): T {
+  return new EntityClass(data, ...args);
+}

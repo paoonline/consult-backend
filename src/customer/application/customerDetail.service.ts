@@ -5,7 +5,7 @@ import { CustomerDetailDto, ICustomerDetail } from './dto/customer.dto';
 import { instanceToPlain } from 'class-transformer';
 import snakecaseKeys from 'snakecase-keys';
 import camelcaseKeys from 'camelcase-keys';
-import { CustomerDetail } from '@prisma/client';
+import { CustomerDetail, Prisma } from '@prisma/client';
 import { CustomerDetailEntity } from '../domain/customerDetail.entity';
 import { createFactory } from 'src/utils/factory';
 
@@ -15,10 +15,10 @@ export class CustomerDetailService implements IRepository<ICustomerDetail, Custo
         private readonly customerDetailRepository: CustomerDetailRepository,
 
     ) { }
-    async create(data: ICustomerDetail): Promise<ICustomerDetail> {
+    async create(data: ICustomerDetail, other?:string, tx?: Prisma.TransactionClient): Promise<ICustomerDetail> {
         const plainData = instanceToPlain(data);
         const snakeData = snakecaseKeys(plainData) as CustomerDetailDto;
-        const result = await this.customerDetailRepository.create(createFactory(snakeData, CustomerDetailEntity))
+        const result = await this.customerDetailRepository.create(createFactory(snakeData, CustomerDetailEntity, tx))
 
         return result as ICustomerDetail
     }

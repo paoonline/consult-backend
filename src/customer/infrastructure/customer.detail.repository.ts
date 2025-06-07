@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { CustomerDetail } from '@prisma/client';
+import { CustomerDetail, Prisma } from '@prisma/client';
 import { PrismaService } from 'prisma/prisma.service';
 import { IRepository } from 'src/utils/respository';
 import { CustomerDetailEntity } from '../domain/customerDetail.entity';
@@ -15,8 +15,9 @@ export class CustomerDetailRepository
   > {
   constructor(private readonly prisma: PrismaService) { }
 
-  async create(data: CustomerDetailEntity): Promise<CustomerDetail> {
-    return this.prisma.customerDetail.create({
+  async create(data: CustomerDetailEntity, _?: string, tx?: Prisma.TransactionClient): Promise<CustomerDetail> {
+    const client = tx ?? this.prisma;
+    return client.customerDetail.create({
       data: {
         ...data.getData()
       }

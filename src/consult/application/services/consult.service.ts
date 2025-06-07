@@ -7,26 +7,27 @@ import snakecaseKeys from 'snakecase-keys';
 import { ApiService } from 'src/services/Api/api';
 import { QueueJob } from 'src/services/Queue/queueJob';
 import { ConsultDto } from '../dto/consult.dto';
-
-
+import { ConsultRepository } from 'src/consult/infrastructure/consult.repository';
+import { createFactory } from 'src/utils/factory';
+import { ConsultEntity } from 'src/consult/domain/consult.entity';
+import { IRepository } from 'src/utils/respository';
+import { IConsultMeeting } from 'src/consult/domain/consult.repository.interface';
 @Injectable()
-export class ConsultService {
+export class ConsultService implements IRepository<ConsultDto | ConsultDto[], ConsultDto, unknown, unknown, ConsultTransaction>, IConsultMeeting {
   constructor(
     private readonly prisma: PrismaService,
     private readonly queueJob: QueueJob,
-    private readonly apiService: ApiService
+    private readonly apiService: ApiService,
+    private readonly consultRepository: ConsultRepository
   ) { }
   // refactor
-  async createConsult(data: ConsultDto, token: string): Promise<ConsultTransaction | null> {
+  async create(data: ConsultDto, token: string): Promise<ConsultTransaction> {
     const plainData = instanceToPlain(data);
     const snakeData = snakecaseKeys(
       plainData,
     ) as Prisma.ConsultTransactionCreateInput;
 
-    const consult = await this.prisma.consultTransaction.create({
-      data: snakeData,
-    });
-
+    const consult = await this.consultRepository.create(createFactory(snakeData, ConsultEntity))
     const customerDetail = await this.apiService.getFromApi<{ data: CustomerDetail }>('/customer/detail/' + data.customerId, token)
     const customerConsultDetail = await this.apiService.getFromApi<{ data: CustomerDetail }>('/customer/detail/' + data.consultId, token)
 
@@ -64,20 +65,15 @@ export class ConsultService {
   }
 
   async findAll(): Promise<ConsultDto[]> {
-    const transactions = await this.prisma.consultTransaction.findMany()
+    const transactions = await this.consultRepository.findAll()
     return transactions.map((item) => camelcaseKeys(item));
   }
 
-  async findByConsultTransaction(
+  async findMany(
     customerId: string,
     consultId: string,
-  ): Promise<ConsultDto[] | null> {
-    const transactions = await this.prisma.consultTransaction.findMany({
-      where: {
-        customer_id: customerId,
-        consult_id: consultId,
-      },
-    });
+  ): Promise<ConsultDto[]> {
+    const transactions = await this.consultRepository.findMany(customerId, consultId)
     return camelcaseKeys(transactions)
   }
 

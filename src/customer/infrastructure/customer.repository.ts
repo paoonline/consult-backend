@@ -3,6 +3,8 @@ import { PrismaService } from 'prisma/prisma.service';
 import { IRepository } from 'src/utils/respository';
 import { CustomerEntity } from '../domain/customer.entity';
 import { CustomerRepo } from '../domain/customer.repository.interface';
+import { Prisma } from '@prisma/client';
+
 
 @Injectable()
 export class CustomerRepository
@@ -34,8 +36,9 @@ export class CustomerRepository
     return result;
   }
 
-  async create(params: CustomerEntity) {
-    await this.prisma.customer.create({
+  async create(params: CustomerEntity, _?: string, tx?: Prisma.TransactionClient) {
+    const client = tx ?? this.prisma;
+    await client.customer.create({
       data: {
         ...params.getData(),
         skills: {
@@ -43,6 +46,7 @@ export class CustomerRepository
         },
       },
     });
+    
   }
 
   async update(
@@ -85,8 +89,9 @@ export class CustomerRepository
     return result as CustomerRepo;
   }
 
-  async findFirst(email: string): Promise<CustomerRepo> {
-    const customer = await this.prisma.customer.findFirst({
+  async findFirst(email: string, tx?: Prisma.TransactionClient): Promise<CustomerRepo> {
+    let client = tx ?? this.prisma
+    const customer = await client.customer.findUnique({
       where: { email },
     });
     return customer as CustomerRepo;

@@ -10,6 +10,7 @@ import { ConsultCommentService } from './application/services/consult.comment.se
 import { ConsultNoteService } from './application/services/consult.note.service';
 import { ConsultService } from './application/services/consult.service';
 import { ApiModule } from 'src/services/Api/api.module';
+import { ConsultRepository } from './infrastructure/consult.repository';
 
 @Module({
   imports: [RedisModule, ApiModule],
@@ -22,6 +23,7 @@ import { ApiModule } from 'src/services/Api/api.module';
     FirebaseService,
     NoteRepository,
     CommentRepository,
+    ConsultRepository,
     QueueJob,
   ],
   exports: [],

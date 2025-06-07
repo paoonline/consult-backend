@@ -2,7 +2,6 @@ import { Injectable } from '@nestjs/common';
 import { ConsultComment } from '@prisma/client';
 import { PrismaService } from 'prisma/prisma.service';
 import { IRepository } from 'src/utils/respository';
-import { ConsultCommentDtoRepository } from '../application/dto/consult.comment.dto';
 import { CommentEntity } from '../domain/comment.entity';
 
 @Injectable()

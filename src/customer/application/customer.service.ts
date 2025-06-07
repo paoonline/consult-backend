@@ -11,6 +11,7 @@ import { CustomerDetailService } from './customerDetail.service';
 import { CustomerDto, CustomerDtoResponse, ICustomerDetail } from './dto/customer.dto';
 import { createFactory } from 'src/utils/factory';
 import { CustomerEntity } from '../domain/customer.entity';
+import { PrismaService } from 'prisma/prisma.service';
 
 @Injectable()
 export class CustomerService implements IRepository<CustomerRepo | CustomerDtoResponse | null, CustomerDto, CustomerDto, null, CustomerRepo> {
@@ -18,7 +19,8 @@ export class CustomerService implements IRepository<CustomerRepo | CustomerDtoRe
     private readonly sessionService: SessionService,
     private readonly customerRepository: CustomerRepository,
     private readonly skillService: SkillService,
-    private readonly customerDetailService: CustomerDetailService
+    private readonly customerDetailService: CustomerDetailService,
+    private readonly prisma: PrismaService
   ) { }
   async create(data: CustomerDto): Promise<CustomerRepo> {
     const newData = {
@@ -35,18 +37,26 @@ export class CustomerService implements IRepository<CustomerRepo | CustomerDtoRe
     snakeData.skills = skills as Prisma.SkillCreateNestedManyWithoutCustomersInput
     snakeData.price = data?.price
 
-    await this.customerRepository.create(createFactory(snakeData, CustomerEntity))
-    const customer = await this.customerRepository.findFirst(data.email)
-
-    if (!customer) {
-      throw new Error('Customer not found for this email');
-    }
-
-    //saveCustomerIdToCustomerDetail
-    await this.customerDetailService.create({
-      customerId: customer.id, price: data?.price
-    })
-    return customer
+    const result = await this.prisma.$transaction(async (tx) => {
+      // Create customer
+      await this.customerRepository.create(createFactory(snakeData, CustomerEntity, tx));
+  
+      // Retrieve customer (within transaction context)
+      const customer = await this.customerRepository.findFirst(data.email, tx);
+  
+      if (!customer) {
+        throw new Error('Customer not found for this email');
+      }
+  
+      // Create customer detail
+      await this.customerDetailService.create({
+        customerId: customer.id,
+        price: data?.price,
+      }, '', tx);
+  
+      return customer;
+    });
+    return result
   }
 
   async findCustomerDetail(id: string): Promise<ICustomerDetail | null> {

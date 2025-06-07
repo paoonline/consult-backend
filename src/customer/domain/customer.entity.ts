@@ -13,7 +13,7 @@ export class CustomerEntity {
     const newData = {
       ...this.data,
       price: undefined,
-      skill: undefined
+      skills: undefined
     }
     return newData
   }

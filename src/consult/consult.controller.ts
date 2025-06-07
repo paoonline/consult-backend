@@ -41,7 +41,7 @@ export class ConsultController {
  
     const token = authHeader?.replace('Bearer ', '');
     try {
-      const consult = await this.consultService.createConsult(data, token);
+      const consult = await this.consultService.create(data, token);
       // Send a successful response with the token
       return res.status(200).json({
         status: 200,
@@ -87,7 +87,7 @@ export class ConsultController {
     @Param('consultId') consultId: string,
   ): Promise<Response<any, Record<string, any>>> {
     try {
-      const consult = await this.consultService.findByConsultTransaction(customerId, consultId);
+      const consult = await this.consultService.findMany(customerId, consultId);
       return res.status(200).json({
         status: 200,
         message: 'successful',
