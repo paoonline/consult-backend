@@ -11,6 +11,7 @@ import { ConsultNoteService } from './application/services/consult.note.service'
 import { ConsultService } from './application/services/consult.service';
 import { ApiModule } from 'src/services/Api/api.module';
 import { ConsultRepository } from './infrastructure/consult.repository';
+import { KafkaService } from 'src/services/Kafka/kafka.service';
 
 @Module({
   imports: [RedisModule, ApiModule],
@@ -25,6 +26,7 @@ import { ConsultRepository } from './infrastructure/consult.repository';
     CommentRepository,
     ConsultRepository,
     QueueJob,
+    KafkaService
   ],
   exports: [],
 })

@@ -24,10 +24,10 @@ export class QueueJob {
   async addJob<T>(queueName: string, jobName: string, data: T): Promise<void> {
     const queue = this.getQueue(queueName);
     await queue.add(jobName, data, {
-      attempts: 3,
-      backoff: 5000,
-      removeOnComplete: true,
-      removeOnFail: { count: 5 },
+      attempts: 3, //  Retry up to 3 times if job fails
+      backoff: 5000,  // 5 seconds between retries
+      removeOnComplete: true,  //Auto remove completed jobs
+      removeOnFail: { count: 5 },    // Keep only last 3 failed jobs
     });
   }
 }

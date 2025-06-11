@@ -11,6 +11,7 @@ import { SkillService } from 'src/skill/application/skill.service';
 import { CustomerWorker } from './application/customer.worker';
 import { CustomerDetailRepository } from './infrastructure/customer.detail.repository';
 import { CustomerDetailService } from './application/customerDetail.service';
+import { KafkaService } from 'src/services/Kafka/kafka.service';
 @Module({
   imports: [RedisModule, SkillModule],
   controllers: [CustomerController],
@@ -23,6 +24,7 @@ import { CustomerDetailService } from './application/customerDetail.service';
     CustomerWorker,
     CustomerDetailRepository,
     CustomerDetailService,
+    KafkaService
   ],
   exports: [CustomerService],
 })

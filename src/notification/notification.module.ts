@@ -6,10 +6,11 @@ import { NotificationService } from "./application/notification.service";
 import { NotificationRepository } from "./infrastructure/notification.repository";
 import { NotificationWorker } from "./application/notification.worker";
 import { RedisModule } from "src/services/Redis/redis.module";
+import { KafkaService } from "src/services/Kafka/kafka.service";
 
 @Module({
   imports: [RedisModule],
-  providers: [NotificationService, PrismaService, NotificationRepository, FirebaseService, NotificationWorker],
+  providers: [NotificationService, PrismaService, NotificationRepository, FirebaseService, NotificationWorker, KafkaService],
   exports: [NotificationService, NotificationRepository],
 })
 export class NotificationModule {}

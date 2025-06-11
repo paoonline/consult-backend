@@ -9,13 +9,14 @@ import { QueueJob } from 'src/services/Queue/queueJob';
 import { createFactory } from 'src/utils/factory';
 import { IRepository } from 'src/utils/respository';
 import { ConsultCommentDto } from '../dto/consult.comment.dto';
-
+import { KafkaService } from 'src/services/Kafka/kafka.service';
 
 @Injectable()
 export class ConsultCommentService implements IRepository<ConsultCommentDto, ConsultCommentDto, null, null, ConsultComment> {
     constructor(
         private readonly commentRepository: CommentRepository,
-        private readonly queueJob: QueueJob
+        private readonly queueJob: QueueJob,
+        private readonly kafkaService: KafkaService
     ) { }
 
     async create(
@@ -29,6 +30,9 @@ export class ConsultCommentService implements IRepository<ConsultCommentDto, Con
 
         // event driven to update rate
         this.queueJob.addJob('customerDetailQueue', 'sendCustomerDetail', { id: comment.customer_detail_id, rate: avgResult })
+        // this.kafkaService.sendMessage()
+        // await this.kafkaService.sendMessage('customerDetailQueue', JSON.stringify({ id: comment.customer_detail_id, rate: avgResult }));
+          
         return comment
     }
 

@@ -9,6 +9,7 @@ import { SessionModule } from './services/Session/session.module';
 import { JwtStrategy } from './validate/jwt.strategy';
 import { NotificationModule } from './notification/notification.module';
 import { BatchNotificationService } from './notification/batch/batch.notification.service';
+import { AppGateway } from './app.gateway';
 
 require('dotenv').config();
 @Module({
@@ -25,6 +26,6 @@ require('dotenv').config();
     SessionModule,
     NotificationModule,
   ],
-  providers: [BatchNotificationService, JwtStrategy],
+  providers: [BatchNotificationService, JwtStrategy, AppGateway],
 })
 export class AppModule {}

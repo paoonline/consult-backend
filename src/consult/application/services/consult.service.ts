@@ -12,13 +12,15 @@ import { createFactory } from 'src/utils/factory';
 import { ConsultEntity } from 'src/consult/domain/consult.entity';
 import { IRepository } from 'src/utils/respository';
 import { IConsultMeeting } from 'src/consult/domain/consult.repository.interface';
+import { KafkaService } from 'src/services/Kafka/kafka.service';
 @Injectable()
 export class ConsultService implements IRepository<ConsultDto | ConsultDto[], ConsultDto, unknown, unknown, ConsultTransaction>, IConsultMeeting {
   constructor(
     private readonly prisma: PrismaService,
     private readonly queueJob: QueueJob,
     private readonly apiService: ApiService,
-    private readonly consultRepository: ConsultRepository
+    private readonly consultRepository: ConsultRepository,
+    private readonly kafkaService: KafkaService,
   ) { }
   // refactor
   async create(data: ConsultDto, token: string): Promise<ConsultTransaction> {
@@ -61,6 +63,8 @@ export class ConsultService implements IRepository<ConsultDto | ConsultDto[], Co
 
     // job noti
     await this.queueJob.addJob('NotificationQueue', 'sendNotification', { id: consult.id, description: "test", title: "test", device_token: "1" })
+    // await this.kafkaService.sendMessage('NotificationQueue', JSON.stringify({ id: consult.id, description: "test", title: "test", device_token: "1"}));
+
     return consult;
   }
 
