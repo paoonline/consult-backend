@@ -122,11 +122,12 @@ interface IConsultComment {
   consultTransactionId: string;
   customerDetailId: string;
 }
-interface IBooking {
-  id: string;
+export interface IBooking {
+
   time: Date;
   customerDetailId?: string;
 }
+
 
 interface ISkill {
   name: string

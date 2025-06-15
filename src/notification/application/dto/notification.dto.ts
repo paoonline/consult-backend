@@ -1,6 +1,6 @@
 import { IsNotEmpty, MaxLength } from "class-validator"
 
-export class ConsultNotificationDto {
+export class NotificationDto {
   @IsNotEmpty()
   @MaxLength(100)
   title: string

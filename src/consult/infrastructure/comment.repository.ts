@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { ConsultComment } from '@prisma/client';
+import { ConsultComment, Prisma } from '@prisma/client';
 import { PrismaService } from 'prisma/prisma.service';
 import { IRepository } from 'src/utils/respository';
 import { CommentEntity } from '../domain/comment.entity';
@@ -22,8 +22,9 @@ export class CommentRepository
     return comment;
   }
 
-  async create(data: CommentEntity): Promise<ConsultComment> {
-    const comment = await this.prisma.consultComment.create({
+  async create(data: CommentEntity, _?: string, tx?: Prisma.TransactionClient): Promise<ConsultComment> {
+    const client = tx ?? this.prisma;
+    const comment = await client.consultComment.create({
       data:data.getData(),
     });
     return comment;
@@ -36,8 +37,9 @@ export class CommentRepository
     return comment as ConsultComment;
   }
 
-  async aggregate(id: string): Promise<number> {
-    const avgResult = await this.prisma.consultComment.aggregate({
+  async aggregate(id: string, tx?: Prisma.TransactionClient): Promise<number> {
+    const client = tx ?? this.prisma;
+    const avgResult = await client.consultComment.aggregate({
       _avg: {
         rate: true,
       },

@@ -10,7 +10,7 @@ import { KafkaService } from "src/services/Kafka/kafka.service";
 
 @Module({
   imports: [RedisModule],
-  providers: [NotificationService, PrismaService, NotificationRepository, FirebaseService, NotificationWorker, KafkaService],
+  providers: [NotificationService, PrismaService, NotificationRepository, FirebaseService, KafkaService],
   exports: [NotificationService, NotificationRepository],
 })
 export class NotificationModule {}

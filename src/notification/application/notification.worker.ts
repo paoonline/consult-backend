@@ -1,12 +1,10 @@
 import { Inject, Injectable, OnModuleInit } from "@nestjs/common";
 import Redis from "ioredis";
-import { CustomerRepository } from "src/customer/infrastructure/customer.repository";
 import { REDIS_CLIENT } from "src/services/Redis/redis.module";
 import { BaseWorker } from "src/services/Worker/BaseWorker";
-import { NotificationRepository } from "../infrastructure/notification.repository";
-import { ConsultNotification } from "@prisma/client";
+import { NotificationDto } from "./dto/notification.dto";
 import { NotificationService } from "./notification.service";
-import { ConsultNotificationDto } from "src/consult/application/dto/consult.noti.dto";
+// import { NotificationDto } from "src/consult/application/dto/consult.noti.dto";
 
 @Injectable()
 export class NotificationWorker extends BaseWorker implements OnModuleInit {
@@ -22,7 +20,7 @@ export class NotificationWorker extends BaseWorker implements OnModuleInit {
           description: description,
           title: title,
           deviceToken: device_token
-      }  as ConsultNotificationDto
+      }  as NotificationDto
       await this.notificationService.create(data)
     });
   }

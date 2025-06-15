@@ -10,13 +10,15 @@ import { createFactory } from 'src/utils/factory';
 import { IRepository } from 'src/utils/respository';
 import { ConsultCommentDto } from '../dto/consult.comment.dto';
 import { KafkaService } from 'src/services/Kafka/kafka.service';
+import { PrismaService } from 'prisma/prisma.service';
 
 @Injectable()
 export class ConsultCommentService implements IRepository<ConsultCommentDto, ConsultCommentDto, null, null, ConsultComment> {
     constructor(
         private readonly commentRepository: CommentRepository,
         private readonly queueJob: QueueJob,
-        private readonly kafkaService: KafkaService
+        private readonly kafkaService: KafkaService,
+        private readonly prisma: PrismaService
     ) { }
 
     async create(
@@ -25,15 +27,17 @@ export class ConsultCommentService implements IRepository<ConsultCommentDto, Con
         const plainData = instanceToPlain(data);
         const snakeData = snakecaseKeys(plainData) as ConsultComment;
 
-        const comment = await this.commentRepository.create(createFactory(snakeData, CommentEntity))
-        const avgResult = await this.commentRepository.aggregate(comment.customer_detail_id)
+        const result = await this.prisma.$transaction(async (tx) => {
+            const comment = await this.commentRepository.create(createFactory(snakeData, CommentEntity), undefined, tx)
+            const avgResult = await this.commentRepository.aggregate(comment.customer_detail_id, tx)
+            this.queueJob.addJob('customerDetailQueue', 'sendCustomerDetail', { id: comment.customer_detail_id, rate: avgResult })
+            return comment
+        });
 
         // event driven to update rate
-        this.queueJob.addJob('customerDetailQueue', 'sendCustomerDetail', { id: comment.customer_detail_id, rate: avgResult })
-        // this.kafkaService.sendMessage()
         // await this.kafkaService.sendMessage('customerDetailQueue', JSON.stringify({ id: comment.customer_detail_id, rate: avgResult }));
           
-        return comment
+        return result
     }
 
     async findAll(): Promise<ConsultCommentDto[]> {

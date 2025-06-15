@@ -1,11 +1,16 @@
 import { Body, Controller, Delete, Get, HttpStatus, Param, Patch, Post, Res, UseGuards } from '@nestjs/common';
 import {  Response } from 'express';
 import { CustomerService } from './application/customer.service';
-import { CustomerDto } from './application/dto/customer.dto';
+import { CustomerDto, IBooking } from './application/dto/customer.dto';
 import { JwtAuthGuard } from 'src/validate/jwt-auth.guard';
+import { CustomerBookingService } from './application/customer.booking.service';
 @Controller('/customer')
 export class CustomerController {
-  constructor(private readonly customerService: CustomerService) {}
+  constructor(
+    private readonly customerService: CustomerService,
+    private readonly customerBookingService: CustomerBookingService
+  )
+     {}
 
   @Post()
   async create(
@@ -145,6 +150,29 @@ export class CustomerController {
         data: customer,
       });
     } catch (error) {
+      return res.status(400).json({
+        status: 400,
+        message: error.message,
+        data: '',
+      });
+    }
+  }
+
+  @Post('/booking')
+  async createBooking(
+    @Res() res: Response,
+    @Body() data: IBooking[],
+  ): Promise<Response<any, Record<string, any>>> {
+    try {
+      const customer = await this.customerBookingService.create(data);
+      // Send a successful response with the token
+      return res.status(200).json({
+        status: 200,
+        message: 'Create successful',
+        data: customer,
+      });
+    } catch (error) {
+      // Handle errors, for example, invalid credentials
       return res.status(400).json({
         status: 400,
         message: error.message,

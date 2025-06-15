@@ -13,5 +13,5 @@ export interface IRepository<T, P, U= unknown, O=unknown, C=void, A=0> {
     delete?(id: string): Promise<T>
     logout?(key: string):Promise<void>
     login?(email: string, password: string): Promise<string>
-    aggregate?(id: string): Promise<A>
+    aggregate?(id: string, tx?: Prisma.TransactionClient): Promise<A>
 }

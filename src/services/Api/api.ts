@@ -6,14 +6,30 @@ import { firstValueFrom, lastValueFrom } from 'rxjs';
 require('dotenv').config();
 @Injectable()
 export class ApiService {
-  constructor(private readonly httpService: HttpService) {}
+  constructor(private readonly httpService: HttpService) { }
 
-  async getFromApi<T, P= unknown>(url:string, token: string, params?:P): Promise<T> {
+  async getFromApi<T, P = unknown>(url: string, token: string, params?: P): Promise<T> {
     try {
       const response$ = this.httpService.get(process.env.URL_PREFIX + url, {
         headers: {
-            Authorization: `Bearer ${token}`,
-          },
+          Authorization: `Bearer ${token}`,
+        },
+      });
+      const response = await firstValueFrom(response$);
+      return response.data;
+    } catch (error) {
+      console.error('Error fetching from API:', error.message);
+      throw error;
+    }
+  }
+
+  async postApi<T, P = unknown>(url: string, token: string, body?: P): Promise<T> {
+    try {
+      const response$ = this.httpService.post(process.env.URL_PREFIX + url, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+        body: body
       });
       const response = await firstValueFrom(response$);
       return response.data;

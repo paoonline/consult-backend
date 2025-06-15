@@ -37,7 +37,7 @@ export class AppGateway implements OnModuleInit {
 
   @SubscribeMessage('message')
   handleMessage(@MessageBody() data: { sender: string; text: string }) {
-    // this.server.emit('message', data); // broadcast to all clients
-    return 'Hello from server';
+    this.server.emit('message', data); // broadcast to all clients
+    // return 'Hello from server';
   }
 }

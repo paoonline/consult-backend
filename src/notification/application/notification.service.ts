@@ -3,11 +3,12 @@ import { Injectable } from '@nestjs/common';
 import camelcaseKeys from 'camelcase-keys';
 import { instanceToPlain } from 'class-transformer';
 import snakecaseKeys from 'snakecase-keys';
-import { ConsultNotificationDto } from 'src/consult/application/dto/consult.noti.dto';
+
 import { IRepository } from 'src/utils/respository';
 import { FirebaseService } from 'src/services/Firebase/firebase.service';
 import { chunkArray } from 'src/utils/array';
 import { NotificationRepository } from '../infrastructure/notification.repository';
+import { NotificationDto } from './dto/notification.dto';
 
 interface IPushNoti {
     pushNoti(): Promise<ConsultNotification[]>
@@ -17,29 +18,29 @@ interface IPushNoti {
 export class NotificationService
     implements
     IRepository<
-        ConsultNotificationDto,
-        ConsultNotificationDto,
+        NotificationDto,
+        NotificationDto,
         null,
         null,
-        ConsultNotificationDto
+        NotificationDto
     >, IPushNoti {
     constructor(
         private readonly notiRepository: NotificationRepository,
         private readonly firebaseService: FirebaseService
     ) { }
-    async create(data: ConsultNotificationDto): Promise<ConsultNotificationDto> {
+    async create(data: NotificationDto): Promise<NotificationDto> {
         const plainData = instanceToPlain(data);
         const snakeData = snakecaseKeys(plainData) as ConsultNotification;
         const noti = await this.notiRepository.create(snakeData);
         return camelcaseKeys(noti);
     }
 
-    async findAll(): Promise<ConsultNotificationDto[]> {
+    async findAll(): Promise<NotificationDto[]> {
         const noti = await this.notiRepository.findAll();
         return noti.map((item) => camelcaseKeys(item));
     }
 
-    async findOne(id: string): Promise<ConsultNotificationDto> {
+    async findOne(id: string): Promise<NotificationDto> {
         const noti = await this.notiRepository.findOne(id);
         return camelcaseKeys(noti);
     }

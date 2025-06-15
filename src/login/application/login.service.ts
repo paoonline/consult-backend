@@ -21,7 +21,7 @@ export class LoginService implements Omit<IRepository<loginLogDto, string>, 'del
   async create(id: string): Promise<void> {
     this.loginRepository.create(createFactory(id, LoginEntity));
   }
-
+  
   async login(email: string, password: string): Promise<string> {
     // find user online
     const alreadyOnline = await this.sessionService.checkUserOnline(`${email}`)
