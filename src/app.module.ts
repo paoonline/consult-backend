@@ -10,6 +10,8 @@ import { JwtStrategy } from './validate/jwt.strategy';
 import { NotificationModule } from './notification/notification.module';
 import { BatchNotificationService } from './notification/batch/batch.notification.service';
 import { AppGateway } from './app.gateway';
+import { SkillModule } from './skill/skill.module';
+import { PaymentModule } from './payment/payment.module';
 
 require('dotenv').config();
 @Module({
@@ -24,7 +26,9 @@ require('dotenv').config();
     CustomerModule,
     ConsultModule,
     SessionModule,
+    SkillModule,
     NotificationModule,
+    PaymentModule
   ],
   providers: [BatchNotificationService, JwtStrategy, AppGateway],
 })

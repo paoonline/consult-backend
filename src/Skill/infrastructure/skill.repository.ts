@@ -23,4 +23,9 @@ export class SkillRepository implements Pick<IRepository<{id: string}[], unknown
       const skillIds = skills.map((skill) => skill.id);
       return skillIds.map((id) => ({id}));
   }
+
+  async findAll(): Promise<string[]> {
+    let skills = await this.prisma.skill.findMany()
+    return skills.map((r) => r.name)
+  }
 }

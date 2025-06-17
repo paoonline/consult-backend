@@ -25,11 +25,10 @@ export class ApiService {
 
   async postApi<T, P = unknown>(url: string, token: string, body?: P): Promise<T> {
     try {
-      const response$ = this.httpService.post(process.env.URL_PREFIX + url, {
+      const response$ = this.httpService.post(process.env.URL_PREFIX + url, body, {
         headers: {
           Authorization: `Bearer ${token}`,
         },
-        body: body
       });
       const response = await firstValueFrom(response$);
       return response.data;

@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { CustomerDetail, Prisma } from '@prisma/client';
+import { CustomerDetail, CustomerType, Prisma } from '@prisma/client';
 import camelcaseKeys from 'camelcase-keys';
 import { SessionService } from 'src/services/Session/session.service';
 import { SkillService } from 'src/skill/application/skill.service';
@@ -34,6 +34,9 @@ export class CustomerService implements IRepository<CustomerRepo | CustomerDtoRe
     snakeData.password = hashedPassword
 
     const skills = await this.skillService.skillMap(data.skills);
+    if(skills.length === 0) {
+      throw new Error('Skill is not match')
+    }
     snakeData.skills = skills as Prisma.SkillCreateNestedManyWithoutCustomersInput
     snakeData.price = data?.price
 
@@ -64,8 +67,8 @@ export class CustomerService implements IRepository<CustomerRepo | CustomerDtoRe
     return camelcaseKeys(result as CustomerDetail) as ICustomerDetail
   }
 
-  async findAll(): Promise<CustomerDtoResponse[]> {
-    const result = await this.customerRepository.findAll()
+  async findAll(whereCustomerType: CustomerType): Promise<CustomerDtoResponse[]> {
+    const result = await this.customerRepository.findAll(whereCustomerType === CustomerType.CUSTOMER ? CustomerType.CONSULT : CustomerType.CUSTOMER)
     const userKey = await this.sessionService.getAllUserOnline('online')
 
     const resultMap = result.map((res) => {

@@ -10,7 +10,7 @@ import { CustomerBookingRepository } from '../infrastructure/customer.booking.re
 import { IBooking } from './dto/customer.dto';
 
 @Injectable()
-export class CustomerBookingService implements IRepository<IBooking, unknown, unknown, unknown, string> {
+export class CustomerBookingService implements IRepository<IBooking | string, unknown, unknown, unknown, string> {
     constructor(
         private readonly customerBookingRepository: CustomerBookingRepository,
 
@@ -25,6 +25,11 @@ export class CustomerBookingService implements IRepository<IBooking, unknown, un
     async findOne(id: string): Promise<IBooking | null> {
         const result = await this.customerBookingRepository.findOne(id)
         return camelcaseKeys(result as Booking ) as IBooking
+    }
+
+    async delete(id: string, secondId: string): Promise<string> {
+        const result = await this.customerBookingRepository.delete(id, secondId)
+        return result
     }
 
 }

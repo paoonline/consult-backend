@@ -1,3 +1,3 @@
 export interface IConsultMeeting {
-    meeting(customerId: string, consultId: string): Promise<string>
+    meeting(customerId: string, consultId: string, token: string): Promise<string>
 }

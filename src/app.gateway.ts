@@ -31,7 +31,7 @@ export class AppGateway implements OnModuleInit {
 
     // get queue coin warning -> expire in 24 hr
 
-  
+    
     client.emit('message', 'Welcome to the socket server!');
   }
 

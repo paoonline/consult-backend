@@ -2,7 +2,6 @@ import { Injectable } from '@nestjs/common';
 import { ConsultTransaction, CustomerDetail, Prisma } from '@prisma/client';
 import camelcaseKeys from 'camelcase-keys';
 import { instanceToPlain } from 'class-transformer';
-import { PrismaService } from 'prisma/prisma.service';
 import snakecaseKeys from 'snakecase-keys';
 import { ApiService } from 'src/services/Api/api';
 import { QueueJob } from 'src/services/Queue/queueJob';
@@ -29,7 +28,6 @@ export class ConsultService
     IConsultMeeting
 {
   constructor(
-    private readonly prisma: PrismaService,
     private readonly queueJob: QueueJob,
     private readonly apiService: ApiService,
     private readonly consultRepository: ConsultRepository,
@@ -50,7 +48,7 @@ export class ConsultService
     const customerConsultDetail = await this.apiService.getFromApi<{
       data: CustomerDetail;
     }>('/customer/detail/' + data.consultId, token);
-
+ 
     if (!customerDetail) {
       throw new Error(
         `CustomerDetail not found for customerId: ${data.customerId}`,
@@ -108,7 +106,7 @@ export class ConsultService
     }
 
     // job noti
-    // await this.queueJob.addJob('NotificationQueue', 'sendNotification', { id: consult.id, description: "test", title: "test", device_token: "1" })
+    await this.queueJob.addJob('NotificationQueue', 'sendNotification', { id: consult.id, description: "test", title: "test", device_token: "1" })
     // await this.kafkaService.sendMessage('NotificationQueue', JSON.stringify({ id: consult.id, description: "test", title: "test", device_token: "1"}));
 
     return consult;
@@ -127,12 +125,11 @@ export class ConsultService
     return camelcaseKeys(transactions);
   }
 
-  async meeting(customerId: string, consultId: string): Promise<string> {
-    await this.prisma.booking.deleteMany({
-      where: {
-        id: { in: [customerId, consultId] },
-      },
-    });
+  async meeting(customerId: string, consultId: string, token: string): Promise<string> {
+    await this.apiService.postApi<{ data: IPaymentDto }, IPaymentDto>(
+      `/booking/${customerId}/${consultId}`,
+      token,
+    );
 
     return 'Success';
   }

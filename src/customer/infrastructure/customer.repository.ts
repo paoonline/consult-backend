@@ -3,7 +3,7 @@ import { PrismaService } from 'prisma/prisma.service';
 import { IRepository } from 'src/utils/respository';
 import { CustomerEntity } from '../domain/customer.entity';
 import { CustomerRepo } from '../domain/customer.repository.interface';
-import { Prisma } from '@prisma/client';
+import { CustomerType, Prisma } from '@prisma/client';
 
 
 @Injectable()
@@ -19,8 +19,8 @@ export class CustomerRepository
   customerId: string;
   price: number;
 
-  async findAll(): Promise<CustomerRepo[]> {
-    const result = await this.prisma.customer.findMany({
+  async findAll(whereCustomerType: CustomerType): Promise<CustomerRepo[]> {
+    let result = await this.prisma.customer.findMany({
       include: {
         skills: true,
         customer_detail: {
@@ -32,8 +32,16 @@ export class CustomerRepository
       omit: {
         password: true,
       },
+      where: {
+        customer_type: whereCustomerType
+      }
     });
-    return result;
+    return result.map((r) => {
+      return {
+        ...r,
+        skills: r.skills.map((r) => r.name)
+      }
+    })
   }
 
   async create(params: CustomerEntity, _?: string, tx?: Prisma.TransactionClient) {

@@ -11,7 +11,7 @@ import { JwtAuthGuard } from 'src/validate/jwt-auth.guard';
 import { NotificationDto } from './application/dto/notification.dto';
 import { NotificationService } from './application/notification.service';
 @Controller('/notification')
-export class ConsultController {
+export class NotificationController {
   constructor(
     private readonly notificationService: NotificationService
   ) 

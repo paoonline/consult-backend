@@ -12,7 +12,7 @@ import { IPaymentDto } from './application/dto/payment.dto';
 import { PaymentService } from './application/payment.service';
 
 @Controller('/payment')
-export class ConsultController {
+export class PaymentController {
   constructor(
     private readonly paymentService: PaymentService
   ) 

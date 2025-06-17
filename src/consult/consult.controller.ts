@@ -15,10 +15,8 @@ import { JwtAuthGuard } from 'src/validate/jwt-auth.guard';
 import { ConsultCommentDto } from './application/dto/consult.comment.dto';
 import { ConsultDto } from './application/dto/consult.dto';
 import { ConsultNoteDto } from './application/dto/consult.note.dto';
-// import { ConsultNotificationDto } from './application/dto/consult.noti.dto';
 import { ConsultCommentService } from './application/services/consult.comment.service';
 import { ConsultNoteService } from './application/services/consult.note.service';
-// import { ConsultNotiService } from './services/consult.noti.service';
 import { ConsultService } from './application/services/consult.service';
 
 @Controller('/consult')
@@ -27,7 +25,6 @@ export class ConsultController {
     private readonly consultService: ConsultService,
     private readonly noteService: ConsultNoteService,
     private readonly commentService: ConsultCommentService,
-    // private readonly consultNotiService: ConsultNotiService
   ) 
   {}
 
@@ -105,12 +102,14 @@ export class ConsultController {
   @Patch(':customerId/:consultId')
   @UseGuards(JwtAuthGuard)
   async meeting(
+    @Headers('authorization') authHeader: string,
     @Res() res: Response,
     @Param('customerId') customerId: string,
     @Param('consultId') consultId: string,
   ): Promise<Response<any, Record<string, any>>> {
     try {
-      const meeting = await this.consultService.meeting(customerId, consultId);
+      const token = authHeader?.replace('Bearer ', '');
+      const meeting = await this.consultService.meeting(customerId, consultId, token);
       // Send a successful response with the token
       return res.status(200).json({
         status: 200,

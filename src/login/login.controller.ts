@@ -11,11 +11,11 @@ export class LoginDto {
   @MaxLength(20)
   password: string
 }
-@Controller('/login')
+@Controller('/auth')
 export class LoginController {
   constructor(private readonly loginService: LoginService) {}
 
-  @Post()
+  @Post('/login')
   async login(
     @Res() res: Response,
     @Body() data: LoginDto,
@@ -40,7 +40,7 @@ export class LoginController {
     }
   }
 
-  @Get()
+  @Get('/login')
   @UseGuards(JwtAuthGuard)
   async getAllLogins(
     @Res() res: Response,
@@ -61,7 +61,7 @@ export class LoginController {
     }
   }
 
-  @Get(':id')
+  @Get('/login/:id')
   @UseGuards(JwtAuthGuard)
   async getLoginById(
     @Res() res: Response,
