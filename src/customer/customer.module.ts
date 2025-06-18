@@ -11,7 +11,6 @@ import { SkillService } from 'src/skill/application/skill.service';
 import { CustomerWorker } from './application/customer.worker';
 import { CustomerDetailRepository } from './infrastructure/customer.detail.repository';
 import { CustomerDetailService } from './application/customerDetail.service';
-import { KafkaService } from 'src/services/Kafka/kafka.service';
 import { CustomerBookingService } from './application/customer.booking.service';
 import { CustomerBookingRepository } from './infrastructure/customer.booking.repository';
 @Module({
@@ -28,7 +27,7 @@ import { CustomerBookingRepository } from './infrastructure/customer.booking.rep
     CustomerDetailService,
     // KafkaService,
     CustomerBookingService,
-    CustomerBookingRepository
+    CustomerBookingRepository,
   ],
   exports: [CustomerService],
 })

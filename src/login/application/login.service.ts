@@ -10,56 +10,61 @@ import camelcaseKeys from 'camelcase-keys';
 import { createFactory } from 'src/utils/factory';
 import { LoginEntity } from '../domain/login.entity';
 @Injectable()
-export class LoginService implements Omit<IRepository<loginLogDto, string>, 'delete'> {
+export class LoginService
+  implements Omit<IRepository<loginLogDto, string>, 'delete'>
+{
   constructor(
     private readonly loginRepository: LoginRepository,
     private readonly jwtService: JwtService,
     private readonly sessionService: SessionService,
-    private readonly customerService: CustomerService
+    private readonly customerService: CustomerService,
   ) {}
-  
+
   async create(id: string): Promise<void> {
-    this.loginRepository.create(createFactory(id, LoginEntity));
+    await this.loginRepository.create(createFactory(id, LoginEntity));
   }
-  
+
   async login(email: string, password: string): Promise<string> {
     // find user online
-    const alreadyOnline = await this.sessionService.checkUserOnline(`${email}`)
- 
-    if(alreadyOnline) {
-      throw new Error('Session was duplicated')
+    const alreadyOnline = await this.sessionService.checkUserOnline(`${email}`);
+
+    if (alreadyOnline) {
+      throw new Error('Session was duplicated');
     }
 
     // Find the user by email
-    const customer = await this.customerService.findFirst(email)
+    const customer = await this.customerService.findFirst(email);
     if (!customer || !customer.password) {
       throw new Error('Invalid credentials');
     }
 
     // Compare the password with the hashed password
-    const isPasswordValid = await this.sessionService.validatePassword(password, customer.password);
+    const isPasswordValid = await this.sessionService.validatePassword(
+      password,
+      customer.password,
+    );
     if (!isPasswordValid) {
       throw new Error('Invalid credentials');
     }
 
     // Create a login record
-    this.create(customer.id)
-    this.sessionService.setUserOnline(email)
+    this.create(customer.id);
+    this.sessionService.setUserOnline(email);
 
     return this.jwtService.createJwtToken(customer);
   }
 
   async findAll(): Promise<loginLogDto[]> {
-    const result = await this.loginRepository.findAll()
+    const result = await this.loginRepository.findAll();
     return camelcaseKeys(result) as loginLogDto[];
   }
 
   async findOne(id: string): Promise<loginLogDto | null> {
-    const result = await this.loginRepository.findOne(id)
-    return camelcaseKeys(result as login) as loginLogDto
+    const result = await this.loginRepository.findOne(id);
+    return camelcaseKeys(result as login) as loginLogDto;
   }
 
-  async logout(key: string):Promise<void> {
-    this.sessionService.logout(key)
+  async logout(key: string): Promise<void> {
+    await this.sessionService.logout(key);
   }
 }

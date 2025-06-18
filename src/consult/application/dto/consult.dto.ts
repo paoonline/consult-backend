@@ -1,24 +1,23 @@
-import { TimeLimitType } from "@prisma/client"
-import { IsDate, IsNotEmpty, MaxLength } from "class-validator"
+import { TimeLimitType } from '@prisma/client';
+import { IsDate, IsNotEmpty, MaxLength } from 'class-validator';
 
 export class ConsultDto {
   @IsNotEmpty()
-  timeList: TimeLimitType
+  timeList: TimeLimitType;
 
   @IsNotEmpty()
   @MaxLength(100)
-  customerId: string
+  customerId: string;
 
   @IsNotEmpty()
   @MaxLength(100)
-  consultId: string
+  consultId: string;
 
   @IsNotEmpty()
   @IsDate()
-  endDate: Date
+  endDate: Date;
 
   @IsNotEmpty()
   @IsDate()
-  startDate: Date
-
+  startDate: Date;
 }

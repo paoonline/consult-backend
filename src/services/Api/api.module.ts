@@ -6,6 +6,6 @@ import { Module } from '@nestjs/common';
 @Module({
   imports: [HttpModule],
   providers: [ApiService],
-  exports: [ApiService, HttpModule]
+  exports: [ApiService, HttpModule],
 })
 export class ApiModule {}

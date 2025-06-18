@@ -5,22 +5,16 @@ import { CustomerEntity } from '../domain/customer.entity';
 import { CustomerRepo } from '../domain/customer.repository.interface';
 import { CustomerType, Prisma } from '@prisma/client';
 
-
 @Injectable()
 export class CustomerRepository
-  implements
-  IRepository<
-    CustomerRepo,
-    CustomerEntity,
-    CustomerEntity
-  >
-   {
-  constructor(private readonly prisma: PrismaService) { }
+  implements IRepository<CustomerRepo, CustomerEntity, CustomerEntity>
+{
+  constructor(private readonly prisma: PrismaService) {}
   customerId: string;
   price: number;
 
   async findAll(whereCustomerType: CustomerType): Promise<CustomerRepo[]> {
-    let result = await this.prisma.customer.findMany({
+    const result = await this.prisma.customer.findMany({
       include: {
         skills: true,
         customer_detail: {
@@ -33,18 +27,22 @@ export class CustomerRepository
         password: true,
       },
       where: {
-        customer_type: whereCustomerType
-      }
+        customer_type: whereCustomerType,
+      },
     });
     return result.map((r) => {
       return {
         ...r,
-        skills: r.skills.map((r) => r.name)
-      }
-    })
+        skills: r.skills.map((r) => r.name),
+      };
+    });
   }
 
-  async create(params: CustomerEntity, _?: string, tx?: Prisma.TransactionClient) {
+  async create(
+    params: CustomerEntity,
+    _?: string,
+    tx?: Prisma.TransactionClient,
+  ) {
     const client = tx ?? this.prisma;
     await client.customer.create({
       data: {
@@ -54,13 +52,9 @@ export class CustomerRepository
         },
       },
     });
-    
   }
 
-  async update(
-    id: string,
-    data: CustomerEntity,
-  ): Promise<CustomerRepo> {
+  async update(id: string, data: CustomerEntity): Promise<CustomerRepo> {
     const updated = await this.prisma.customer.update({
       where: { id },
       data: {
@@ -97,8 +91,11 @@ export class CustomerRepository
     return result as CustomerRepo;
   }
 
-  async findFirst(email: string, tx?: Prisma.TransactionClient): Promise<CustomerRepo> {
-    let client = tx ?? this.prisma
+  async findFirst(
+    email: string,
+    tx?: Prisma.TransactionClient,
+  ): Promise<CustomerRepo> {
+    const client = tx ?? this.prisma;
     const customer = await client.customer.findUnique({
       where: { email },
     });

@@ -1,8 +1,8 @@
-import { Injectable } from "@nestjs/common";
-import { login } from "@prisma/client";
-import { PrismaService } from "prisma/prisma.service";
-import { IRepository } from "src/utils/respository";
-import { LoginEntity } from "../domain/login.entity";
+import { Injectable } from '@nestjs/common';
+import { login } from '@prisma/client';
+import { PrismaService } from 'prisma/prisma.service';
+import { IRepository } from 'src/utils/respository';
+import { LoginEntity } from '../domain/login.entity';
 // src/
 //   └── user/
 //       ├── domain/
@@ -24,11 +24,10 @@ import { LoginEntity } from "../domain/login.entity";
 // }
 
 @Injectable()
-export class LoginRepository implements Omit<IRepository<login, LoginEntity>, 'delete'> {
-  constructor(
-    private readonly prisma: PrismaService,
-  ) 
-    {}
+export class LoginRepository
+  implements Omit<IRepository<login, LoginEntity>, 'delete'>
+{
+  constructor(private readonly prisma: PrismaService) {}
 
   async findAll(): Promise<login[]> {
     return await this.prisma.login.findMany();
@@ -36,7 +35,7 @@ export class LoginRepository implements Omit<IRepository<login, LoginEntity>, 'd
 
   async create(data: LoginEntity) {
     await this.prisma.login.create({
-      data: { email_id: data.getEmail()},
+      data: { email_id: data.getEmail() },
     });
   }
 

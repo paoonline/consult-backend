@@ -5,10 +5,9 @@ import { JwtPayload } from 'jsonwebtoken';
 import { Strategy, ExtractJwt } from 'passport-jwt';
 import { PrismaService } from 'prisma/prisma.service';
 
-
 @Injectable()
 export class JwtStrategy extends PassportStrategy(Strategy) {
-  constructor(private readonly  prisma: PrismaService) {
+  constructor(private readonly prisma: PrismaService) {
     super({
       jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
       secretOrKey: process.env.JWT_SECRET || 'your-secret-key',
@@ -16,7 +15,9 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
   }
 
   async validate(payload: JwtPayload) {
-    const customer = await this.prisma.customer.findUnique({where : {id: payload.userId}});
+    const customer = await this.prisma.customer.findUnique({
+      where: { id: payload.userId as string },
+    });
     if (!customer) {
       throw new Error('Customer not found');
     }

@@ -1,27 +1,32 @@
-import { Inject, Injectable, OnModuleInit } from "@nestjs/common";
-import Redis from "ioredis";
-import { REDIS_CLIENT } from "src/services/Redis/redis.module";
-import { BaseWorker } from "src/services/Worker/BaseWorker";
-import { NotificationDto } from "./dto/notification.dto";
-import { NotificationService } from "./notification.service";
+import { Inject, Injectable, OnModuleInit } from '@nestjs/common';
+import Redis from 'ioredis';
+import { REDIS_CLIENT } from 'src/services/Redis/redis.module';
+import { BaseWorker } from 'src/services/Worker/BaseWorker';
+import { NotificationDto } from './dto/notification.dto';
+import { NotificationService } from './notification.service';
 // import { NotificationDto } from "src/consult/application/dto/consult.noti.dto";
 
 @Injectable()
 export class NotificationWorker extends BaseWorker implements OnModuleInit {
   constructor(
     @Inject(REDIS_CLIENT) redis: Redis,
-    private readonly notificationService: NotificationService
+    private readonly notificationService: NotificationService,
   ) {
     super('NotificationQueue', redis, async (job) => {
-      const { id, description, title, device_token } = job.data;
+      const { id, description, title, device_token } = job.data as {
+        id: string;
+        description: string;
+        title: string;
+        device_token: string;
+      };
 
-      let data = {
-          consultTransactionId: id,
-          description: description,
-          title: title,
-          deviceToken: device_token
-      }  as NotificationDto
-      await this.notificationService.create(data)
+      const data = {
+        consultTransactionId: id,
+        description: description,
+        title: title,
+        deviceToken: device_token,
+      } as NotificationDto;
+      await this.notificationService.create(data);
     });
   }
 
@@ -30,7 +35,6 @@ export class NotificationWorker extends BaseWorker implements OnModuleInit {
     console.log('👷 NotificationWorker initialized');
   }
 }
-
 
 // import { Inject, Injectable, OnModuleInit } from "@nestjs/common";
 // import Redis from "ioredis";
@@ -67,7 +71,7 @@ export class NotificationWorker extends BaseWorker implements OnModuleInit {
 //         deviceToken: msgData.device_token
 //     }  as ConsultNotificationDto
 //     this.notificationService.create(data)
-  
+
 //     });
 //     // Optionally log something
 //     console.log('👷 NotificationWorker initialized');

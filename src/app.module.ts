@@ -12,11 +12,11 @@ import { BatchNotificationService } from './notification/batch/batch.notificatio
 import { AppGateway } from './app.gateway';
 import { SkillModule } from './skill/skill.module';
 import { PaymentModule } from './payment/payment.module';
+import 'dotenv/config';
 
-require('dotenv').config();
+// require('dotenv').config();
 @Module({
-  imports: 
-  [
+  imports: [
     ScheduleModule.forRoot(),
     ConfigModule.forRoot({
       isGlobal: true,
@@ -28,7 +28,7 @@ require('dotenv').config();
     SessionModule,
     SkillModule,
     NotificationModule,
-    PaymentModule
+    PaymentModule,
   ],
   providers: [BatchNotificationService, JwtStrategy, AppGateway],
 })

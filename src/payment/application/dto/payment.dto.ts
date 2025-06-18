@@ -1,4 +1,4 @@
-export interface IPaymentDto  {
-    price: number,
-    consultTransactionId: string
+export interface IPaymentDto {
+  price: number;
+  consultTransactionId: string;
 }

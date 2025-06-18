@@ -20,7 +20,10 @@ export class BaseWorker implements OnModuleDestroy {
     });
 
     this.worker.on('failed', (job, err) => {
-      console.error(`❌ Job ${job?.id} from ${this.queueName} failed:`, err.message);
+      console.error(
+        `❌ Job ${job?.id} from ${this.queueName} failed:`,
+        err.message,
+      );
     });
   }
 

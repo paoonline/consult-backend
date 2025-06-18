@@ -48,7 +48,6 @@ export class ConsultService
     const customerConsultDetail = await this.apiService.getFromApi<{
       data: CustomerDetail;
     }>('/customer/detail/' + data.consultId, token);
- 
     if (!customerDetail) {
       throw new Error(
         `CustomerDetail not found for customerId: ${data.customerId}`,
@@ -97,7 +96,11 @@ export class ConsultService
       deviceToken: '1',
     });
 
-    const [bookingRes, paymentRes, notiRes] = await Promise.all([booking, payment, notification]);
+    const [bookingRes, paymentRes, notiRes] = await Promise.all([
+      booking,
+      payment,
+      notification,
+    ]);
 
     if (!bookingRes || !paymentRes || !notiRes) {
       throw new Error(
@@ -106,7 +109,12 @@ export class ConsultService
     }
 
     // job noti
-    await this.queueJob.addJob('NotificationQueue', 'sendNotification', { id: consult.id, description: "test", title: "test", device_token: "1" })
+    await this.queueJob.addJob('NotificationQueue', 'sendNotification', {
+      id: consult.id,
+      description: 'test',
+      title: 'test',
+      device_token: '1',
+    });
     // await this.kafkaService.sendMessage('NotificationQueue', JSON.stringify({ id: consult.id, description: "test", title: "test", device_token: "1"}));
 
     return consult;
@@ -117,7 +125,10 @@ export class ConsultService
     return transactions.map((item) => camelcaseKeys(item));
   }
 
-  async findMany(customerId: string, consultId: string): Promise<ConsultDto[]> {
+  async findMany(
+    customerId?: string,
+    consultId?: string,
+  ): Promise<ConsultDto[]> {
     const transactions = await this.consultRepository.findMany(
       customerId,
       consultId,
@@ -125,7 +136,11 @@ export class ConsultService
     return camelcaseKeys(transactions);
   }
 
-  async meeting(customerId: string, consultId: string, token: string): Promise<string> {
+  async meeting(
+    customerId: string,
+    consultId: string,
+    token: string,
+  ): Promise<string> {
     await this.apiService.postApi<{ data: IPaymentDto }, IPaymentDto>(
       `/booking/${customerId}/${consultId}`,
       token,

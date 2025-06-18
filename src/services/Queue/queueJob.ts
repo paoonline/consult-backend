@@ -1,7 +1,7 @@
-import { Injectable, Inject } from "@nestjs/common";
-import { Queue } from "bullmq";
-import Redis from "ioredis";
-import { REDIS_CLIENT } from "../Redis/redis.module";
+import { Injectable, Inject } from '@nestjs/common';
+import { Queue } from 'bullmq';
+import Redis from 'ioredis';
+import { REDIS_CLIENT } from '../Redis/redis.module';
 
 @Injectable()
 export class QueueJob {
@@ -25,9 +25,9 @@ export class QueueJob {
     const queue = this.getQueue(queueName);
     await queue.add(jobName, data, {
       attempts: 3, //  Retry up to 3 times if job fails
-      backoff: 5000,  // 5 seconds between retries
-      removeOnComplete: true,  //Auto remove completed jobs
-      removeOnFail: { count: 5 },    // Keep only last 3 failed jobs
+      backoff: 5000, // 5 seconds between retries
+      removeOnComplete: true, //Auto remove completed jobs
+      removeOnFail: { count: 5 }, // Keep only last 3 failed jobs
     });
   }
 }

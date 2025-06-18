@@ -26,7 +26,7 @@ import { KafkaService } from 'src/services/Kafka/kafka.service';
     CommentRepository,
     ConsultRepository,
     QueueJob,
-    KafkaService
+    KafkaService,
   ],
   exports: [],
 })

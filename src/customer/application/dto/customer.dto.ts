@@ -6,7 +6,7 @@ import {
   IsEmail,
   IsEnum,
   IsString,
-  MaxLength
+  MaxLength,
 } from 'class-validator';
 
 export class CustomerDto {
@@ -46,13 +46,11 @@ export class CustomerDto {
   profileImage?: string;
 
   @MaxLength(100)
-  price: number
+  price: number;
 }
 
-
 export class CustomerDtoResponse {
-
-  id: string
+  id: string;
 
   @IsEmail()
   @MaxLength(100)
@@ -82,29 +80,27 @@ export class CustomerDtoResponse {
   customerType: CustomerType;
 
   @IsDate()
-  createdAt: Date
+  createdAt: Date;
 
   @IsDate()
-  updatedAt: Date
+  updatedAt: Date;
 
   @IsString()
   @MaxLength(100)
   profileImage?: string;
 
-
   @IsArray()
   skills?: ISkill[];
 
-  customerDetail?: ICustomerDetail
+  customerDetail?: ICustomerDetail;
 
-  onlineStatus: boolean
-  verifyEmail: boolean
-
+  onlineStatus: boolean;
+  verifyEmail: boolean;
 }
 
 export interface CustomerDetailDto {
-    customer_id: string,
-    price: number
+  customer_id: string;
+  price: number;
 }
 
 export interface ICustomerDetail {
@@ -123,12 +119,10 @@ interface IConsultComment {
   customerDetailId: string;
 }
 export interface IBooking {
-
   time: Date;
   customerDetailId?: string;
 }
 
-
 interface ISkill {
-  name: string
+  name: string;
 }

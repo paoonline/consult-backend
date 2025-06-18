@@ -7,12 +7,18 @@ export class FirebaseService implements OnModuleInit {
   onModuleInit() {
     if (!admin.apps.length) {
       admin.initializeApp({
-        credential: admin.credential.cert(serviceAccount as admin.ServiceAccount),
+        credential: admin.credential.cert(
+          serviceAccount as admin.ServiceAccount,
+        ),
       });
     }
   }
 
-  async sendMulticastNotification(tokens: string[], title: string, body: string) {
+  async sendMulticastNotification(
+    tokens: string[],
+    title: string,
+    body: string,
+  ) {
     const message = {
       notification: {
         title,
@@ -20,7 +26,7 @@ export class FirebaseService implements OnModuleInit {
       },
       tokens,
     };
-  
+
     try {
       const response = await admin.messaging().sendEachForMulticast(message);
       console.log('Multicast sent:', response.successCount, 'successes');
@@ -36,5 +42,4 @@ export class FirebaseService implements OnModuleInit {
       throw error;
     }
   }
-  
 }

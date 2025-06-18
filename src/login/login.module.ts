@@ -12,7 +12,13 @@ import { LoginRepository } from './infrastructure/login.repository';
 @Module({
   imports: [RedisModule, CustomerModule],
   controllers: [LoginController],
-  providers: [LoginService, PrismaService, LoginRepository, JwtService, SessionService],
+  providers: [
+    LoginService,
+    PrismaService,
+    LoginRepository,
+    JwtService,
+    SessionService,
+  ],
   exports: [LoginService],
 })
 export class LoginModule {}

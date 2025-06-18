@@ -9,10 +9,10 @@ import { CustomerDetailService } from './customerDetail.service';
 export class CustomerWorker extends BaseWorker implements OnModuleInit {
   constructor(
     @Inject(REDIS_CLIENT) redis: Redis,
-    private readonly customerDetailService : CustomerDetailService
+    private readonly customerDetailService: CustomerDetailService,
   ) {
     super('customerDetailQueue', redis, async (job) => {
-      const { id, rate } = job.data;
+      const { id, rate } = job.data as { id: string; rate: number };
       await this.customerDetailService.update(id, rate);
     });
   }

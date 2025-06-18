@@ -1,11 +1,6 @@
 export class LoginEntity {
-    constructor(
-      private readonly emailId: string,
-    ) {
-     
-    }
-    getEmail(): string {
-      return this.emailId
-    }
+  constructor(private readonly emailId: string) {}
+  getEmail(): string {
+    return this.emailId;
   }
-
+}

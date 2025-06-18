@@ -11,23 +11,16 @@ import { IPaymentDto } from './dto/payment.dto';
 
 @Injectable()
 export class PaymentService
-    implements
-    IRepository<
-        IPaymentDto,
-        IPaymentDto,
-        null,
-        null,
-        IPaymentDto
-    > {
-    constructor(
-        private readonly paymentRepository: PaymentRepository,
-    ) { }
-    async create(data: IPaymentDto): Promise<IPaymentDto> {
-        const plainData = instanceToPlain(data);
-        const snakeData = snakecaseKeys(plainData) as PaymentTransaction;
+  implements IRepository<IPaymentDto, IPaymentDto, null, null, IPaymentDto>
+{
+  constructor(private readonly paymentRepository: PaymentRepository) {}
+  async create(data: IPaymentDto): Promise<IPaymentDto> {
+    const plainData = instanceToPlain(data);
+    const snakeData = snakecaseKeys(plainData) as PaymentTransaction;
 
-        const payment = await this.paymentRepository.create(createFactory(snakeData, PaymentEntity))
-        return camelcaseKeys(payment);
-    }
-
+    const payment = await this.paymentRepository.create(
+      createFactory(snakeData, PaymentEntity),
+    );
+    return camelcaseKeys(payment);
+  }
 }

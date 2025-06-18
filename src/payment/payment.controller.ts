@@ -1,10 +1,4 @@
-import {
-    Body,
-    Controller,
-    Post,
-    Res,
-    UseGuards
-} from '@nestjs/common';
+import { Body, Controller, Post, Res, UseGuards } from '@nestjs/common';
 import { Response } from 'express';
 
 import { JwtAuthGuard } from 'src/validate/jwt-auth.guard';
@@ -13,10 +7,7 @@ import { PaymentService } from './application/payment.service';
 
 @Controller('/payment')
 export class PaymentController {
-  constructor(
-    private readonly paymentService: PaymentService
-  ) 
-  {}
+  constructor(private readonly paymentService: PaymentService) {}
 
   @Post('/')
   @UseGuards(JwtAuthGuard)
@@ -32,15 +23,14 @@ export class PaymentController {
         message: 'Create successful',
         data: notification,
       });
-    } catch (error) {
-      // Handle errors, for example, invalid credentials
+    } catch (error: unknown) {
+      const errMsg =
+        error instanceof Error ? error.message : 'Unknown error occurred';
       return res.status(400).json({
         status: 400,
-        message: error.message,
+        message: errMsg,
         data: '',
       });
     }
   }
-  
-
 }

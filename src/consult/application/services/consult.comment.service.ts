@@ -13,40 +13,57 @@ import { KafkaService } from 'src/services/Kafka/kafka.service';
 import { PrismaService } from 'prisma/prisma.service';
 
 @Injectable()
-export class ConsultCommentService implements IRepository<ConsultCommentDto, ConsultCommentDto, null, null, ConsultComment> {
-    constructor(
-        private readonly commentRepository: CommentRepository,
-        private readonly queueJob: QueueJob,
-        private readonly kafkaService: KafkaService,
-        private readonly prisma: PrismaService
-    ) { }
+export class ConsultCommentService
+  implements
+    IRepository<
+      ConsultCommentDto,
+      ConsultCommentDto,
+      null,
+      null,
+      ConsultComment
+    >
+{
+  constructor(
+    private readonly commentRepository: CommentRepository,
+    private readonly queueJob: QueueJob,
+    private readonly kafkaService: KafkaService,
+    private readonly prisma: PrismaService,
+  ) {}
 
-    async create(
-        data: ConsultCommentDto,
-    ): Promise<ConsultComment> {
-        const plainData = instanceToPlain(data);
-        const snakeData = snakecaseKeys(plainData) as ConsultComment;
+  async create(data: ConsultCommentDto): Promise<ConsultComment> {
+    const plainData = instanceToPlain(data);
+    const snakeData = snakecaseKeys(plainData) as ConsultComment;
 
-        const result = await this.prisma.$transaction(async (tx) => {
-            const comment = await this.commentRepository.create(createFactory(snakeData, CommentEntity), undefined, tx)
-            const avgResult = await this.commentRepository.aggregate(comment.customer_detail_id, tx)
-            this.queueJob.addJob('customerDetailQueue', 'sendCustomerDetail', { id: comment.customer_detail_id, rate: avgResult })
-            return comment
-        });
+    const result = await this.prisma.$transaction(async (tx) => {
+      const comment = await this.commentRepository.create(
+        createFactory(snakeData, CommentEntity),
+        undefined,
+        tx,
+      );
+      const avgResult = await this.commentRepository.aggregate(
+        comment.customer_detail_id,
+        tx,
+      );
+      void this.queueJob.addJob('customerDetailQueue', 'sendCustomerDetail', {
+        id: comment.customer_detail_id,
+        rate: avgResult,
+      });
+      return comment;
+    });
 
-        // event driven to update rate
-        // await this.kafkaService.sendMessage('customerDetailQueue', JSON.stringify({ id: comment.customer_detail_id, rate: avgResult }));
-          
-        return result
-    }
+    // event driven to update rate
+    // await this.kafkaService.sendMessage('customerDetailQueue', JSON.stringify({ id: comment.customer_detail_id, rate: avgResult }));
 
-    async findAll(): Promise<ConsultCommentDto[]> {
-        const comment = await this.commentRepository.findAll()
-        return comment.map((r) => camelcaseKeys(r)) as ConsultCommentDto[]
-    }
+    return result;
+  }
 
-    async findOne(id: string): Promise<ConsultCommentDto> {
-        const comment = await this.commentRepository.findOne(id)
-        return camelcaseKeys(comment)
-    }
+  async findAll(): Promise<ConsultCommentDto[]> {
+    const comment = await this.commentRepository.findAll();
+    return comment.map((r) => camelcaseKeys(r)) as ConsultCommentDto[];
+  }
+
+  async findOne(id: string): Promise<ConsultCommentDto> {
+    const comment = await this.commentRepository.findOne(id);
+    return camelcaseKeys(comment);
+  }
 }

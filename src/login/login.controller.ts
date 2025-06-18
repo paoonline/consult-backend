@@ -1,4 +1,12 @@
-import { Body, Controller, Get, Param, Post, Res, UseGuards } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Get,
+  Param,
+  Post,
+  Res,
+  UseGuards,
+} from '@nestjs/common';
 import { Response } from 'express';
 import { LoginService } from './application/login.service';
 import { IsString, MaxLength } from 'class-validator';
@@ -9,7 +17,7 @@ export class LoginDto {
   email: string;
 
   @MaxLength(20)
-  password: string
+  password: string;
 }
 @Controller('/auth')
 export class LoginController {
@@ -30,11 +38,12 @@ export class LoginController {
         message: 'Login successful',
         data: token,
       });
-    } catch (error) {
-      // Handle errors, for example, invalid credentials
+    } catch (error: unknown) {
+      const errMsg =
+        error instanceof Error ? error.message : 'Unknown error occurred';
       return res.status(400).json({
         status: 400,
-        message: error.message,
+        message: errMsg,
         data: '',
       });
     }
@@ -52,10 +61,12 @@ export class LoginController {
         message: 'successful',
         data: login,
       });
-    } catch (error) {
+    } catch (error: unknown) {
+      const errMsg =
+        error instanceof Error ? error.message : 'Unknown error occurred';
       return res.status(400).json({
         status: 400,
-        message: error.message,
+        message: errMsg,
         data: '',
       });
     }
@@ -74,10 +85,12 @@ export class LoginController {
         message: 'successful',
         data: login,
       });
-    } catch (error) {
+    } catch (error: unknown) {
+      const errMsg =
+        error instanceof Error ? error.message : 'Unknown error occurred';
       return res.status(400).json({
         status: 400,
-        message: error.message,
+        message: errMsg,
         data: '',
       });
     }
@@ -86,21 +99,22 @@ export class LoginController {
   @Post('/logout')
   async logout(
     @Res() res: Response,
-    @Body() dto: {key: string},
+    @Body() dto: { key: string },
   ): Promise<Response<any, Record<string, any>>> {
     try {
-      await this.loginService.logout(`online:${dto.key}`)
+      await this.loginService.logout(`online:${dto.key}`);
 
       return res.status(200).json({
         status: 200,
         message: 'logout successful',
         data: '',
       });
-    } catch (error) {
-      // Handle errors, for example, invalid credentials
+    } catch (error: unknown) {
+      const errMsg =
+        error instanceof Error ? error.message : 'Unknown error occurred';
       return res.status(400).json({
         status: 400,
-        message: error.message,
+        message: errMsg,
         data: '',
       });
     }

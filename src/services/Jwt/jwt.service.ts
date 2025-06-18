@@ -7,11 +7,11 @@ import * as jwt from 'jsonwebtoken';
 export class JwtService {
   private readonly jwtSecret = process.env.JWT_SECRET || 'your-secret-key';
 
-  async createJwtToken(customer: {
+  createJwtToken(customer: {
     id: string;
     email: string;
     customerType: CustomerType;
-  }): Promise<string> {
+  }): string {
     const payload: JwtPayload = {
       userId: customer.id,
       email: customer.email,

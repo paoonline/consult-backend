@@ -10,31 +10,47 @@ import { CustomerDetailEntity } from '../domain/customerDetail.entity';
 import { createFactory } from 'src/utils/factory';
 
 @Injectable()
-export class CustomerDetailService implements IRepository<ICustomerDetail, CustomerDetailDto, number, null, ICustomerDetail> {
-    constructor(
-        private readonly customerDetailRepository: CustomerDetailRepository,
+export class CustomerDetailService
+  implements
+    IRepository<
+      ICustomerDetail,
+      CustomerDetailDto,
+      number,
+      null,
+      ICustomerDetail
+    >
+{
+  constructor(
+    private readonly customerDetailRepository: CustomerDetailRepository,
+  ) {}
+  async create(
+    data: ICustomerDetail,
+    other?: string,
+    tx?: Prisma.TransactionClient,
+  ): Promise<ICustomerDetail> {
+    const plainData = instanceToPlain(data);
+    const snakeData = snakecaseKeys(plainData) as CustomerDetailDto;
+    const result = await this.customerDetailRepository.create(
+      createFactory(snakeData, CustomerDetailEntity, tx),
+    );
 
-    ) { }
-    async create(data: ICustomerDetail, other?:string, tx?: Prisma.TransactionClient): Promise<ICustomerDetail> {
-        const plainData = instanceToPlain(data);
-        const snakeData = snakecaseKeys(plainData) as CustomerDetailDto;
-        const result = await this.customerDetailRepository.create(createFactory(snakeData, CustomerDetailEntity, tx))
+    return result as ICustomerDetail;
+  }
 
-        return result as ICustomerDetail
-    }
+  async findOne(id: string): Promise<ICustomerDetail> {
+    const result = await this.customerDetailRepository.findOne(id);
+    return camelcaseKeys(result as CustomerDetail) as ICustomerDetail;
+  }
 
-    async findOne(id: string): Promise<ICustomerDetail> {
-        const result = await this.customerDetailRepository.findOne(id)
-        return camelcaseKeys(result as CustomerDetail ) as ICustomerDetail
-    }
-
-    async update(id: string, rate: number): Promise<ICustomerDetail> {
-        let data = createFactory({
-            customer_id: id,
-            rate
-        }, CustomerDetailEntity)
-        const result = await this.customerDetailRepository.update(id, data)
-        return camelcaseKeys(result as CustomerDetail) as ICustomerDetail
-    }
+  async update(id: string, rate: number): Promise<ICustomerDetail> {
+    const data = createFactory(
+      {
+        customer_id: id,
+        rate,
+      },
+      CustomerDetailEntity,
+    );
+    const result = await this.customerDetailRepository.update(id, data);
+    return camelcaseKeys(result) as ICustomerDetail;
+  }
 }
-

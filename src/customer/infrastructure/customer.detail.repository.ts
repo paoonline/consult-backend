@@ -6,22 +6,27 @@ import { CustomerDetailEntity } from '../domain/customerDetail.entity';
 @Injectable()
 export class CustomerDetailRepository
   implements
-  IRepository<
-    CustomerDetail,
-    CustomerDetailEntity,
-    CustomerDetailEntity,
-    null,
-    CustomerDetail
-  > {
-  constructor(private readonly prisma: PrismaService) { }
+    IRepository<
+      CustomerDetail,
+      CustomerDetailEntity,
+      CustomerDetailEntity,
+      null,
+      CustomerDetail
+    >
+{
+  constructor(private readonly prisma: PrismaService) {}
 
-  async create(data: CustomerDetailEntity, _?: string, tx?: Prisma.TransactionClient): Promise<CustomerDetail> {
+  async create(
+    data: CustomerDetailEntity,
+    _?: string,
+    tx?: Prisma.TransactionClient,
+  ): Promise<CustomerDetail> {
     const client = tx ?? this.prisma;
     return client.customerDetail.create({
       data: {
-        ...data.getData()
-      }
-    })
+        ...data.getData(),
+      },
+    });
   }
 
   async findOne(id: string): Promise<CustomerDetail | null> {
@@ -30,7 +35,10 @@ export class CustomerDetailRepository
     });
   }
 
-  async update(id: string, data: CustomerDetailEntity): Promise<CustomerDetail> {
+  async update(
+    id: string,
+    data: CustomerDetailEntity,
+  ): Promise<CustomerDetail> {
     return this.prisma.customerDetail.update({
       where: {
         id: id,

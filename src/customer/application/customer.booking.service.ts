@@ -10,27 +10,32 @@ import { CustomerBookingRepository } from '../infrastructure/customer.booking.re
 import { IBooking } from './dto/customer.dto';
 
 @Injectable()
-export class CustomerBookingService implements IRepository<IBooking | string, unknown, unknown, unknown, string> {
-    constructor(
-        private readonly customerBookingRepository: CustomerBookingRepository,
+export class CustomerBookingService
+  implements IRepository<IBooking | string, unknown, unknown, unknown, string>
+{
+  constructor(
+    private readonly customerBookingRepository: CustomerBookingRepository,
+  ) {}
+  async create(
+    data: IBooking[],
+    _?: string,
+    tx?: Prisma.TransactionClient,
+  ): Promise<string> {
+    const plainData = instanceToPlain(data);
+    const snakeData = snakecaseKeys(plainData) as BookingEntity[];
+    const result = await this.customerBookingRepository.create(
+      createFactory(snakeData, BookingEntity as keyof object, tx),
+    );
+    return result;
+  }
 
-    ) { }
-    async create(data: IBooking[], _?:string, tx?: Prisma.TransactionClient): Promise<string> {
-        const plainData = instanceToPlain(data);
-        const snakeData = snakecaseKeys(plainData) as BookingEntity[];
-        const result = await this.customerBookingRepository.create(createFactory(snakeData, BookingEntity as keyof object, tx))
-        return result
-    }
+  async findOne(id: string): Promise<IBooking | null> {
+    const result = await this.customerBookingRepository.findOne(id);
+    return camelcaseKeys(result as Booking) as IBooking;
+  }
 
-    async findOne(id: string): Promise<IBooking | null> {
-        const result = await this.customerBookingRepository.findOne(id)
-        return camelcaseKeys(result as Booking ) as IBooking
-    }
-
-    async delete(id: string, secondId: string): Promise<string> {
-        const result = await this.customerBookingRepository.delete(id, secondId)
-        return result
-    }
-
+  async delete(id: string, secondId: string): Promise<string> {
+    const result = await this.customerBookingRepository.delete(id, secondId);
+    return result;
+  }
 }
-

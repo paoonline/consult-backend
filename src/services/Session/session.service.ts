@@ -7,31 +7,32 @@ export class SessionService {
   constructor(private readonly redisService: RedisService) {}
 
   async logout(key: string): Promise<void> {
-    this.redisService.removeKey(key);
+    await this.redisService.removeKey(key);
   }
 
-  checkUserOnline(email: string): Promise<string> {
-    return this.redisService.getValue(`online:${email}`);
+  async checkUserOnline(email: string): Promise<string | null> {
+    return await this.redisService.getValue(`online:${email}`);
   }
 
-  getAllUserOnline(key:string):Promise<Record<string, any>> {
-    return this.redisService.getAllKey(key)
+  getAllUserOnline(key: string): Promise<Record<string, any>> {
+    return this.redisService.getAllKey(key);
   }
 
   validatePassword(userPassword: string, customerPassword: string) {
-    return bcrypt.compare(userPassword, customerPassword)
+    return bcrypt.compare(userPassword, customerPassword);
   }
 
   async hashPassword(password: string, length: number): Promise<string> {
-    const hash =await  bcrypt.hash(password, length);
-    return hash
+    const hash = await bcrypt.hash(password, length);
+    return hash;
   }
 
-  setUserOnline(
-    email: string
-  ) {
-    this.redisService.setValueString(
-      `online:${email}`, 'true', 'EX', 7200
+  async setUserOnline(email: string) {
+    await this.redisService.setValueString(
+      `online:${email}`,
+      'true',
+      'EX',
+      7200,
     );
   }
 }

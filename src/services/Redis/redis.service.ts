@@ -7,7 +7,7 @@ export class RedisService {
   async getValue(key: string) {
     const raw = await this.redis.get(key); // string
     try {
-      const parsed = JSON.parse(raw || '');
+      const parsed = JSON.parse(raw || '') as string;
       console.log('Parsed object:', parsed);
       return parsed;
     } catch (err) {
@@ -20,28 +20,32 @@ export class RedisService {
     await this.redis.set(key, JSON.stringify(value));
   }
 
-  async setValueString(key: string, value: string, typeTime: 'EX', expire: number) {
-    this.redis.set(key,  JSON.stringify(value), typeTime, expire);
+  async setValueString(
+    key: string,
+    value: string,
+    typeTime: 'EX',
+    expire: number,
+  ) {
+    await this.redis.set(key, JSON.stringify(value), typeTime, expire);
   }
 
   async removeKey(key: string) {
-    await this.redis.del(key)
+    await this.redis.del(key);
   }
 
-  async getAllKey(key:string):Promise<Record<string, any>> {
+  async getAllKey(key: string): Promise<Record<string, any>> {
     const stream = this.redis.scanStream({
       match: `${key}:*`,
     });
-    let keys: Record<string, any> = {};
+    const keys: Record<string, any> = {};
 
-    let newRegEx = `/${key}:/`
+    const newRegEx = `/${key}:/`;
     stream.on('data', (resultKeys: string[]) => {
       for (const key of resultKeys) {
-        keys[key.replace(newRegEx, '')] = 'true'
+        keys[key.replace(newRegEx, '')] = 'true';
       }
-
     });
     await new Promise((resolve) => stream.on('end', resolve));
-    return keys
+    return keys;
   }
 }

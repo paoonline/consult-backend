@@ -1,10 +1,4 @@
-import {
-    Body,
-    Controller,
-    Post,
-    Res,
-    UseGuards
-} from '@nestjs/common';
+import { Body, Controller, Post, Res, UseGuards } from '@nestjs/common';
 import { Response } from 'express';
 
 import { JwtAuthGuard } from 'src/validate/jwt-auth.guard';
@@ -12,10 +6,7 @@ import { NotificationDto } from './application/dto/notification.dto';
 import { NotificationService } from './application/notification.service';
 @Controller('/notification')
 export class NotificationController {
-  constructor(
-    private readonly notificationService: NotificationService
-  ) 
-  {}
+  constructor(private readonly notificationService: NotificationService) {}
 
   @Post('/')
   @UseGuards(JwtAuthGuard)
@@ -31,15 +22,14 @@ export class NotificationController {
         message: 'Create successful',
         data: notification,
       });
-    } catch (error) {
-      // Handle errors, for example, invalid credentials
+    } catch (error: unknown) {
+      const errMsg =
+        error instanceof Error ? error.message : 'Unknown error occurred';
       return res.status(400).json({
         status: 400,
-        message: error.message,
+        message: errMsg,
         data: '',
       });
     }
   }
-  
-
 }

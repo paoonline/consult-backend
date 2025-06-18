@@ -1,20 +1,19 @@
-import { IsNotEmpty, MaxLength } from "class-validator"
+import { IsNotEmpty, MaxLength } from 'class-validator';
 
 export class NotificationDto {
   @IsNotEmpty()
   @MaxLength(100)
-  title: string
+  title: string;
 
   @IsNotEmpty()
   @MaxLength(100)
-  consultTransactionId: string
+  consultTransactionId: string;
 
   @IsNotEmpty()
   @MaxLength(100)
-  deviceToken: string
+  deviceToken: string;
 
   @IsNotEmpty()
   @MaxLength(255)
-  description: string
-
+  description: string;
 }

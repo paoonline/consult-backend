@@ -25,8 +25,7 @@ export class ConsultController {
     private readonly consultService: ConsultService,
     private readonly noteService: ConsultNoteService,
     private readonly commentService: ConsultCommentService,
-  ) 
-  {}
+  ) {}
 
   @Post()
   @UseGuards(JwtAuthGuard)
@@ -35,7 +34,6 @@ export class ConsultController {
     @Res() res: Response,
     @Body() data: ConsultDto,
   ): Promise<Response<any, Record<string, any>>> {
- 
     const token = authHeader?.replace('Bearer ', '');
     try {
       const consult = await this.consultService.create(data, token);
@@ -45,11 +43,12 @@ export class ConsultController {
         message: 'Create successful',
         data: consult,
       });
-    } catch (error) {
-      // Handle errors, for example, invalid credentials
+    } catch (error: unknown) {
+      const errMsg =
+        error instanceof Error ? error.message : 'Unknown error occurred';
       return res.status(400).json({
         status: 400,
-        message: error.message,
+        message: errMsg,
         data: '',
       });
     }
@@ -67,10 +66,12 @@ export class ConsultController {
         message: 'successful',
         data: consult,
       });
-    } catch (error) {
+    } catch (error: unknown) {
+      const errMsg =
+        error instanceof Error ? error.message : 'Unknown error occurred';
       return res.status(400).json({
         status: 400,
-        message: error.message,
+        message: errMsg,
         data: '',
       });
     }
@@ -90,10 +91,12 @@ export class ConsultController {
         message: 'successful',
         data: consult,
       });
-    } catch (error) {
+    } catch (error: unknown) {
+      const errMsg =
+        error instanceof Error ? error.message : 'Unknown error occurred';
       return res.status(400).json({
         status: 400,
-        message: error.message,
+        message: errMsg,
         data: '',
       });
     }
@@ -109,18 +112,23 @@ export class ConsultController {
   ): Promise<Response<any, Record<string, any>>> {
     try {
       const token = authHeader?.replace('Bearer ', '');
-      const meeting = await this.consultService.meeting(customerId, consultId, token);
+      const meeting = await this.consultService.meeting(
+        customerId,
+        consultId,
+        token,
+      );
       // Send a successful response with the token
       return res.status(200).json({
         status: 200,
         message: 'Meeting successful',
         data: meeting,
       });
-    } catch (error) {
-      // Handle errors, for example, invalid credentials
+    } catch (error: unknown) {
+      const errMsg =
+        error instanceof Error ? error.message : 'Unknown error occurred';
       return res.status(400).json({
         status: 400,
-        message: error.message,
+        message: errMsg,
         data: '',
       });
     }
@@ -138,10 +146,12 @@ export class ConsultController {
         message: 'successful',
         data: note,
       });
-    } catch (error) {
+    } catch (error: unknown) {
+      const errMsg =
+        error instanceof Error ? error.message : 'Unknown error occurred';
       return res.status(400).json({
         status: 400,
-        message: error.message,
+        message: errMsg,
         data: '',
       });
     }
@@ -160,10 +170,12 @@ export class ConsultController {
         message: 'successful',
         data: note,
       });
-    } catch (error) {
+    } catch (error: unknown) {
+      const errMsg =
+        error instanceof Error ? error.message : 'Unknown error occurred';
       return res.status(400).json({
         status: 400,
-        message: error.message,
+        message: errMsg,
         data: '',
       });
     }
@@ -183,16 +195,16 @@ export class ConsultController {
         message: 'Create successful',
         data: note,
       });
-    } catch (error) {
-      // Handle errors, for example, invalid credentials
+    } catch (error: unknown) {
+      const errMsg =
+        error instanceof Error ? error.message : 'Unknown error occurred';
       return res.status(400).json({
         status: 400,
-        message: error.message,
+        message: errMsg,
         data: '',
       });
     }
   }
-
 
   @Get('/comment')
   @UseGuards(JwtAuthGuard)
@@ -206,10 +218,12 @@ export class ConsultController {
         message: 'successful',
         data: comment,
       });
-    } catch (error) {
+    } catch (error: unknown) {
+      const errMsg =
+        error instanceof Error ? error.message : 'Unknown error occurred';
       return res.status(400).json({
         status: 400,
-        message: error.message,
+        message: errMsg,
         data: '',
       });
     }
@@ -228,10 +242,12 @@ export class ConsultController {
         message: 'successful',
         data: comment,
       });
-    } catch (error) {
+    } catch (error: unknown) {
+      const errMsg =
+        error instanceof Error ? error.message : 'Unknown error occurred';
       return res.status(400).json({
         status: 400,
-        message: error.message,
+        message: errMsg,
         data: '',
       });
     }
@@ -251,11 +267,12 @@ export class ConsultController {
         message: 'Create successful',
         data: comment,
       });
-    } catch (error) {
-      // Handle errors, for example, invalid credentials
+    } catch (error: unknown) {
+      const errMsg =
+        error instanceof Error ? error.message : 'Unknown error occurred';
       return res.status(400).json({
         status: 400,
-        message: error.message,
+        message: errMsg,
         data: '',
       });
     }

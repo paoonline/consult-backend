@@ -1,4 +1,15 @@
-import { Body, Controller, Delete, Get, HttpStatus, Param, Patch, Post, Res, UseGuards, Headers } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Delete,
+  Get,
+  HttpStatus,
+  Param,
+  Patch,
+  Post,
+  Res,
+  UseGuards,
+} from '@nestjs/common';
 import { Response } from 'express';
 import { CustomerService } from './application/customer.service';
 import { CustomerDto, IBooking } from './application/dto/customer.dto';
@@ -9,8 +20,8 @@ import { CustomerType } from '@prisma/client';
 export class CustomerController {
   constructor(
     private readonly customerService: CustomerService,
-    private readonly customerBookingService: CustomerBookingService
-  ) { }
+    private readonly customerBookingService: CustomerBookingService,
+  ) {}
 
   @Post()
   async create(
@@ -25,11 +36,12 @@ export class CustomerController {
         message: 'Create successful',
         data: customer,
       });
-    } catch (error) {
-      // Handle errors, for example, invalid credentials
+    } catch (error: unknown) {
+      const errMsg =
+        error instanceof Error ? error.message : 'Unknown error occurred';
       return res.status(400).json({
         status: 400,
-        message: error.message,
+        message: errMsg,
         data: '',
       });
     }
@@ -48,10 +60,12 @@ export class CustomerController {
         message: 'successful',
         data: customer,
       });
-    } catch (error) {
+    } catch (error: unknown) {
+      const errMsg =
+        error instanceof Error ? error.message : 'Unknown error occurred';
       return res.status(400).json({
         status: 400,
-        message: error.message,
+        message: errMsg,
         data: '',
       });
     }
@@ -70,10 +84,12 @@ export class CustomerController {
         message: 'successful',
         data: customer,
       });
-    } catch (error) {
+    } catch (error: unknown) {
+      const errMsg =
+        error instanceof Error ? error.message : 'Unknown error occurred';
       return res.status(400).json({
         status: 400,
-        message: error.message,
+        message: errMsg,
         data: '',
       });
     }
@@ -92,10 +108,12 @@ export class CustomerController {
         message: 'successful',
         data: customer,
       });
-    } catch (error) {
+    } catch (error: unknown) {
+      const errMsg =
+        error instanceof Error ? error.message : 'Unknown error occurred';
       return res.status(400).json({
         status: 400,
-        message: error.message,
+        message: errMsg,
         data: '',
       });
     }
@@ -106,7 +124,7 @@ export class CustomerController {
   async updatCustomer(
     @Param('id') id: string,
     @Res() res: Response,
-    @Body() customerDto: CustomerDto
+    @Body() customerDto: CustomerDto,
   ): Promise<Response<any, Record<string, any>>> {
     try {
       const safeData = {
@@ -128,10 +146,12 @@ export class CustomerController {
         message: 'successful',
         data: updatedCustomer,
       });
-    } catch (error) {
+    } catch (error: unknown) {
+      const errMsg =
+        error instanceof Error ? error.message : 'Unknown error occurred';
       return res.status(400).json({
         status: 400,
-        message: error.message,
+        message: errMsg,
         data: '',
       });
     }
@@ -150,10 +170,12 @@ export class CustomerController {
         message: 'successful',
         data: customer,
       });
-    } catch (error) {
+    } catch (error: unknown) {
+      const errMsg =
+        error instanceof Error ? error.message : 'Unknown error occurred';
       return res.status(400).json({
         status: 400,
-        message: error.message,
+        message: errMsg,
         data: '',
       });
     }
@@ -173,11 +195,12 @@ export class CustomerController {
         message: 'Create successful',
         data: customer,
       });
-    } catch (error) {
-      // Handle errors, for example, invalid credentials
+    } catch (error: unknown) {
+      const errMsg =
+        error instanceof Error ? error.message : 'Unknown error occurred';
       return res.status(400).json({
         status: 400,
-        message: error.message,
+        message: errMsg,
         data: '',
       });
     }
@@ -198,11 +221,12 @@ export class CustomerController {
         message: 'Create successful',
         data: customer,
       });
-    } catch (error) {
-      // Handle errors, for example, invalid credentials
+    } catch (error: unknown) {
+      const errMsg =
+        error instanceof Error ? error.message : 'Unknown error occurred';
       return res.status(400).json({
         status: 400,
-        message: error.message,
+        message: errMsg,
         data: '',
       });
     }

@@ -9,13 +9,11 @@ export const REDIS_CLIENT = 'REDIS_CLIENT';
     {
       provide: REDIS_CLIENT,
       useFactory: () => {
-        return new Redis(
-          {
-            host: 'localhost', // or your Redis host
-            port: 6379,
-            maxRetriesPerRequest: null, // ✅ Required by BullMQ
-          }
-        ); // Customize connection if needed
+        return new Redis({
+          host: 'localhost', // or your Redis host
+          port: 6379,
+          maxRetriesPerRequest: null, // ✅ Required by BullMQ
+        }); // Customize connection if needed
       },
     },
     RedisService, // Your custom service using redis

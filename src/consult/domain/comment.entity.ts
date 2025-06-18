@@ -1,9 +1,7 @@
-import { ConsultComment } from "@prisma/client";
+import { ConsultComment } from '@prisma/client';
 
 export class CommentEntity {
-  constructor(
-    private readonly data: ConsultComment,
-  ) {}
+  constructor(private readonly data: ConsultComment) {}
 
   getData(): ConsultComment {
     return this.data;

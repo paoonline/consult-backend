@@ -2,8 +2,11 @@ import { Prisma } from '@prisma/client';
 
 export class CustomerEntity {
   constructor(
-    private readonly data: Prisma.CustomerCreateInput & { skills: { id: string }[], price: number },
-  ) { }
+    private readonly data: Prisma.CustomerCreateInput & {
+      skills: { id: string }[];
+      price: number;
+    },
+  ) {}
 
   getPrice(): number | undefined {
     return this.data.price;
@@ -13,9 +16,9 @@ export class CustomerEntity {
     const newData = {
       ...this.data,
       price: undefined,
-      skills: undefined
-    }
-    return newData
+      skills: undefined,
+    };
+    return newData;
   }
 
   getSkills(): { id: string }[] {

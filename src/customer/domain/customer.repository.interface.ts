@@ -1,4 +1,4 @@
-import { Customer } from "@prisma/client";
+import { Customer } from '@prisma/client';
 
 export interface IUpdateCustomer {
   skills: { id: string }[];
@@ -7,9 +7,9 @@ export interface IUpdateCustomer {
 }
 
 export interface ICustomerDetailEntity {
-  customer_id: string
-  price?: number
-  rate?: number
+  customer_id: string;
+  price?: number;
+  rate?: number;
 }
 
 export type CustomerRepo = Omit<Customer, 'password'>;

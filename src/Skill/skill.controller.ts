@@ -1,21 +1,14 @@
-import {
-  Controller,
-  Get,
-  Res
-} from '@nestjs/common';
+import { Controller, Get, Res } from '@nestjs/common';
 import { Response } from 'express';
 
 import { SkillService } from './application/skill.service';
 
 @Controller('/skills')
 export class SkillController {
-  constructor(
-    private readonly skillService: SkillService
-  ) 
-  {}
+  constructor(private readonly skillService: SkillService) {}
 
   @Get('/')
-//   @UseGuards(JwtAuthGuard)
+  //   @UseGuards(JwtAuthGuard)
   async create(
     @Res() res: Response,
   ): Promise<Response<any, Record<string, any>>> {
@@ -27,15 +20,14 @@ export class SkillController {
         message: 'successful',
         data: skill,
       });
-    } catch (error) {
-      // Handle errors, for example, invalid credentials
+    } catch (error: unknown) {
+      const errMsg =
+        error instanceof Error ? error.message : 'Unknown error occurred';
       return res.status(400).json({
         status: 400,
-        message: error.message,
+        message: errMsg,
         data: '',
       });
     }
   }
-  
-
 }

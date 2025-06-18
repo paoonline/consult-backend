@@ -1,42 +1,39 @@
-import { IsNotEmpty, MaxLength } from "class-validator"
+import { IsNotEmpty, MaxLength } from 'class-validator';
 
 export class ConsultCommentDto {
-
   @IsNotEmpty()
   @MaxLength(100)
-  consultTransactionId: string
+  consultTransactionId: string;
 
   @IsNotEmpty()
   @MaxLength(255)
-  description: string
+  description: string;
 
   @IsNotEmpty()
   @MaxLength(1)
-  rate: number
+  rate: number;
 
   @IsNotEmpty()
   @MaxLength(100)
-  customerDetailId: string
-
+  customerDetailId: string;
 }
-
 
 export class ConsultCommentDtoRepository {
   @IsNotEmpty()
   @MaxLength(100)
-  consult_transaction_id: string
+  consult_transaction_id: string;
 
   @IsNotEmpty()
   @MaxLength(255)
-  description: string
+  description: string;
 
   @IsNotEmpty()
   @MaxLength(1)
-  rate: number
+  rate: number;
 
   @IsNotEmpty()
   @MaxLength(100)
-  customer_detail_id: string
+  customer_detail_id: string;
 
-  comment_date: Date
+  comment_date: Date;
 }

@@ -7,25 +7,30 @@ import { CommentEntity } from '../domain/comment.entity';
 @Injectable()
 export class CommentRepository
   implements
-  IRepository<
-    ConsultComment,
-    CommentEntity,
-    null,
-    null,
-    ConsultComment,
-    number
-  > {
-  constructor(private readonly prisma: PrismaService) { }
+    IRepository<
+      ConsultComment,
+      CommentEntity,
+      null,
+      null,
+      ConsultComment,
+      number
+    >
+{
+  constructor(private readonly prisma: PrismaService) {}
 
   async findAll(): Promise<ConsultComment[]> {
     const comment = await this.prisma.consultComment.findMany();
     return comment;
   }
 
-  async create(data: CommentEntity, _?: string, tx?: Prisma.TransactionClient): Promise<ConsultComment> {
+  async create(
+    data: CommentEntity,
+    _?: string,
+    tx?: Prisma.TransactionClient,
+  ): Promise<ConsultComment> {
     const client = tx ?? this.prisma;
     const comment = await client.consultComment.create({
-      data:data.getData(),
+      data: data.getData(),
     });
     return comment;
   }

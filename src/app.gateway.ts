@@ -19,7 +19,7 @@ export class AppGateway implements OnModuleInit {
     //   this.handleMessage({sender: "2", text: '1'})
 
     // CONSUME
-      this.server.emit('message', {sender: "2", text: '1'}); 
+    this.server.emit('message', { sender: '2', text: '1' });
   }
   @WebSocketServer()
   server: Server;
@@ -31,7 +31,6 @@ export class AppGateway implements OnModuleInit {
 
     // get queue coin warning -> expire in 24 hr
 
-    
     client.emit('message', 'Welcome to the socket server!');
   }
 
