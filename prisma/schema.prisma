@@ -26,6 +26,8 @@ model Customer {
   updated_at      DateTime        @updatedAt
   profile_image   String?         @db.VarChar(255)
   customer_detail CustomerDetail? @relation("CustomerToDetail")
+  first_name             String               @default("firstName")
+  last_name              String               @default("lastName")
 
   // many to many
   skills          Skill[]
@@ -54,6 +56,8 @@ model ConsultTransaction {
   note               Note?
   comment            ConsultComment?
   consultNotification       ConsultNotification? @relation("TransactionToNotification")
+
+  is_pass      Boolean   @default(false)
 
   @@index([customer_id, consult_id])
   @@map("consult_transaction")

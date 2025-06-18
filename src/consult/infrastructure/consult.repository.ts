@@ -45,14 +45,29 @@ export class ConsultRepository
     return this.prisma.consultTransaction.findMany(whereParams);
   }
 
-  async findMany(
-    customerId?: string,
-    consultId?: string,
-  ): Promise<ConsultTransaction[]> {
+  async findMany(customerId?: string): Promise<ConsultTransaction[]> {
     return this.prisma.consultTransaction.findMany({
+      include: {
+        customer: {
+          select: {
+            id: true,
+            first_name: true,
+            last_name: true,
+          },
+        },
+        consult: {
+          select: {
+            id: true,
+            first_name: true,
+            last_name: true,
+          },
+        },
+      },
       where: {
-        customer_id: customerId,
-        consult_id: consultId,
+        OR: [{ consult_id: customerId }, { customer_id: customerId }],
+        end_date: {
+          gt: new Date(), // Filter where end_date is in the future
+        },
       },
     });
   }

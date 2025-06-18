@@ -77,15 +77,14 @@ export class ConsultController {
     }
   }
 
-  @Get('/consult-all/:customerId/:consultId')
+  @Get('/consult-all/:customerId')
   @UseGuards(JwtAuthGuard)
   async getCounsultTransactionById(
     @Res() res: Response,
-    @Param('customerId') customerId: string,
-    @Param('consultId') consultId: string,
+    @Param('customerId') customerId?: string,
   ): Promise<Response<any, Record<string, any>>> {
     try {
-      const consult = await this.consultService.findMany(customerId, consultId);
+      const consult = await this.consultService.findMany(customerId);
       return res.status(200).json({
         status: 200,
         message: 'successful',

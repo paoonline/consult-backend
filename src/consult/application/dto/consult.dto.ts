@@ -20,4 +20,6 @@ export class ConsultDto {
   @IsNotEmpty()
   @IsDate()
   startDate: Date;
+
+  isPass: boolean;
 }

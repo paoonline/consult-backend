@@ -125,15 +125,9 @@ export class ConsultService
     return transactions.map((item) => camelcaseKeys(item));
   }
 
-  async findMany(
-    customerId?: string,
-    consultId?: string,
-  ): Promise<ConsultDto[]> {
-    const transactions = await this.consultRepository.findMany(
-      customerId,
-      consultId,
-    );
-    return camelcaseKeys(transactions);
+  async findMany(customerId?: string): Promise<ConsultDto[]> {
+    const transactions = await this.consultRepository.findMany(customerId);
+    return camelcaseKeys(transactions, { deep: true });
   }
 
   async meeting(
