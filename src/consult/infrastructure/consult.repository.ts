@@ -64,6 +64,7 @@ export class ConsultRepository
         },
       },
       where: {
+        is_pass: false,
         OR: [{ consult_id: customerId }, { customer_id: customerId }],
         end_date: {
           gt: new Date(), // Filter where end_date is in the future
