@@ -10,7 +10,7 @@ import { ConsultRepository } from 'src/consult/infrastructure/consult.repository
 import { createFactory } from 'src/utils/factory';
 import { ConsultEntity } from 'src/consult/domain/consult.entity';
 import { IRepository } from 'src/utils/respository';
-import { IConsultMeeting } from 'src/consult/domain/consult.repository.interface';
+// import { IConsultMeeting } from 'src/consult/domain/consult.repository.interface';
 import { KafkaService } from 'src/services/Kafka/kafka.service';
 import { NotificationDto } from 'src/notification/application/dto/notification.dto';
 import { IBooking } from 'src/customer/application/dto/customer.dto';
@@ -24,8 +24,7 @@ export class ConsultService
       unknown,
       unknown,
       ConsultTransaction
-    >,
-    IConsultMeeting
+    >
 {
   constructor(
     private readonly queueJob: QueueJob,
@@ -130,16 +129,21 @@ export class ConsultService
     return camelcaseKeys(transactions, { deep: true });
   }
 
-  async meeting(
-    customerId: string,
-    consultId: string,
-    token: string,
-  ): Promise<string> {
-    await this.apiService.postApi<{ data: IPaymentDto }, IPaymentDto>(
-      `/booking/${customerId}/${consultId}`,
-      token,
-    );
-
-    return 'Success';
+  async update(id: string): Promise<ConsultDto> {
+    const result = await this.consultRepository.update(id);
+    return camelcaseKeys(result);
   }
+
+  // async meeting(
+  //   customerId: string,
+  //   consultId: string,
+  //   token: string,
+  // ): Promise<string> {
+  //   await this.apiService.postApi<{ data: IPaymentDto }, IPaymentDto>(
+  //     `/booking/${customerId}/${consultId}`,
+  //     token,
+  //   );
+
+  //   return 'Success';
+  // }
 }

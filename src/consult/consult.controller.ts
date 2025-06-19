@@ -101,21 +101,14 @@ export class ConsultController {
     }
   }
 
-  @Patch(':customerId/:consultId')
+  @Patch(':consultId')
   @UseGuards(JwtAuthGuard)
   async meeting(
-    @Headers('authorization') authHeader: string,
     @Res() res: Response,
-    @Param('customerId') customerId: string,
     @Param('consultId') consultId: string,
   ): Promise<Response<any, Record<string, any>>> {
     try {
-      const token = authHeader?.replace('Bearer ', '');
-      const meeting = await this.consultService.meeting(
-        customerId,
-        consultId,
-        token,
-      );
+      const meeting = await this.consultService.update(consultId);
       // Send a successful response with the token
       return res.status(200).json({
         status: 200,
@@ -132,6 +125,38 @@ export class ConsultController {
       });
     }
   }
+
+  // @Patch(':customerId/:consultId')
+  // @UseGuards(JwtAuthGuard)
+  // async meeting(
+  //   @Headers('authorization') authHeader: string,
+  //   @Res() res: Response,
+  //   @Param('customerId') customerId: string,
+  //   @Param('consultId') consultId: string,
+  // ): Promise<Response<any, Record<string, any>>> {
+  //   try {
+  //     const token = authHeader?.replace('Bearer ', '');
+  //     const meeting = await this.consultService.meeting(
+  //       customerId,
+  //       consultId,
+  //       token,
+  //     );
+  //     // Send a successful response with the token
+  //     return res.status(200).json({
+  //       status: 200,
+  //       message: 'Meeting successful',
+  //       data: meeting,
+  //     });
+  //   } catch (error: unknown) {
+  //     const errMsg =
+  //       error instanceof Error ? error.message : 'Unknown error occurred';
+  //     return res.status(400).json({
+  //       status: 400,
+  //       message: errMsg,
+  //       data: '',
+  //     });
+  //   }
+  // }
 
   @Get('/note')
   @UseGuards(JwtAuthGuard)

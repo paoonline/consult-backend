@@ -10,7 +10,7 @@ export class ConsultRepository
     IRepository<
       ConsultTransaction,
       ConsultEntity,
-      null,
+      { isPass?: boolean },
       null,
       ConsultTransaction
     >
@@ -20,6 +20,15 @@ export class ConsultRepository
   async create(data: ConsultEntity): Promise<ConsultTransaction> {
     return this.prisma.consultTransaction.create({
       data: data.getData(),
+    });
+  }
+
+  async update(id: string): Promise<ConsultTransaction> {
+    return this.prisma.consultTransaction.update({
+      where: { id },
+      data: {
+        is_pass: true,
+      },
     });
   }
 
@@ -57,6 +66,7 @@ export class ConsultRepository
         },
         consult: {
           select: {
+            customer_detail: true,
             id: true,
             first_name: true,
             last_name: true,
