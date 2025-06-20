@@ -9,7 +9,7 @@ import { QueueJob } from 'src/services/Queue/queueJob';
 import { createFactory } from 'src/utils/factory';
 import { IRepository } from 'src/utils/respository';
 import { ConsultCommentDto } from '../dto/consult.comment.dto';
-import { KafkaService } from 'src/services/Kafka/kafka.service';
+// import { KafkaService } from 'src/services/Kafka/kafka.service';
 import { PrismaService } from 'prisma/prisma.service';
 
 @Injectable()
@@ -26,7 +26,7 @@ export class ConsultCommentService
   constructor(
     private readonly commentRepository: CommentRepository,
     private readonly queueJob: QueueJob,
-    private readonly kafkaService: KafkaService,
+    // private readonly kafkaService: KafkaService,
     private readonly prisma: PrismaService,
   ) {}
 
