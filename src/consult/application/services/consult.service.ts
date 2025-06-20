@@ -11,7 +11,7 @@ import { createFactory } from 'src/utils/factory';
 import { ConsultEntity } from 'src/consult/domain/consult.entity';
 import { IRepository } from 'src/utils/respository';
 // import { IConsultMeeting } from 'src/consult/domain/consult.repository.interface';
-import { KafkaService } from 'src/services/Kafka/kafka.service';
+// import { KafkaService } from 'src/services/Kafka/kafka.service';
 import { NotificationDto } from 'src/notification/application/dto/notification.dto';
 import { IBooking } from 'src/customer/application/dto/customer.dto';
 import { IPaymentDto } from 'src/payment/application/dto/payment.dto';
@@ -30,7 +30,7 @@ export class ConsultService
     private readonly queueJob: QueueJob,
     private readonly apiService: ApiService,
     private readonly consultRepository: ConsultRepository,
-    private readonly kafkaService: KafkaService,
+    // private readonly kafkaService: KafkaService,
   ) {}
   async create(data: ConsultDto, token: string): Promise<ConsultTransaction> {
     const plainData = instanceToPlain(data);
