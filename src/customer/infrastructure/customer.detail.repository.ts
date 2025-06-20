@@ -31,6 +31,9 @@ export class CustomerDetailRepository
 
   async findOne(id: string): Promise<CustomerDetail | null> {
     return this.prisma.customerDetail.findFirst({
+      include: {
+        bookings: true,
+      },
       where: { customer_id: id },
     });
   }

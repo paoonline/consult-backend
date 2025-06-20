@@ -39,7 +39,9 @@ export class CustomerDetailService
 
   async findOne(id: string): Promise<ICustomerDetail> {
     const result = await this.customerDetailRepository.findOne(id);
-    return camelcaseKeys(result as CustomerDetail) as ICustomerDetail;
+    return camelcaseKeys(result as CustomerDetail, {
+      deep: true,
+    }) as ICustomerDetail;
   }
 
   async update(id: string, rate: number): Promise<ICustomerDetail> {
