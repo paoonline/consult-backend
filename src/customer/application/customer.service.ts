@@ -53,7 +53,7 @@ export class CustomerService
     snakeData.password = hashedPassword;
 
     const skills = await this.skillService.skillMap(data.skills);
-    if (skills.length === 0) {
+    if (skills.length === 0 && data.customerType !== CustomerType.CUSTOMER) {
       throw new Error('Skill is not match');
     }
     snakeData.skills =

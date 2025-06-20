@@ -52,7 +52,7 @@ export class CustomerRepository
     const client = tx ?? this.prisma;
     await client.customer.create({
       data: {
-        ...params.getData(),
+        ...params.getDataForCreate(),
         skills: {
           connect: params.getSkills(), // List of Skill IDs
         },
@@ -64,7 +64,7 @@ export class CustomerRepository
     const updated = await this.prisma.customer.update({
       where: { id },
       data: {
-        ...data.getData(),
+        ...data.getDataForUpdate(),
         skills: {
           set: data.getSkills(),
         },

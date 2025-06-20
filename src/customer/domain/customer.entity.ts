@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import { Prisma } from '@prisma/client';
 
 export class CustomerEntity {
@@ -12,13 +13,17 @@ export class CustomerEntity {
     return this.data.price;
   }
 
-  getData(): Prisma.CustomerCreateInput {
-    const newData = {
-      ...this.data,
-      price: undefined,
-      skills: undefined,
-    };
-    return newData;
+  getDataForUpdate(): Omit<
+    Prisma.CustomerUpdateInput,
+    'skills' | 'customer_detail'
+  > {
+    const { skills, price, ...rest } = this.data;
+    return rest;
+  }
+
+  getDataForCreate(): Prisma.CustomerCreateInput {
+    const { skills, price, ...rest } = this.data;
+    return rest;
   }
 
   getSkills(): { id: string }[] {
