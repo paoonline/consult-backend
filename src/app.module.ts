@@ -10,7 +10,7 @@ import { JwtStrategy } from './validate/jwt.strategy';
 import { NotificationModule } from './notification/notification.module';
 import { BatchNotificationService } from './notification/batch/batch.notification.service';
 import { AppGateway } from './app.gateway';
-import { SkillModule } from './skill/skill.module';
+import { SkillModule } from './skillMap/skill-map.module';
 import { PaymentModule } from './payment/payment.module';
 import 'dotenv/config';
 

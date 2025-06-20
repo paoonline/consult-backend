@@ -2,7 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { CustomerDetail, CustomerType, Prisma } from '@prisma/client';
 import camelcaseKeys from 'camelcase-keys';
 import { SessionService } from 'src/services/Session/session.service';
-import { SkillService } from 'src/skill/application/skill.service';
+import { SkillService } from 'src/skillMap/application/skill-map.service';
 import { formatSnakeCase } from 'src/utils/format';
 import { IRepository } from 'src/utils/respository';
 import { CustomerRepo } from '../domain/customer.repository.interface';

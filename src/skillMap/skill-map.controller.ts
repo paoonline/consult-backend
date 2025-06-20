@@ -1,7 +1,7 @@
 import { Controller, Get, Res } from '@nestjs/common';
 import { Response } from 'express';
 
-import { SkillService } from './application/skill.service';
+import { SkillService } from './application/skill-map.service';
 
 @Controller('/skills')
 export class SkillController {

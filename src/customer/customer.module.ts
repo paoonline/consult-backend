@@ -3,11 +3,10 @@ import { PrismaService } from 'prisma/prisma.service';
 import { RedisModule } from 'src/services/Redis/redis.module';
 import { SessionService } from 'src/services/Session/session.service';
 
-import { SkillModule } from 'src/skill/skill.module';
+import { SkillModule } from 'src/skillMap/skill-map.module';
 import { CustomerService } from './application/customer.service';
 import { CustomerController } from './customer.controller';
 import { CustomerRepository } from './infrastructure/customer.repository';
-import { SkillService } from 'src/skill/application/skill.service';
 import { CustomerWorker } from './application/customer.worker';
 import { CustomerDetailRepository } from './infrastructure/customer.detail.repository';
 import { CustomerDetailService } from './application/customerDetail.service';
@@ -21,7 +20,7 @@ import { CustomerBookingRepository } from './infrastructure/customer.booking.rep
     PrismaService,
     SessionService,
     CustomerRepository,
-    SkillService,
+    // SkillService,
     CustomerWorker,
     CustomerDetailRepository,
     CustomerDetailService,

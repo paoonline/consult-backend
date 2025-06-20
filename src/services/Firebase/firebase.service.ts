@@ -1,16 +1,16 @@
 import * as admin from 'firebase-admin';
 import { Injectable, OnModuleInit } from '@nestjs/common';
-import * as serviceAccount from '../Firebase/firebase-consult-service.json'; // You will download this
+// import serviceAccount from '../Firebase/firebase-consult-service.json'; // You will download this
 
 @Injectable()
 export class FirebaseService implements OnModuleInit {
   onModuleInit() {
     if (!admin.apps.length) {
-      admin.initializeApp({
-        credential: admin.credential.cert(
-          serviceAccount as admin.ServiceAccount,
-        ),
-      });
+      // admin.initializeApp({
+      //   credential: admin.credential.cert(
+      //     serviceAccount as admin.ServiceAccount,
+      //   ),
+      // });
     }
   }
 
