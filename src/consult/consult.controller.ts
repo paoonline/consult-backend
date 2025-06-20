@@ -54,13 +54,14 @@ export class ConsultController {
     }
   }
 
-  @Get()
+  @Get(':id')
   @UseGuards(JwtAuthGuard)
   async getAllCounsultTransaction(
     @Res() res: Response,
+    @Param('id') id: string,
   ): Promise<Response<any, Record<string, any>>> {
     try {
-      const consult = await this.consultService.findAll();
+      const consult = await this.consultService.findAll(id);
       return res.status(200).json({
         status: 200,
         message: 'successful',

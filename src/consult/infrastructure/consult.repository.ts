@@ -38,20 +38,27 @@ export class ConsultRepository
     });
   }
 
-  async findAll(
-    customerId?: string,
-    consultId?: string,
-  ): Promise<ConsultTransaction[]> {
-    const whereParams =
-      customerId && consultId
-        ? {
-            where: {
-              customer_id: customerId,
-              consult_id: consultId,
-            },
-          }
-        : undefined;
-    return this.prisma.consultTransaction.findMany(whereParams);
+  async findAll(customerId?: string): Promise<ConsultTransaction[]> {
+    return this.prisma.consultTransaction.findMany({
+      include: {
+        comment: true,
+        note: true,
+        customer: {
+          select: {
+            email: true,
+          },
+        },
+        consult: {
+          select: {
+            email: true,
+          },
+        },
+      },
+      where: {
+        is_pass: true,
+        OR: [{ consult_id: customerId }, { customer_id: customerId }],
+      },
+    });
   }
 
   async findMany(customerId?: string): Promise<ConsultTransaction[]> {

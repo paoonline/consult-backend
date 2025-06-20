@@ -83,7 +83,8 @@ model ConsultTransaction {
 
   is_pass      Boolean   @default(false)
 
-  @@index([customer_id, consult_id])
+  @@index([customer_id])
+  @@index([consult_id])
   @@map("consult_transaction")
 }
 

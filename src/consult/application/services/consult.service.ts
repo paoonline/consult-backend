@@ -120,8 +120,8 @@ export class ConsultService
     return consult;
   }
 
-  async findAll(): Promise<ConsultDto[]> {
-    const transactions = await this.consultRepository.findAll();
+  async findAll(customerId?: string): Promise<ConsultDto[]> {
+    const transactions = await this.consultRepository.findAll(customerId);
     return transactions.map((item) => camelcaseKeys(item));
   }
 
