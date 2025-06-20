@@ -38,6 +38,7 @@ export class ConsultRepository
     });
   }
 
+  // history
   async findAll(customerId?: string): Promise<ConsultTransaction[]> {
     return this.prisma.consultTransaction.findMany({
       include: {
@@ -58,9 +59,13 @@ export class ConsultRepository
         is_pass: true,
         OR: [{ consult_id: customerId }, { customer_id: customerId }],
       },
+      orderBy: {
+        start_date: 'asc',
+      },
     });
   }
 
+  //booking
   async findMany(customerId?: string): Promise<ConsultTransaction[]> {
     return this.prisma.consultTransaction.findMany({
       include: {
@@ -86,6 +91,9 @@ export class ConsultRepository
         end_date: {
           gt: new Date(), // Filter where end_date is in the future
         },
+      },
+      orderBy: {
+        start_date: 'asc',
       },
     });
   }

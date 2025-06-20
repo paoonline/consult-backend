@@ -13,6 +13,7 @@ export class CustomerRepository
   customerId: string;
   price: number;
 
+  // consult list
   async findAll(whereCustomerType: CustomerType): Promise<CustomerRepo[]> {
     const result = await this.prisma.customer.findMany({
       include: {
