@@ -29,6 +29,11 @@ export class CustomerRepository
       where: {
         customer_type: whereCustomerType,
       },
+      orderBy: {
+        customer_detail: {
+          rate: 'desc',
+        },
+      },
     });
     return result.map((r) => {
       return {

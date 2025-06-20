@@ -75,14 +75,15 @@ export class ConsultService
       ],
     );
 
-    const payment = this.apiService.postApi<{ data: IPaymentDto }, IPaymentDto>(
-      '/payment',
-      token,
-      {
-        consultTransactionId: consult.id,
-        price: customerConsultDetail.data.price,
-      },
-    );
+    const payment = this.apiService.postApi<
+      { data: IPaymentDto },
+      Partial<IPaymentDto>
+    >('/payment', token, {
+      consultTransactionId: consult.id,
+      customerId: consult.customer_id,
+      consultId: consult.consult_id,
+      price: customerConsultDetail.data.price,
+    });
 
     // noti
     const notification = this.apiService.postApi<

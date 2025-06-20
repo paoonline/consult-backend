@@ -38,7 +38,31 @@ model Customer {
   clientTransactions     ConsultTransaction[] @relation("CustomerIsClient")
   consultantTransactions ConsultTransaction[] @relation("CustomerIsConsultant")
 
+  customer_payment  PaymentTransaction[] @relation("CustomerToPayments")
+  consult_payment   PaymentTransaction[] @relation("ConsultantToPayments")
+
   @@map("customer")
+}
+
+model PaymentTransaction {
+  id String @id @default(uuid())
+
+  price        Float    @default(0.00)
+  payment_date DateTime @default(now())
+
+  consult_transaction_id String             @unique
+  consultTransaction     ConsultTransaction @relation(fields: [consult_transaction_id], references: [id])
+
+  customer_id            String?
+  customer               Customer?          @relation("CustomerToPayments", fields: [customer_id], references: [id])
+
+  // Consultant (the receiver)
+  consult_id              String?
+  consult                Customer?          @relation("ConsultantToPayments", fields: [consult_id], references: [id])
+
+  @@index([customer_id])
+  @@index([consult_id])
+  @@map("payment_transaction")
 }
 
 model ConsultTransaction {
@@ -78,17 +102,7 @@ model ConsultNotification {
   @@map("notification")
 }
 
-model PaymentTransaction {
-  id String @id @default(uuid())
 
-  price        Float    @default(0.00)
-  payment_date DateTime @default(now())
-
-  consult_transaction_id String             @unique
-  consultTransaction     ConsultTransaction @relation(fields: [consult_transaction_id], references: [id])
-
-  @@map("payment_transaction")
-}
 
 model Note {
   id String @id @default(uuid())

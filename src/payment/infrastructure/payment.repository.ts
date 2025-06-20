@@ -20,8 +20,30 @@ export class PaymentRepository
   create(data: PaymentEntity): Promise<PaymentTransaction> {
     return this.prisma.paymentTransaction.create({
       data: {
+        consult_id: String(data.getData().consult_id),
+        customer_id: String(data.getData().customer_id),
         price: data.getData().price,
         consult_transaction_id: data.getData().consult_transaction_id,
+      },
+    });
+  }
+
+  async findMany(id: string): Promise<PaymentTransaction[]> {
+    return this.prisma.paymentTransaction.findMany({
+      include: {
+        customer: {
+          select: {
+            email: true,
+          },
+        },
+        consult: {
+          select: {
+            email: true,
+          },
+        },
+      },
+      where: {
+        OR: [{ consult_id: id }, { customer_id: id }],
       },
     });
   }

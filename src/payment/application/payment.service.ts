@@ -21,6 +21,11 @@ export class PaymentService
     const payment = await this.paymentRepository.create(
       createFactory(snakeData, PaymentEntity),
     );
-    return camelcaseKeys(payment);
+    return camelcaseKeys(payment as Partial<PaymentTransaction>) as IPaymentDto;
+  }
+
+  async findMany(id: string): Promise<IPaymentDto[]> {
+    const payment = await this.paymentRepository.findMany(id);
+    return camelcaseKeys(payment) as IPaymentDto[];
   }
 }
