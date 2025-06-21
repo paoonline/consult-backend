@@ -79,7 +79,7 @@ export class ConsultRepository
         is_pass: true,
         OR: [{ consult_id: customerId }, { customer_id: customerId }],
         end_date: {
-          gt: new Date(), // Filter where end_date is in the future
+          lt: new Date(), // Filter where end_date is in the future
         },
       },
       orderBy: {
