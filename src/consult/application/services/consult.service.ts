@@ -90,7 +90,7 @@ export class ConsultService
       consultTransactionId: consult.id,
       customerId: consult.customer_id,
       consultId: consult.consult_id,
-      price: 0,
+      price: customerConsultDetail.data.price,
     });
 
     // noti
