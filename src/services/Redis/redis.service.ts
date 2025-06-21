@@ -10,8 +10,8 @@ export class RedisService {
       const parsed = JSON.parse(raw || '') as string;
       console.log('Parsed object:', parsed);
       return parsed;
-    } catch (err) {
-      console.error('Error parsing JSON from Redis:', err);
+    } catch {
+      // console.error('Error parsing JSON from Redis:', err);
       return null;
     }
   }
