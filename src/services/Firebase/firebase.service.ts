@@ -2,15 +2,18 @@ import * as admin from 'firebase-admin';
 import { Injectable, OnModuleInit } from '@nestjs/common';
 // import serviceAccount from '../Firebase/firebase-consult-service.json'; // You will download this
 
+import 'dotenv/config';
 @Injectable()
 export class FirebaseService implements OnModuleInit {
   onModuleInit() {
     if (!admin.apps.length) {
-      // admin.initializeApp({
-      //   credential: admin.credential.cert(
-      //     serviceAccount as admin.ServiceAccount,
-      //   ),
-      // });
+      admin.initializeApp({
+        credential: admin.credential.cert(
+          JSON.parse(
+            process.env.FIREBASE_SERVICE_ACCOUNT || '{}',
+          ) as admin.ServiceAccount,
+        ),
+      });
     }
   }
 

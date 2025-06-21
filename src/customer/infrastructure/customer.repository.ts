@@ -7,25 +7,33 @@ import { CustomerType, Prisma } from '@prisma/client';
 
 @Injectable()
 export class CustomerRepository
-  implements IRepository<CustomerRepo, CustomerEntity, CustomerEntity>
+  implements IRepository<Partial<CustomerRepo>, CustomerEntity, CustomerEntity>
 {
   constructor(private readonly prisma: PrismaService) {}
   customerId: string;
   price: number;
 
   // consult list
-  async findAll(whereCustomerType: CustomerType): Promise<CustomerRepo[]> {
+  async findAll(
+    whereCustomerType: CustomerType,
+  ): Promise<Partial<CustomerRepo>[]> {
     const result = await this.prisma.customer.findMany({
-      include: {
+      select: {
+        id: true,
+        first_name: true,
+        last_name: true,
+        job: true,
+        description: true,
         skills: true,
+        email: true,
         customer_detail: {
-          include: {
+          select: {
             bookings: true,
+            id: true,
+            price: true,
+            rate: true,
           },
         },
-      },
-      omit: {
-        password: true,
       },
       where: {
         customer_type: whereCustomerType,
@@ -37,8 +45,9 @@ export class CustomerRepository
       },
     });
     return result.map((r) => {
+      const { ...rest } = r;
       return {
-        ...r,
+        ...rest,
         skills: r.skills.map((r) => r.name),
       };
     });
@@ -79,22 +88,28 @@ export class CustomerRepository
     return updated;
   }
 
-  async findOne(id: string): Promise<CustomerRepo> {
+  async findOne(id: string): Promise<Partial<CustomerRepo>> {
     const result = await this.prisma.customer.findUnique({
       where: { id },
-      include: {
+      select: {
+        id: true,
+        first_name: true,
+        last_name: true,
+        job: true,
+        description: true,
         skills: true,
+        email: true,
         customer_detail: {
-          include: {
+          select: {
             bookings: true,
+            id: true,
+            price: true,
+            rate: true,
           },
         },
       },
-      omit: {
-        password: true,
-      },
     });
-    return result as CustomerRepo;
+    return result as Partial<CustomerRepo>;
   }
 
   async findFirst(

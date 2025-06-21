@@ -5,7 +5,7 @@ import * as jwt from 'jsonwebtoken';
 
 @Injectable()
 export class JwtService {
-  private readonly jwtSecret = process.env.JWT_SECRET || 'your-secret-key';
+  private readonly jwtSecret = process.env.JWT_SECRET  ?? '';
 
   createJwtToken(customer: {
     id: string;

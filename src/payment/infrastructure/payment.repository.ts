@@ -8,7 +8,7 @@ import { PaymentEntity } from '../domain/payment.entity';
 export class PaymentRepository
   implements
     IRepository<
-      PaymentTransaction, //return
+      Partial<PaymentTransaction>, //return
       PaymentEntity, //params
       null,
       null,
@@ -28,9 +28,12 @@ export class PaymentRepository
     });
   }
 
-  async findMany(id: string): Promise<PaymentTransaction[]> {
-    return this.prisma.paymentTransaction.findMany({
-      include: {
+  async findMany(id: string): Promise<Partial<PaymentTransaction>[]> {
+    const data = await this.prisma.paymentTransaction.findMany({
+      select: {
+        payment_date: true,
+        id: true,
+        price: true,
         customer: {
           select: {
             email: true,
@@ -46,5 +49,6 @@ export class PaymentRepository
         OR: [{ consult_id: id }, { customer_id: id }],
       },
     });
+    return data;
   }
 }

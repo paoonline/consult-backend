@@ -104,7 +104,7 @@ export class CustomerService
     const userKey = await this.sessionService.getAllUserOnline('online');
 
     const resultMap = result.map((res) => {
-      const online = userKey[res.email] as string;
+      const online = userKey[res.email as string] as string;
       return {
         ...res,
         onlineStatus: !!online,

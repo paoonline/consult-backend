@@ -18,8 +18,20 @@ export class NotificationRepository
 
   async findAll(): Promise<ConsultNotification[]> {
     const notification = await this.prisma.consultNotification.findMany({
-      include: {
-        consultTransaction: true,
+      select: {
+        id: true,
+        title: true,
+        description: true,
+        noti_date: true,
+        is_push_noti: true,
+        consult_transaction_id: true,
+        device_token: true,
+        consultTransaction: {
+          select: {
+            id: true,
+            // Add other specific fields you want from ConsultTransaction here
+          },
+        },
       },
     });
     return notification;
@@ -33,11 +45,23 @@ export class NotificationRepository
 
   async findOne(id: string): Promise<ConsultNotification> {
     const notification = await this.prisma.consultNotification.findFirst({
+      select: {
+        id: true,
+        title: true,
+        description: true,
+        noti_date: true,
+        is_push_noti: true,
+        consult_transaction_id: true,
+        device_token: true,
+        consultTransaction: {
+          select: {
+            id: true,
+            // Add other specific fields you want from ConsultTransaction here
+          },
+        },
+      },
       where: {
         id,
-      },
-      include: {
-        consultTransaction: true,
       },
     });
     return notification as ConsultNotification;

@@ -8,7 +8,7 @@ import { ConsultEntity } from '../domain/consult.entity';
 export class ConsultRepository
   implements
     IRepository<
-      ConsultTransaction,
+      Partial<ConsultTransaction>,
       ConsultEntity,
       { isPass?: boolean },
       null,
@@ -39,19 +39,33 @@ export class ConsultRepository
   }
 
   // history
-  async findAll(customerId?: string): Promise<ConsultTransaction[]> {
+  async findAll(customerId?: string): Promise<Partial<ConsultTransaction>[]> {
     return this.prisma.consultTransaction.findMany({
-      include: {
-        comment: true,
-        note: true,
+      select: {
+        start_date: true,
+        end_date: true,
+        comment: {
+          select: {
+            description: true,
+            rate: true,
+          },
+        },
+        note: {
+          select: {
+            description: true,
+            note_date: true,
+          },
+        },
         customer: {
           select: {
-            email: true,
+            first_name: true,
+            last_name: true,
           },
         },
         consult: {
           select: {
-            email: true,
+            first_name: true,
+            last_name: true,
           },
         },
       },
@@ -69,9 +83,12 @@ export class ConsultRepository
   }
 
   //booking
-  async findMany(customerId?: string): Promise<ConsultTransaction[]> {
+  async findMany(customerId?: string): Promise<Partial<ConsultTransaction>[]> {
     return this.prisma.consultTransaction.findMany({
-      include: {
+      select: {
+        id: true,
+        start_date: true,
+        end_date: true,
         customer: {
           select: {
             id: true,
@@ -81,7 +98,11 @@ export class ConsultRepository
         },
         consult: {
           select: {
-            customer_detail: true,
+            customer_detail: {
+              select: {
+                id: true,
+              },
+            },
             id: true,
             first_name: true,
             last_name: true,

@@ -22,4 +22,12 @@ export class ConsultDto {
   startDate: Date;
 
   isPass: boolean;
+
+  @IsNotEmpty()
+  @MaxLength(100)
+  customerDetailId: string;
+
+  @IsNotEmpty()
+  @MaxLength(100)
+  consultDetailId: string;
 }

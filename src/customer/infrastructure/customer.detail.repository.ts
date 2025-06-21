@@ -7,7 +7,7 @@ import { CustomerDetailEntity } from '../domain/customerDetail.entity';
 export class CustomerDetailRepository
   implements
     IRepository<
-      CustomerDetail,
+      Partial<CustomerDetail>,
       CustomerDetailEntity,
       CustomerDetailEntity,
       null,
@@ -29,9 +29,12 @@ export class CustomerDetailRepository
     });
   }
 
-  async findOne(id: string): Promise<CustomerDetail | null> {
+  async findOne(id: string): Promise<Partial<CustomerDetail> | null> {
     return this.prisma.customerDetail.findFirst({
-      include: {
+      select: {
+        rate: true,
+        id: true,
+        price: true,
         bookings: true,
       },
       where: { customer_id: id },

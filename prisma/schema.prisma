@@ -41,6 +41,7 @@ model Customer {
   customer_payment  PaymentTransaction[] @relation("CustomerToPayments")
   consult_payment   PaymentTransaction[] @relation("ConsultantToPayments")
 
+  @@index([customer_type])
   @@map("customer")
 }
 
@@ -126,6 +127,7 @@ model CustomerDetail {
   price       Float     @default(0.00)
   comments    ConsultComment[]
 
+  @@index([customer_id])
   @@map("customer_detail")
 }
 

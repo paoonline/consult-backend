@@ -3,23 +3,23 @@ import { ConsultTransaction, CustomerDetail, Prisma } from '@prisma/client';
 import camelcaseKeys from 'camelcase-keys';
 import { instanceToPlain } from 'class-transformer';
 import snakecaseKeys from 'snakecase-keys';
+import { ConsultEntity } from 'src/consult/domain/consult.entity';
+import { ConsultRepository } from 'src/consult/infrastructure/consult.repository';
 import { ApiService } from 'src/services/Api/api';
 import { QueueJob } from 'src/services/Queue/queueJob';
-import { ConsultDto } from '../dto/consult.dto';
-import { ConsultRepository } from 'src/consult/infrastructure/consult.repository';
 import { createFactory } from 'src/utils/factory';
-import { ConsultEntity } from 'src/consult/domain/consult.entity';
 import { IRepository } from 'src/utils/respository';
+import { ConsultDto } from '../dto/consult.dto';
 // import { IConsultMeeting } from 'src/consult/domain/consult.repository.interface';
 // import { KafkaService } from 'src/services/Kafka/kafka.service';
-import { NotificationDto } from 'src/notification/application/dto/notification.dto';
 import { IBooking } from 'src/customer/application/dto/customer.dto';
+import { NotificationDto } from 'src/notification/application/dto/notification.dto';
 import { IPaymentDto } from 'src/payment/application/dto/payment.dto';
 @Injectable()
 export class ConsultService
   implements
     IRepository<
-      ConsultDto | ConsultDto[],
+      Partial<ConsultDto> | Partial<ConsultDto>[],
       ConsultDto,
       unknown,
       unknown,
@@ -33,7 +33,13 @@ export class ConsultService
     // private readonly kafkaService: KafkaService,
   ) {}
   async create(data: ConsultDto, token: string): Promise<ConsultTransaction> {
-    const plainData = instanceToPlain(data);
+    const newData = {
+      ...data,
+      customerDetailId: undefined,
+      consultDetailId: undefined,
+    };
+
+    const plainData = instanceToPlain(newData);
     const snakeData = snakecaseKeys(
       plainData,
     ) as Prisma.ConsultTransactionCreateInput;
@@ -41,17 +47,19 @@ export class ConsultService
     const consult = await this.consultRepository.create(
       createFactory(snakeData, ConsultEntity),
     );
-    const customerDetail = await this.apiService.getFromApi<{
-      data: CustomerDetail;
-    }>('/customer/detail/' + data.customerId, token);
+
+    // const customerDetail = await this.apiService.getFromApi<{
+    //   data: CustomerDetail;
+    // }>('/customer/detail/' + data.customerId, token);
     const customerConsultDetail = await this.apiService.getFromApi<{
       data: CustomerDetail;
     }>('/customer/detail/' + data.consultId, token);
-    if (!customerDetail) {
-      throw new Error(
-        `CustomerDetail not found for customerId: ${data.customerId}`,
-      );
-    }
+
+    // if (!customerDetail) {
+    //   throw new Error(
+    //     `CustomerDetail not found for customerId: ${data.customerId}`,
+    //   );
+    // }
 
     if (!customerConsultDetail) {
       throw new Error(
@@ -65,11 +73,11 @@ export class ConsultService
       token,
       [
         {
-          customerDetailId: customerDetail.data.id,
+          customerDetailId: data.customerDetailId,
           time: data.startDate,
         },
         {
-          customerDetailId: customerConsultDetail.data.id,
+          customerDetailId: data.consultDetailId,
           time: data.startDate,
         },
       ],
@@ -82,7 +90,7 @@ export class ConsultService
       consultTransactionId: consult.id,
       customerId: consult.customer_id,
       consultId: consult.consult_id,
-      price: customerConsultDetail.data.price,
+      price: 0,
     });
 
     // noti
@@ -120,17 +128,17 @@ export class ConsultService
     return consult;
   }
 
-  async findAll(customerId?: string): Promise<ConsultDto[]> {
+  async findAll(customerId?: string): Promise<Partial<ConsultDto>[]> {
     const transactions = await this.consultRepository.findAll(customerId);
-    return transactions.map((item) => camelcaseKeys(item));
+    return transactions.map((item) => camelcaseKeys(item, { deep: true }));
   }
 
-  async findMany(customerId?: string): Promise<ConsultDto[]> {
+  async findMany(customerId?: string): Promise<Partial<ConsultDto>[]> {
     const transactions = await this.consultRepository.findMany(customerId);
     return camelcaseKeys(transactions, { deep: true });
   }
 
-  async update(id: string): Promise<ConsultDto> {
+  async update(id: string): Promise<Partial<ConsultDto>> {
     const result = await this.consultRepository.update(id);
     return camelcaseKeys(result);
   }

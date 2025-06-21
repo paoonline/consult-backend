@@ -12,10 +12,7 @@ export class AuthMiddleware implements NestMiddleware {
     }
 
     try {
-      const decoded = jwt.verify(
-        token,
-        process.env.JWT_SECRET || 'your-secret-key',
-      );
+      const decoded = jwt.verify(token, process.env.JWT_SECRET ?? '');
       req['user'] = decoded; // Attach the decoded user to the request
       next();
     } catch {
