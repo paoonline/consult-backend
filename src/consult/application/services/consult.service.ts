@@ -117,12 +117,12 @@ export class ConsultService
     }
 
     // job noti
-    await this.queueJob.addJob('NotificationQueue', 'sendNotification', {
-      id: consult.id,
-      description: 'test',
-      title: 'test',
-      device_token: '1',
-    });
+    // await this.queueJob.addJob('NotificationQueue', 'sendNotification', {
+    //   id: consult.id,
+    //   description: 'test',
+    //   title: 'test',
+    //   device_token: '1',
+    // });
     // await this.kafkaService.sendMessage('NotificationQueue', JSON.stringify({ id: consult.id, description: "test", title: "test", device_token: "1"}));
 
     return consult;
