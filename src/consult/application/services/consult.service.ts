@@ -44,22 +44,13 @@ export class ConsultService
       plainData,
     ) as Prisma.ConsultTransactionCreateInput;
 
-    const consult = await this.consultRepository.create(
-      createFactory(snakeData, ConsultEntity),
-    );
-
-    // const customerDetail = await this.apiService.getFromApi<{
-    //   data: CustomerDetail;
-    // }>('/customer/detail/' + data.customerId, token);
-    const customerConsultDetail = await this.apiService.getFromApi<{
-      data: CustomerDetail;
-    }>('/customer/detail/' + data.consultId, token);
-
-    // if (!customerDetail) {
-    //   throw new Error(
-    //     `CustomerDetail not found for customerId: ${data.customerId}`,
-    //   );
-    // }
+    const [consult, customerConsultDetail] = await Promise.all([
+      this.consultRepository.create(createFactory(snakeData, ConsultEntity)),
+      this.apiService.getFromApi<{ data: CustomerDetail }>(
+        '/customer/detail/' + data.consultId,
+        token,
+      ),
+    ]);
 
     if (!customerConsultDetail) {
       throw new Error(
@@ -67,47 +58,41 @@ export class ConsultService
       );
     }
 
-    // transactional
-    const booking = this.apiService.postApi<{ data: IBooking[] }, IBooking[]>(
-      '/customer/booking',
-      token,
-      [
-        {
-          customerDetailId: data.customerDetailId,
-          time: data.startDate,
-        },
-        {
-          customerDetailId: data.consultDetailId,
-          time: data.startDate,
-        },
-      ],
-    );
-
-    const payment = this.apiService.postApi<
-      { data: IPaymentDto },
-      Partial<IPaymentDto>
-    >('/payment', token, {
-      consultTransactionId: consult.id,
-      customerId: consult.customer_id,
-      consultId: consult.consult_id,
-      price: customerConsultDetail.data.price,
-    });
-
-    // noti
-    const notification = this.apiService.postApi<
-      { data: NotificationDto },
-      NotificationDto
-    >('/notification', token, {
-      consultTransactionId: consult.id,
-      description: 'test',
-      title: 'test',
-      deviceToken: '1',
-    });
-
     const [bookingRes, paymentRes, notiRes] = await Promise.all([
-      booking,
-      payment,
-      notification,
+      this.apiService.postApi<{ data: IBooking[] }, IBooking[]>(
+        '/customer/booking',
+        token,
+        [
+          {
+            customerDetailId: data.customerDetailId,
+            time: data.startDate,
+          },
+          {
+            customerDetailId: data.consultDetailId,
+            time: data.startDate,
+          },
+        ],
+      ),
+      this.apiService.postApi<{ data: IPaymentDto }, Partial<IPaymentDto>>(
+        '/payment',
+        token,
+        {
+          consultTransactionId: consult.id,
+          customerId: consult.customer_id,
+          consultId: consult.consult_id,
+          price: customerConsultDetail.data.price,
+        },
+      ),
+      this.apiService.postApi<{ data: NotificationDto }, NotificationDto>(
+        '/notification',
+        token,
+        {
+          consultTransactionId: consult.id,
+          description: 'test',
+          title: 'test',
+          deviceToken: '1',
+        },
+      ),
     ]);
 
     if (!bookingRes || !paymentRes || !notiRes) {
@@ -115,16 +100,6 @@ export class ConsultService
         `Failed to create booking/payment/notification for consultId: ${data.consultId}`,
       );
     }
-
-    // job noti
-    // await this.queueJob.addJob('NotificationQueue', 'sendNotification', {
-    //   id: consult.id,
-    //   description: 'test',
-    //   title: 'test',
-    //   device_token: '1',
-    // });
-    // await this.kafkaService.sendMessage('NotificationQueue', JSON.stringify({ id: consult.id, description: "test", title: "test", device_token: "1"}));
-
     return consult;
   }
 
