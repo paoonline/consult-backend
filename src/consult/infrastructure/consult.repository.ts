@@ -32,6 +32,12 @@ export class ConsultRepository
     });
   }
 
+  async delete(id: string): Promise<ConsultTransaction> {
+    return this.prisma.consultTransaction.delete({
+      where: { id },
+    });
+  }
+
   async findOne(id: string): Promise<ConsultTransaction | null> {
     return this.prisma.consultTransaction.findFirst({
       where: { id },
