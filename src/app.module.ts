@@ -13,9 +13,11 @@ import { AppGateway } from './app.gateway';
 import { SkillModule } from './skillMap/skill-map.module';
 import { PaymentModule } from './payment/payment.module';
 import 'dotenv/config';
+import { HealthController } from './app.controller';
 
 // require('dotenv').config();
 @Module({
+  controllers: [HealthController],
   imports: [
     ScheduleModule.forRoot(),
     ConfigModule.forRoot({
