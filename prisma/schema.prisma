@@ -98,12 +98,22 @@ model ConsultNotification {
   is_push_noti Boolean @default(false)
   consult_transaction_id String             @unique
   consultTransaction       ConsultTransaction  @relation("TransactionToNotification", fields: [consult_transaction_id], references: [id])
-  device_token String   @db.VarChar(100)
+  deviceToken DeviceToken? @relation(fields: [deviceTokenId], references: [id])
+  deviceTokenId String?
 
   @@index([is_push_noti])
   @@map("notification")
 }
 
+model DeviceToken {
+  id          String   @id @default(uuid())
+  token       String   @unique
+  platform    String?  // 'web', 'ios', 'android'
+  customer    Customer @relation(fields: [customerId], references: [id])
+  customerId  String
+  createdAt   DateTime @default(now())
+  active      Boolean  @default(true)
+}
 
 
 model Note {
