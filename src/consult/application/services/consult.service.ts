@@ -63,14 +63,17 @@ export class ConsultService
         '/customer/booking',
         token,
         [
-          {
-            customerDetailId: data.customerDetailId,
-            time: data.startDate,
-          },
-          {
-            customerDetailId: data.consultDetailId,
-            time: data.startDate,
-          },
+          ...(data.customerDetailId
+            ? [
+                {
+                  customerDetailId: data.customerDetailId,
+                  time: data.startDate,
+                },
+              ]
+            : []),
+          ...(data.consultDetailId
+            ? [{ customerDetailId: data.consultDetailId, time: data.startDate }]
+            : []),
         ],
       ),
       this.apiService.postApi<{ data: IPaymentDto }, Partial<IPaymentDto>>(
@@ -96,10 +99,19 @@ export class ConsultService
     ]);
 
     if (!bookingRes || !paymentRes || !notiRes) {
+      await this.consultRepository.delete(consult.id);
       throw new Error(
         `Failed to create booking/payment/notification for consultId: ${data.consultId}`,
       );
     }
+    // job noti
+    // await this.queueJob.addJob('NotificationQueue', 'sendNotification', {
+    //   id: consult.id,
+    //   description: 'test',
+    //   title: 'test',
+    //   device_token: '1',
+    // });
+    // await this.kafkaService.sendMessage('NotificationQueue', JSON.stringify({ id: consult.id, description: "test", title: "test", device_token: "1"}));
     return consult;
   }
 
