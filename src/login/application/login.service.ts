@@ -26,14 +26,17 @@ export class LoginService
 
   async login(email: string, password: string): Promise<string> {
     // find user online
-    const alreadyOnline = await this.sessionService.checkUserOnline(`${email}`);
+    const newEmail = email.toLowerCase();
+    const alreadyOnline = await this.sessionService.checkUserOnline(
+      `${newEmail}`,
+    );
 
     if (alreadyOnline) {
       throw new Error('Session was duplicated');
     }
 
     // Find the user by email
-    const customer = await this.customerService.findFirst(email);
+    const customer = await this.customerService.findFirst(newEmail);
     if (!customer || !customer.password) {
       throw new Error('Invalid credentials');
     }
@@ -49,7 +52,7 @@ export class LoginService
 
     // Create a login record
     this.create(customer.id);
-    this.sessionService.setUserOnline(email);
+    this.sessionService.setUserOnline(newEmail);
 
     return this.jwtService.createJwtToken(customer);
   }

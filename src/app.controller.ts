@@ -1,14 +1,18 @@
 import { Controller, Get, Res } from '@nestjs/common';
 import { Response } from 'express';
+import { PrismaService } from 'prisma/prisma.service';
 
 @Controller('/health')
 export class HealthController {
-  constructor() {}
+  constructor(private readonly prisma: PrismaService) {}
 
   @Get('/')
-  create(@Res() res: Response): Response<any, Record<string, any>> {
+  async create(
+    @Res() res: Response,
+  ): Promise<Response<any, Record<string, any>>> {
     try {
       // Send a successful response with the token
+      await this.prisma.$queryRaw`SELECT 1`;
       return res.status(200).json({
         status: 200,
         message: 'Alive',

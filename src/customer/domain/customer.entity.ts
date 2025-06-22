@@ -22,8 +22,11 @@ export class CustomerEntity {
   }
 
   getDataForCreate(): Prisma.CustomerCreateInput {
-    const { skills, price, ...rest } = this.data;
-    return rest;
+    const { skills, price, email, ...rest } = this.data;
+    return {
+      ...rest,
+      email: email.toLowerCase(),
+    };
   }
 
   getSkills(): { id: string }[] {
