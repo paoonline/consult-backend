@@ -67,7 +67,10 @@ export class CustomerService
       );
 
       // Retrieve customer (within transaction context)
-      const customer = await this.customerRepository.findFirst(data.email, tx);
+      const customer = await this.customerRepository.findFirst(
+        data.email.toLowerCase(),
+        tx,
+      );
 
       if (!customer) {
         throw new Error('Customer not found for this email');
