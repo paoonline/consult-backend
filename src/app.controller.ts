@@ -2,28 +2,31 @@ import { Controller, Get, Res } from '@nestjs/common';
 import { Response } from 'express';
 import { PrismaService } from 'prisma/prisma.service';
 
-@Controller('/health')
+@Controller()
 export class HealthController {
   constructor(private readonly prisma: PrismaService) {}
 
-  @Get('/')
-  async create(
+  @Get('/health')
+  async checkHealth(
     @Res() res: Response,
   ): Promise<Response<any, Record<string, any>>> {
     try {
-      // Send a successful response with the token
       await this.prisma.$queryRaw`SELECT 1`;
+
       return res.status(200).json({
-        status: 200,
-        message: 'Alive',
+        status: 'ok',
+        db: true,
+        timestamp: new Date().toISOString(),
       });
     } catch (error: unknown) {
       const errMsg =
         error instanceof Error ? error.message : 'Unknown error occurred';
-      return res.status(400).json({
-        status: 400,
+
+      return res.status(503).json({
+        status: 'error',
+        db: false,
         message: errMsg,
-        data: '',
+        timestamp: new Date().toISOString(),
       });
     }
   }
