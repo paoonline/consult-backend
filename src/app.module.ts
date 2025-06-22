@@ -14,6 +14,7 @@ import { SkillModule } from './skillMap/skill-map.module';
 import { PaymentModule } from './payment/payment.module';
 import 'dotenv/config';
 import { HealthController } from './app.controller';
+import { HealthCronService } from './app.service';
 
 // require('dotenv').config();
 @Module({
@@ -32,6 +33,11 @@ import { HealthController } from './app.controller';
     NotificationModule,
     PaymentModule,
   ],
-  providers: [BatchNotificationService, JwtStrategy, AppGateway],
+  providers: [
+    BatchNotificationService,
+    JwtStrategy,
+    AppGateway,
+    HealthCronService,
+  ],
 })
 export class AppModule {}
