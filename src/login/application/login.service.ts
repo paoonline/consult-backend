@@ -27,13 +27,13 @@ export class LoginService
   async login(email: string, password: string): Promise<string> {
     // find user online
     const newEmail = email.toLowerCase();
-    const alreadyOnline = await this.sessionService.checkUserOnline(
-      `${newEmail}`,
-    );
+    // const alreadyOnline = await this.sessionService.checkUserOnline(
+    //   `${newEmail}`,
+    // );
 
-    if (alreadyOnline) {
-      throw new Error('Session was duplicated');
-    }
+    // if (alreadyOnline) {
+    //   throw new Error('Session was duplicated');
+    // }
 
     // Find the user by email
     const customer = await this.customerService.findFirst(newEmail);
@@ -52,7 +52,7 @@ export class LoginService
 
     // Create a login record
     this.create(customer.id);
-    this.sessionService.setUserOnline(newEmail);
+    // this.sessionService.setUserOnline(newEmail);
 
     return this.jwtService.createJwtToken(customer);
   }
