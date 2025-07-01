@@ -8,7 +8,7 @@ export class SkillController {
   constructor(private readonly skillService: SkillService) {}
 
   @Get('/')
-  @Header('Cache-Control', 'public, max-age=60, s-maxage=300')
+  @Header('Cache-Control', 'public, max-age=3600')
   //   @UseGuards(JwtAuthGuard)
   async create(
     @Res() res: Response,
