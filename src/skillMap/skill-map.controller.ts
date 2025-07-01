@@ -1,4 +1,4 @@
-import { Controller, Get, Res } from '@nestjs/common';
+import { Controller, Get, Header, Res } from '@nestjs/common';
 import { Response } from 'express';
 
 import { SkillService } from './application/skill-map.service';
@@ -8,6 +8,7 @@ export class SkillController {
   constructor(private readonly skillService: SkillService) {}
 
   @Get('/')
+  @Header('Cache-Control', 'public, max-age=60, s-maxage=300')
   //   @UseGuards(JwtAuthGuard)
   async create(
     @Res() res: Response,
