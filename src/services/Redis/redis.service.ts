@@ -20,6 +20,10 @@ export class RedisService {
     await this.redis.set(key, JSON.stringify(value));
   }
 
+  async saddValue(key: string, value: string) {
+    await this.redis.sadd(key, value);
+  }
+
   async setValueString(
     key: string,
     value: string,
@@ -33,19 +37,11 @@ export class RedisService {
     await this.redis.del(key);
   }
 
-  async getAllKey(key: string): Promise<Record<string, any>> {
-    const stream = this.redis.scanStream({
-      match: `${key}:*`,
-    });
-    const keys: Record<string, any> = {};
+  async removeKeySrem(key: string) {
+    await this.redis.srem('online:users', key);
+  }
 
-    const newRegEx = `/${key}:/`;
-    stream.on('data', (resultKeys: string[]) => {
-      for (const key of resultKeys) {
-        keys[key.replace(newRegEx, '')] = 'true';
-      }
-    });
-    await new Promise((resolve) => stream.on('end', resolve));
-    return keys;
+  async getAllKey(key: string): Promise<Record<string, any>> {
+    return this.redis.smembers(key);
   }
 }

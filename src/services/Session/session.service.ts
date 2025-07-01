@@ -8,6 +8,7 @@ export class SessionService {
 
   async logout(key: string): Promise<void> {
     await this.redisService.removeKey(key);
+    await this.redisService.removeKeySrem(key);
   }
 
   async checkUserOnline(email: string): Promise<string | null> {
@@ -34,5 +35,6 @@ export class SessionService {
       'EX',
       7200,
     );
+    await this.redisService.saddValue('online-users', email);
   }
 }

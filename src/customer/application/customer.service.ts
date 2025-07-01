@@ -104,7 +104,7 @@ export class CustomerService
         ? CustomerType.CONSULT
         : CustomerType.CUSTOMER,
     );
-    // const userKey = await this.sessionService.getAllUserOnline('online');
+    // const userKey = await this.sessionService.getAllUserOnline('online-users');
 
     const resultMap = result.map((res) => {
       // const online = userKey[res.email as string] as string;

@@ -13,6 +13,7 @@ export class BaseWorker implements OnModuleDestroy {
   ) {
     this.worker = new Worker(this.queueName, this.handler, {
       connection: this.redis,
+      autorun: false,
     });
 
     this.worker.on('completed', (job) => {

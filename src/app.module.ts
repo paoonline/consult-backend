@@ -27,7 +27,6 @@ import { HealthController } from './app.controller';
     LoginModule,
     CustomerModule,
     ConsultModule,
-    SessionModule,
     SkillModule,
     NotificationModule,
     PaymentModule,
