@@ -111,6 +111,10 @@ export class ConsultService
     //   title: 'test',
     //   device_token: '1',
     // });
+    // headers: {
+    //   'x-delay-until': deliverAt.toString(),
+    // },
+    // x-delay-until
     // await this.kafkaService.sendMessage('NotificationQueue', JSON.stringify({ id: consult.id, description: "test", title: "test", device_token: "1"}));
     return consult;
   }

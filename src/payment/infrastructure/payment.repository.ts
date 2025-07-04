@@ -2,14 +2,14 @@ import { Injectable } from '@nestjs/common';
 import { PaymentTransaction } from '@prisma/client';
 import { PrismaService } from 'prisma/prisma.service';
 import { IRepository } from 'src/utils/respository';
-import { PaymentEntity } from '../domain/payment.entity';
+import { PaymentTransactionInput } from '../application/payment.type';
 
 @Injectable()
 export class PaymentRepository
   implements
     IRepository<
       Partial<PaymentTransaction>, //return
-      PaymentEntity, //params
+      PaymentTransactionInput, //params
       null,
       null,
       PaymentTransaction //create return
@@ -17,13 +17,13 @@ export class PaymentRepository
 {
   constructor(private readonly prisma: PrismaService) {}
 
-  create(data: PaymentEntity): Promise<PaymentTransaction> {
+  create(data: PaymentTransactionInput): Promise<PaymentTransaction> {
     return this.prisma.paymentTransaction.create({
       data: {
-        consult_id: String(data.getData().consult_id),
-        customer_id: String(data.getData().customer_id),
-        price: data.getData().price,
-        consult_transaction_id: data.getData().consult_transaction_id,
+        consult_id: data.consult_id,
+        customer_id: data.customer_id,
+        price: data.price,
+        consult_transaction_id: data.consult_transaction_id,
       },
     });
   }

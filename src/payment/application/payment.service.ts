@@ -3,11 +3,13 @@ import { Injectable } from '@nestjs/common';
 import camelcaseKeys from 'camelcase-keys';
 import { instanceToPlain } from 'class-transformer';
 import snakecaseKeys from 'snakecase-keys';
-import { createFactory } from 'src/utils/factory';
 import { IRepository } from 'src/utils/respository';
+import { PaymentBuilder } from '../domain/payment.builder';
 import { PaymentEntity } from '../domain/payment.entity';
 import { PaymentRepository } from '../infrastructure/payment.repository';
 import { IPaymentDto } from './dto/payment.dto';
+// import { LegacyPaymentInput } from './payment.type';
+// import { LegacyPaymentAdapter } from '../infrastructure/payment.adapter';
 
 @Injectable()
 export class PaymentService
@@ -18,10 +20,29 @@ export class PaymentService
     const plainData = instanceToPlain(data);
     const snakeData = snakecaseKeys(plainData) as PaymentTransaction;
 
+    const input = new PaymentBuilder()
+      .setPaymentDate(snakeData.payment_date)
+      .setPrice(snakeData.price)
+      .setConsultId(snakeData.consult_id!)
+      .setConsultTransactionId(snakeData.consult_transaction_id)
+      .setCustomerId(snakeData.customer_id!)
+      .build();
+
+    const paymentEntity = new PaymentEntity(input);
+
+    // const legacyData: LegacyPaymentInput = {
+    //   amount: 1000,
+    //   paid_on: '2025-07-03T13:00:00Z',
+    //   cust_id: 'cus_abc123',
+    // };
+
+    // const builder = new LegacyPaymentAdapter(legacyData).toBuilder();
+    // const newPayment = builder.build();
+
     const payment = await this.paymentRepository.create(
-      createFactory(snakeData, PaymentEntity),
+      paymentEntity.getData(),
     );
-    return camelcaseKeys(payment as Partial<PaymentTransaction>) as IPaymentDto;
+    return camelcaseKeys(payment) as IPaymentDto;
   }
 
   async findMany(id: string): Promise<IPaymentDto[]> {
