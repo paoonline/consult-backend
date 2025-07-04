@@ -9,6 +9,7 @@ import { FirebaseService } from 'src/services/Firebase/firebase.service';
 import { chunkArray } from 'src/utils/array';
 import { NotificationRepository } from '../infrastructure/notification.repository';
 import { NotificationDto } from './dto/notification.dto';
+import { createFactory } from 'src/utils/factory';
 
 interface IPushNoti {
   pushNoti(): Promise<ConsultNotification[]>;
@@ -27,6 +28,7 @@ export class NotificationService
   async create(data: NotificationDto): Promise<NotificationDto> {
     const plainData = instanceToPlain(data);
     const snakeData = snakecaseKeys(plainData) as ConsultNotification;
+
     const noti = await this.notiRepository.create(snakeData);
     return camelcaseKeys(noti);
   }

@@ -5,7 +5,7 @@ export class PaymentEntity {
     if (this.isSuspicious()) {
       throw new Error('Payment is suspicious');
     }
-    if (this.isPriceZero()) {
+    if (this.isPriceLessThanZero()) {
       throw new Error('Price is zero');
     }
   }
@@ -20,7 +20,7 @@ export class PaymentEntity {
     return this.data.price > 100000 || this.getDaysSincePayment() > 30;
   }
 
-  isPriceZero(): boolean {
+  isPriceLessThanZero(): boolean {
     return this.data.price < 0;
   }
 
