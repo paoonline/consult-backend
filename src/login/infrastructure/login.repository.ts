@@ -2,7 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { login } from '@prisma/client';
 import { PrismaService } from 'prisma/prisma.service';
 import { IRepository } from 'src/utils/respository';
-import { LoginEntity } from '../domain/login.entity';
+import { LoginInput } from '../domain/login.entity';
 // src/
 //   └── user/
 //       ├── domain/
@@ -25,7 +25,7 @@ import { LoginEntity } from '../domain/login.entity';
 
 @Injectable()
 export class LoginRepository
-  implements Omit<IRepository<login, LoginEntity>, 'delete'>
+  implements Omit<IRepository<login, LoginInput>, 'delete'>
 {
   constructor(private readonly prisma: PrismaService) {}
 
@@ -33,9 +33,9 @@ export class LoginRepository
     return await this.prisma.login.findMany();
   }
 
-  async create(data: LoginEntity) {
+  async create(data: LoginInput) {
     await this.prisma.login.create({
-      data: { email_id: data.getEmail() },
+      data: { email_id: data.email_id },
     });
   }
 

@@ -20,8 +20,34 @@ export class LoginService
     private readonly customerService: CustomerService,
   ) {}
 
+  createLoginRecord(emailId: string, date?: Date | null): LoginEntity {
+    return createFactory(
+      { email_id: emailId, login_date: date ?? new Date() },
+      LoginEntity,
+    );
+  }
+
   async create(id: string): Promise<void> {
-    await this.loginRepository.create(createFactory(id, LoginEntity));
+    const newLogin = this.createLoginRecord(id);
+    const lastLoginFromDB = await this.loginRepository.findOne(id);
+    if (!lastLoginFromDB) {
+      throw new Error("Can't find last login");
+    }
+
+    // const newLastLoginBuilder = new LoginBuilder()
+    //   .setLoginDate(lastLoginFromDB.login_date)
+    //   .build();
+
+    const newLastLoginBuilder = this.createLoginRecord(
+      lastLoginFromDB.email_id,
+      lastLoginFromDB.login_date,
+    );
+
+    if (newLogin.isDuplicateOf(newLastLoginBuilder)) {
+      throw new Error('Duplicate login');
+    }
+
+    await this.loginRepository.create(this.createLoginRecord(id).getData());
   }
 
   async login(email: string, password: string): Promise<string> {
@@ -51,7 +77,7 @@ export class LoginService
     }
 
     // Create a login record
-    this.create(customer.id);
+    await this.create(customer.id);
     // this.sessionService.setUserOnline(newEmail);
 
     return this.jwtService.createJwtToken(customer);

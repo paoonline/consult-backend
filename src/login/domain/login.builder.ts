@@ -1,0 +1,25 @@
+import { LoginInput } from './login.entity';
+
+export class LoginBuilder {
+  private data: LoginInput = {
+    email_id: '',
+    login_date: new Date(),
+  };
+
+  setLoginDate(date?: Date | null) {
+    this.data.login_date = date ?? new Date();
+    return this;
+  }
+
+  setEmail(id: string) {
+    this.data.email_id = id;
+    return this;
+  }
+
+  build(): LoginInput {
+    if (!this.data.login_date || !this.data.email_id) {
+      throw new Error('Missing required payment fields');
+    }
+    return this.data; // ควรใช้ type ที่ตรง
+  }
+}
