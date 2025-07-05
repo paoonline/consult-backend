@@ -1,6 +1,6 @@
 export type LoginInput = {
   email_id: string;
-  login_date?: Date;
+  login_date: Date;
 };
 
 export class LoginEntity {
