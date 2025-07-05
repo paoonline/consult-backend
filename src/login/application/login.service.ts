@@ -9,7 +9,7 @@ import { login } from '.prisma/client';
 import camelcaseKeys from 'camelcase-keys';
 import { createFactory } from 'src/utils/factory';
 import { LoginEntity } from '../domain/login.entity';
-import { LoginBuilder } from '../domain/login.builder';
+// import { LoginBuilder } from '../domain/login.builder';
 @Injectable()
 export class LoginService
   implements Omit<IRepository<loginLogDto, string>, 'delete'>
