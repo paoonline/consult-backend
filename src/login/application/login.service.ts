@@ -31,17 +31,17 @@ export class LoginService
   async create(id: string): Promise<void> {
     const newLogin = this.createLoginRecord(id);
     const lastLoginFromDB = await this.loginRepository.findOne(id);
-    const newLastLoginBuilder = new LoginBuilder()
-      .setEmail(lastLoginFromDB?.email_id)
-      .setLoginDate(lastLoginFromDB?.login_date)
-      .build();
+    // const newLastLoginBuilder = new LoginBuilder()
+    //   .setEmailId(lastLoginFromDB?.email_id)
+    //   .setLoginDate(lastLoginFromDB?.login_date)
+    //   .build();
 
-    // const newLastLoginBuilder = this.createLoginRecord(
-    //   lastLoginFromDB?.email_id,
-    //   lastLoginFromDB?.login_date,
-    // );
+    const newLastLoginBuilder = this.createLoginRecord(
+      lastLoginFromDB?.email_id ?? '',
+      lastLoginFromDB?.login_date,
+    );
 
-    if (newLogin.isDuplicateOf(newLastLoginBuilder?.login_date)) {
+    if (newLogin.isDuplicateOf(newLastLoginBuilder)) {
       throw new Error('Duplicate login');
     }
 

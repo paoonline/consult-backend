@@ -11,7 +11,7 @@ export class LoginBuilder {
     return this;
   }
 
-  setEmail(id?: string) {
+  setEmailId(id?: string) {
     if (!id) throw new Error('id undefined');
     this.data.email_id = id;
     return this;
@@ -19,7 +19,7 @@ export class LoginBuilder {
 
   build(): LoginInput {
     if (!this.data.email_id) {
-      throw new Error('Missing required payment fields');
+      throw new Error('Missing required login fields');
     }
     return this.data; // ควรใช้ type ที่ตรง
   }
