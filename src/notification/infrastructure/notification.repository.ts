@@ -41,7 +41,11 @@ export class NotificationRepository
   async create(data: NotificationInput): Promise<ConsultNotification> {
     return this.prisma.consultNotification.create({
       data: {
-        ...data,
+        title: data.title,
+        consult_transaction_id: data.consult_transaction_id,
+        device_token: data.device_token ?? '',
+        description: data.description,
+        noti_date: data.noti_date,
       },
     });
   }
@@ -75,7 +79,7 @@ export class NotificationRepository
       where: { is_push_noti: false },
       select: { device_token: true },
     });
-    return noti as ConsultNotification[];
+    return noti;
   }
 
   async updateMany(): Promise<number> {
