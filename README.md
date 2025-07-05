@@ -1,98 +1,218 @@
-<p align="center">
-  <a href="http://nestjs.com/" target="blank"><img src="https://nestjs.com/img/logo-small.svg" width="120" alt="Nest Logo" /></a>
-</p>
+# 📦 Prisma Schema Overview
 
-[circleci-image]: https://img.shields.io/circleci/build/github/nestjs/nest/master?token=abc123def456
-[circleci-url]: https://circleci.com/gh/nestjs/nest
+This project uses **Prisma ORM** to manage PostgreSQL schemas with clear relations, enums, and data modeling.
 
-  <p align="center">A progressive <a href="http://nodejs.org" target="_blank">Node.js</a> framework for building efficient and scalable server-side applications.</p>
-    <p align="center">
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/v/@nestjs/core.svg" alt="NPM Version" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/l/@nestjs/core.svg" alt="Package License" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/dm/@nestjs/common.svg" alt="NPM Downloads" /></a>
-<a href="https://circleci.com/gh/nestjs/nest" target="_blank"><img src="https://img.shields.io/circleci/build/github/nestjs/nest/master" alt="CircleCI" /></a>
-<a href="https://discord.gg/G7Qnnhy" target="_blank"><img src="https://img.shields.io/badge/discord-online-brightgreen.svg" alt="Discord"/></a>
-<a href="https://opencollective.com/nest#backer" target="_blank"><img src="https://opencollective.com/nest/backers/badge.svg" alt="Backers on Open Collective" /></a>
-<a href="https://opencollective.com/nest#sponsor" target="_blank"><img src="https://opencollective.com/nest/sponsors/badge.svg" alt="Sponsors on Open Collective" /></a>
-  <a href="https://paypal.me/kamilmysliwiec" target="_blank"><img src="https://img.shields.io/badge/Donate-PayPal-ff3f59.svg" alt="Donate us"/></a>
-    <a href="https://opencollective.com/nest#sponsor"  target="_blank"><img src="https://img.shields.io/badge/Support%20us-Open%20Collective-41B883.svg" alt="Support us"></a>
-  <a href="https://twitter.com/nestframework" target="_blank"><img src="https://img.shields.io/twitter/follow/nestframework.svg?style=social&label=Follow" alt="Follow us on Twitter"></a>
-</p>
-  <!--[![Backers on Open Collective](https://opencollective.com/nest/backers/badge.svg)](https://opencollective.com/nest#backer)
-  [![Sponsors on Open Collective](https://opencollective.com/nest/sponsors/badge.svg)](https://opencollective.com/nest#sponsor)-->
+---
 
-## Description
+## ⚙️ Configuration
 
-[Nest](https://github.com/nestjs/nest) framework TypeScript starter repository.
+```ts
+generator client {
+  provider = "prisma-client-js"
+}
 
-## Project setup
-
-```bash
-$ yarn install
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
 ```
 
-## Compile and run the project
+- Uses **Prisma Client** to interact with the database.
+- Uses **PostgreSQL** as the underlying database engine.
 
-```bash
-# development
-$ yarn run start
+---
 
-# watch mode
-$ yarn run start:dev
+## 📚 Core Models
 
-# production mode
-$ yarn run start:prod
+### 🔐 `login`
+
+Stores login history of a user by email.
+
+| Field       | Type      | Notes                    |
+|-------------|-----------|--------------------------|
+| `id`        | String    | Primary key (UUID)       |
+| `email_id`  | String    | Email used for login     |
+| `login_date`| DateTime? | Optional. Defaults to now() |
+
+---
+
+### 💰 `PaymentTransaction`
+
+Stores payment information for consult transactions.
+
+| Field                    | Type              | Notes                                 |
+|--------------------------|-------------------|---------------------------------------|
+| `id`                     | String            | Primary key                           |
+| `price`                  | Float             | Default = 0.00                        |
+| `payment_date`           | DateTime          | Default = now()                       |
+| `consult_transaction_id` | String            | Unique. FK to `ConsultTransaction`    |
+| `customer_id`            | String?           | FK to `Customer` (payer)              |
+| `consult_id`             | String?           | FK to `Customer` (receiver)           |
+
+> ✅ Indexed by: `customer_id`, `consult_id`  
+> 🧭 Table: `payment_transaction`
+
+---
+
+### 🤝 `ConsultTransaction`
+
+Represents a consulting session between customer and consultant.
+
+| Field                  | Type                  | Notes                                  |
+|------------------------|-----------------------|----------------------------------------|
+| `customer_id`          | String                | FK to `Customer` (client)              |
+| `consult_id`           | String                | FK to `Customer` (consultant)          |
+| `start_date`, `end_date` | DateTime           | Time range of consultation            |
+| `time_list`            | TimeLimitType         | Enum                                   |
+| `is_pass`              | Boolean               | Default: false                         |
+| `paymentTransaction`   | PaymentTransaction?   | One-to-one                             |
+| `consultNotification`  | ConsultNotification?  | One-to-one                             |
+
+> 🧭 Table: `consult_transaction`
+
+---
+
+### 👤 `Customer`
+
+Main user model representing either a customer or consultant.
+
+- **One-to-one**: `CustomerDetail`  
+- **One-to-many**: `ConsultTransaction`, `PaymentTransaction`, `DeviceToken`  
+- **Many-to-many**: `Skill`
+
+| Field           | Type             | Notes                         |
+|-----------------|------------------|-------------------------------|
+| `email`         | String           | Unique                        |
+| `password`, `job`, `phone_number` | String | Basic profile info |
+| `customer_type` | CustomerType     | Enum                          |
+| `online_status` | Boolean          | Default: false                |
+| `verify_email`  | Boolean          | Default: false                |
+
+> 🧭 Table: `customer`
+
+---
+
+### 🔔 `ConsultNotification`
+
+Push notification related to a consult transaction.
+
+| Field                    | Type              | Notes                              |
+|--------------------------|-------------------|------------------------------------|
+| `title`, `description`   | String            | Notification content               |
+| `is_push_noti`           | Boolean           | Push status                        |
+| `consult_transaction_id` | String            | FK to `ConsultTransaction`         |
+| `device_token_id`        | String            | FK to `DeviceToken`                |
+
+> 🧭 Table: `notification`
+
+---
+
+### 📱 `DeviceToken`
+
+Represents FCM device token registration.
+
+| Field        | Type          | Notes                          |
+|--------------|---------------|--------------------------------|
+| `token`      | String        | Unique                         |
+| `platform`   | PlatformType  | Enum: web, ios, android        |
+| `customer_id`| String        | FK to `Customer`               |
+| `active`     | Boolean       | Default: true                  |
+
+---
+
+### 🗒️ `Note`
+
+Simple note linked to a consult transaction.
+
+| Field                  | Type     | Notes                      |
+|------------------------|----------|----------------------------|
+| `description`          | String   | Note content               |
+| `note_date`            | DateTime | Default: now()             |
+| `consult_transaction_id` | String | FK to `ConsultTransaction` |
+
+> 🧭 Table: `note`
+
+---
+
+### 💬 `ConsultComment`
+
+Review or rating left by a customer.
+
+| Field                    | Type         | Notes                              |
+|--------------------------|--------------|------------------------------------|
+| `description`, `rate`    | String, Int  | Comment content and rating         |
+| `consult_transaction_id` | String       | FK to `ConsultTransaction`         |
+| `customer_detail_id`     | String       | FK to `CustomerDetail`             |
+
+> 🧭 Table: `consult_comment`
+
+---
+
+### 📄 `CustomerDetail`
+
+Extended profile data, including pricing and rating.
+
+- One-to-one with `Customer`
+- One-to-many with `Booking`, `ConsultComment`
+
+> 🧭 Table: `customer_detail`
+
+---
+
+### 🧠 `Skill`
+
+Many-to-many relation to represent user expertise.
+
+> 🧭 Table: `skill`
+
+---
+
+### 📅 `Booking`
+
+Time slot booked by a customer.
+
+| Field              | Type     | Notes                        |
+|--------------------|----------|------------------------------|
+| `time`             | DateTime | Booking time                 |
+| `customer_detail_id` | String | FK to `CustomerDetail`       |
+
+> 🧭 Table: `booking`
+
+---
+
+## 🔘 Enums
+
+### `CustomerType`
+
+```ts
+CONSULT
+CUSTOMER
 ```
 
-## Run tests
+---
 
-```bash
-# unit tests
-$ yarn run test
+### `TimeLimitType`
 
-# e2e tests
-$ yarn run test:e2e
-
-# test coverage
-$ yarn run test:cov
+```ts
+ONE_HR
+TWO_HR
 ```
 
-## Deployment
+---
 
-When you're ready to deploy your NestJS application to production, there are some key steps you can take to ensure it runs as efficiently as possible. Check out the [deployment documentation](https://docs.nestjs.com/deployment) for more information.
+### `PlatformType`
 
-If you are looking for a cloud-based platform to deploy your NestJS application, check out [Mau](https://mau.nestjs.com), our official platform for deploying NestJS applications on AWS. Mau makes deployment straightforward and fast, requiring just a few simple steps:
-
-```bash
-$ yarn install -g mau
-$ mau deploy
+```ts
+web
+ios
+android
 ```
 
-With Mau, you can deploy your application in just a few clicks, allowing you to focus on building features rather than managing infrastructure.
+---
 
-## Resources
+## 📌 Developer Notes
 
-Check out a few resources that may come in handy when working with NestJS:
-
-- Visit the [NestJS Documentation](https://docs.nestjs.com) to learn more about the framework.
-- For questions and support, please visit our [Discord channel](https://discord.gg/G7Qnnhy).
-- To dive deeper and get more hands-on experience, check out our official video [courses](https://courses.nestjs.com/).
-- Deploy your application to AWS with the help of [NestJS Mau](https://mau.nestjs.com) in just a few clicks.
-- Visualize your application graph and interact with the NestJS application in real-time using [NestJS Devtools](https://devtools.nestjs.com).
-- Need help with your project (part-time to full-time)? Check out our official [enterprise support](https://enterprise.nestjs.com).
-- To stay in the loop and get updates, follow us on [X](https://x.com/nestframework) and [LinkedIn](https://linkedin.com/company/nestjs).
-- Looking for a job, or have a job to offer? Check out our official [Jobs board](https://jobs.nestjs.com).
-
-## Support
-
-Nest is an MIT-licensed open source project. It can grow thanks to the sponsors and support by the amazing backers. If you'd like to join them, please [read more here](https://docs.nestjs.com/support).
-
-## Stay in touch
-
-- Author - [Kamil Myśliwiec](https://twitter.com/kammysliwiec)
-- Website - [https://nestjs.com](https://nestjs.com/)
-- Twitter - [@nestframework](https://twitter.com/nestframework)
-
-## License
-
-Nest is [MIT licensed](https://github.com/nestjs/nest/blob/master/LICENSE).
+- Use `npx prisma migrate dev` to apply schema changes
+- Use `npx prisma generate` to update Prisma Client
+- DB connection URL is stored in `.env` as `DATABASE_URL`
+- All models use UUIDs (`@default(uuid())`) for primary keys
