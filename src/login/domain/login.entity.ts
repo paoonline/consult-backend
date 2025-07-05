@@ -14,9 +14,9 @@ export class LoginEntity {
     return this.data.login_date;
   }
 
-  isDuplicateOf(other: LoginEntity): boolean {
+  isDuplicateOf(other?: Date): boolean {
     const dateA = this.getLoginDate();
-    const dateB = other.getLoginDate();
+    const dateB = other;
     if (!dateA || !dateB) return false;
 
     const diff = Math.abs(dateA.getTime() - dateB.getTime());

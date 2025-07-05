@@ -9,6 +9,7 @@ import { login } from '.prisma/client';
 import camelcaseKeys from 'camelcase-keys';
 import { createFactory } from 'src/utils/factory';
 import { LoginEntity } from '../domain/login.entity';
+import { LoginBuilder } from '../domain/login.builder';
 @Injectable()
 export class LoginService
   implements Omit<IRepository<loginLogDto, string>, 'delete'>
@@ -30,20 +31,16 @@ export class LoginService
   async create(id: string): Promise<void> {
     const newLogin = this.createLoginRecord(id);
     const lastLoginFromDB = await this.loginRepository.findOne(id);
-    if (!lastLoginFromDB) {
-      throw new Error("Can't find last login");
-    }
+    const newLastLoginBuilder = new LoginBuilder()
+      .setLoginDate(lastLoginFromDB?.login_date)
+      .build();
 
-    // const newLastLoginBuilder = new LoginBuilder()
-    //   .setLoginDate(lastLoginFromDB.login_date)
-    //   .build();
+    // const newLastLoginBuilder = this.createLoginRecord(
+    //   lastLoginFromDB?.email_id,
+    //   lastLoginFromDB?.login_date,
+    // );
 
-    const newLastLoginBuilder = this.createLoginRecord(
-      lastLoginFromDB.email_id,
-      lastLoginFromDB.login_date,
-    );
-
-    if (newLogin.isDuplicateOf(newLastLoginBuilder)) {
+    if (newLogin.isDuplicateOf(newLastLoginBuilder?.login_date)) {
       throw new Error('Duplicate login');
     }
 

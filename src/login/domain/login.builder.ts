@@ -11,7 +11,8 @@ export class LoginBuilder {
     return this;
   }
 
-  setEmail(id: string) {
+  setEmail(id?: string) {
+    if (!id) throw new Error('id undefined');
     this.data.email_id = id;
     return this;
   }
