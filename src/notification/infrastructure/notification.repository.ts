@@ -40,7 +40,9 @@ export class NotificationRepository
 
   async create(data: NotificationInput): Promise<ConsultNotification> {
     return this.prisma.consultNotification.create({
-      data,
+      data: {
+        ...data,
+      },
     });
   }
 
