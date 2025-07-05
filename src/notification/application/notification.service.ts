@@ -4,13 +4,13 @@ import camelcaseKeys from 'camelcase-keys';
 import { instanceToPlain } from 'class-transformer';
 import snakecaseKeys from 'snakecase-keys';
 
-import { IRepository } from 'src/utils/respository';
 import { FirebaseService } from 'src/services/Firebase/firebase.service';
 import { chunkArray } from 'src/utils/array';
+import { createFactory } from 'src/utils/factory';
+import { IRepository } from 'src/utils/respository';
+import { NotificationEntity } from '../domain/notification.entity';
 import { NotificationRepository } from '../infrastructure/notification.repository';
 import { NotificationDto } from './dto/notification.dto';
-import { createFactory } from 'src/utils/factory';
-import { NotificationEntity } from '../domain/notification.entity';
 
 interface IPushNoti {
   pushNoti(): Promise<ConsultNotification[]>;
@@ -48,10 +48,16 @@ export class NotificationService
 
   async pushNoti(): Promise<ConsultNotification[]> {
     const pendingNotis = await this.notiRepository.findMany();
-    if (pendingNotis.length > 0) {
-      const tokens = pendingNotis.map((r) => r.device_token);
 
-      const tokenChunks = chunkArray(tokens, 500);
+    const pushableEntities = pendingNotis
+      .map((raw) => new NotificationEntity(raw))
+      .filter((entity) => entity.isPushable());
+
+    if (pendingNotis.length > 0) {
+      const tokens = pushableEntities.map(
+        (e) => e.getData().device_token || '',
+      );
+      const tokenChunks = chunkArray(tokens || [], 500);
       await this.notiRepository.updateMany();
 
       // push 500 token per request

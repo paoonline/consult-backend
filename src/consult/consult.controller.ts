@@ -127,38 +127,6 @@ export class ConsultController {
     }
   }
 
-  // @Patch(':customerId/:consultId')
-  // @UseGuards(JwtAuthGuard)
-  // async meeting(
-  //   @Headers('authorization') authHeader: string,
-  //   @Res() res: Response,
-  //   @Param('customerId') customerId: string,
-  //   @Param('consultId') consultId: string,
-  // ): Promise<Response<any, Record<string, any>>> {
-  //   try {
-  //     const token = authHeader?.replace('Bearer ', '');
-  //     const meeting = await this.consultService.meeting(
-  //       customerId,
-  //       consultId,
-  //       token,
-  //     );
-  //     // Send a successful response with the token
-  //     return res.status(200).json({
-  //       status: 200,
-  //       message: 'Meeting successful',
-  //       data: meeting,
-  //     });
-  //   } catch (error: unknown) {
-  //     const errMsg =
-  //       error instanceof Error ? error.message : 'Unknown error occurred';
-  //     return res.status(400).json({
-  //       status: 400,
-  //       message: errMsg,
-  //       data: '',
-  //     });
-  //   }
-  // }
-
   @Get('/note')
   @UseGuards(JwtAuthGuard)
   async getAllNotes(
@@ -302,71 +270,4 @@ export class ConsultController {
       });
     }
   }
-
-  // @Post('/notification')
-  // @UseGuards(JwtAuthGuard)
-  // async createNotification(
-  //   @Res() res: Response,
-  //   @Body() data: ConsultNotificationDto,
-  // ): Promise<Response<any, Record<string, any>>> {
-  //   try {
-  //     const notification = await this.consultNotiService.create(data);
-  //     // Send a successful response with the token
-  //     return res.status(200).json({
-  //       status: 200,
-  //       message: 'Create successful',
-  //       data: notification,
-  //     });
-  //   } catch (error) {
-  //     // Handle errors, for example, invalid credentials
-  //     return res.status(400).json({
-  //       status: 400,
-  //       message: error.message,
-  //       data: '',
-  //     });
-  //   }
-  // }
-
-  // @Get('/notification/:notificationId')
-  // @UseGuards(JwtAuthGuard)
-  // async getNotificationByid(
-  //   @Res() res: Response,
-  //   @Param('notificationId') notificationId: string,
-  // ): Promise<Response<any, Record<string, any>>> {
-  //   try {
-  //     const notification = await this.consultNotiService.findByNotificationId(notificationId);
-  //     return res.status(200).json({
-  //       status: 200,
-  //       message: 'successful',
-  //       data: notification,
-  //     });
-  //   } catch (error) {
-  //     return res.status(400).json({
-  //       status: 400,
-  //       message: error.message,
-  //       data: '',
-  //     });
-  //   }
-  // }
-
-  // @Get('/notification')
-  // @UseGuards(JwtAuthGuard)
-  // async getAllNotification(
-  //   @Res() res: Response,
-  // ): Promise<Response<any, Record<string, any>>> {
-  //   try {
-  //     const notification = await this.consultNotiService.findAll();
-  //     return res.status(200).json({
-  //       status: 200,
-  //       message: 'successful',
-  //       data: notification,
-  //     });
-  //   } catch (error) {
-  //     return res.status(400).json({
-  //       status: 400,
-  //       message: error.message,
-  //       data: '',
-  //     });
-  //   }
-  // }
 }
