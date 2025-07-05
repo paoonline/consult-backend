@@ -16,8 +16,8 @@ export class NotificationEntity {
   }
 
   private hasValidDeviceToken(): boolean {
-    if (!this?.data?.device_token?.length) return false;
-    return this.data.device_token.length > 10; // example validation
+    if (!this?.data?.device_token_id?.length) return false;
+    return this.data.device_token_id.length > 10; // example validation
   }
 
   private isExpired(): boolean {

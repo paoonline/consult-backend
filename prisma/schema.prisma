@@ -13,38 +13,6 @@ model login {
   login_date DateTime? @default(now())
 }
 
-model Customer {
-  id              String          @id @default(uuid())
-  email           String          @unique @db.VarChar(20)
-  password        String          @db.VarChar(100)
-  job             String          @db.VarChar(50)
-  address         String          @db.VarChar(255)
-  phone_number    String          @db.VarChar(10)
-  description     String          @db.VarChar(255)
-  customer_type   CustomerType
-  created_at      DateTime        @default(now())
-  updated_at      DateTime        @updatedAt
-  profile_image   String?         @db.VarChar(255)
-  customer_detail CustomerDetail? @relation("CustomerToDetail")
-  first_name             String               @default("firstName")
-  last_name              String               @default("lastName")
-
-  // many to many
-  skills          Skill[]
-  online_status   Boolean         @default(false)
-  verify_email    Boolean         @default(false)
-
-  // 👇 back-relations
-  clientTransactions     ConsultTransaction[] @relation("CustomerIsClient")
-  consultantTransactions ConsultTransaction[] @relation("CustomerIsConsultant")
-
-  customer_payment  PaymentTransaction[] @relation("CustomerToPayments")
-  consult_payment   PaymentTransaction[] @relation("ConsultantToPayments")
-
-  @@index([customer_type])
-  @@map("customer")
-}
-
 model PaymentTransaction {
   id String @id @default(uuid())
 
@@ -89,6 +57,39 @@ model ConsultTransaction {
   @@map("consult_transaction")
 }
 
+model Customer {
+  id              String          @id @default(uuid())
+  email           String          @unique @db.VarChar(20)
+  password        String          @db.VarChar(100)
+  job             String          @db.VarChar(50)
+  address         String          @db.VarChar(255)
+  phone_number    String          @db.VarChar(10)
+  description     String          @db.VarChar(255)
+  customer_type   CustomerType
+  created_at      DateTime        @default(now())
+  updated_at      DateTime        @updatedAt
+  profile_image   String?         @db.VarChar(255)
+  customer_detail CustomerDetail? @relation("CustomerToDetail")
+  first_name             String               @default("firstName")
+  last_name              String               @default("lastName")
+
+  // many to many
+  skills          Skill[]
+  online_status   Boolean         @default(false)
+  verify_email    Boolean         @default(false)
+
+  // 👇 back-relations
+  clientTransactions     ConsultTransaction[] @relation("CustomerIsClient")
+  consultantTransactions ConsultTransaction[] @relation("CustomerIsConsultant")
+  customer_payment  PaymentTransaction[] @relation("CustomerToPayments")
+  consult_payment   PaymentTransaction[] @relation("ConsultantToPayments")
+  
+  deviceTokens           DeviceToken[]
+
+  @@index([customer_type])
+  @@map("customer")
+}
+
 model ConsultNotification {
   id String @id @default(uuid())
 
@@ -98,8 +99,8 @@ model ConsultNotification {
   is_push_noti Boolean @default(false)
   consult_transaction_id String             @unique
   consultTransaction       ConsultTransaction  @relation("TransactionToNotification", fields: [consult_transaction_id], references: [id])
-  deviceToken DeviceToken? @relation(fields: [deviceTokenId], references: [id])
-  deviceTokenId String?
+  deviceToken DeviceToken? @relation(fields: [device_token_id], references: [id])
+  device_token_id String
 
   @@index([is_push_noti])
   @@map("notification")
@@ -108,11 +109,13 @@ model ConsultNotification {
 model DeviceToken {
   id          String   @id @default(uuid())
   token       String   @unique
-  platform    String?  // 'web', 'ios', 'android'
-  customer    Customer @relation(fields: [customerId], references: [id])
-  customerId  String
-  createdAt   DateTime @default(now())
+  platform    PlatformType  // 'web', 'ios', 'android'
+  customer    Customer @relation(fields: [customer_id], references: [id])
+  customer_id String
+  created_at   DateTime @default(now())
   active      Boolean  @default(true)
+
+  notifications ConsultNotification[]
 }
 
 
@@ -183,4 +186,11 @@ enum CustomerType {
 enum TimeLimitType {
   ONE_HR
   TWO_HR
+}
+
+
+enum PlatformType {
+  web
+  ios
+  android
 }

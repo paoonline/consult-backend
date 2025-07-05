@@ -11,7 +11,7 @@ export class NotificationDto {
 
   @IsNotEmpty()
   @MaxLength(100)
-  deviceToken: string;
+  deviceTokenId: string;
 
   @IsNotEmpty()
   @MaxLength(255)

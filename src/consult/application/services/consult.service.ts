@@ -93,7 +93,7 @@ export class ConsultService
           consultTransactionId: consult.id,
           description: 'test',
           title: 'test',
-          deviceToken: '1',
+          deviceTokenId: '1',
         },
       ),
     ]);

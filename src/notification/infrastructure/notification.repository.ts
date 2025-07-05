@@ -26,7 +26,7 @@ export class NotificationRepository
         noti_date: true,
         is_push_noti: true,
         consult_transaction_id: true,
-        device_token: true,
+        device_token_id: true,
         consultTransaction: {
           select: {
             id: true,
@@ -43,7 +43,7 @@ export class NotificationRepository
       data: {
         title: data.title,
         consult_transaction_id: data.consult_transaction_id,
-        device_token: data.device_token ?? '',
+        device_token_id: data.device_token_id ?? '',
         description: data.description,
         noti_date: data.noti_date,
       },
@@ -59,7 +59,7 @@ export class NotificationRepository
         noti_date: true,
         is_push_noti: true,
         consult_transaction_id: true,
-        device_token: true,
+        device_token_id: true,
         consultTransaction: {
           select: {
             id: true,
@@ -77,7 +77,7 @@ export class NotificationRepository
   async findMany(): Promise<ConsultNotification[]> {
     const noti = await this.prisma.consultNotification.findMany({
       where: { is_push_noti: false },
-      select: { device_token: true },
+      select: { device_token_id: true },
     });
     return noti as ConsultNotification[];
   }

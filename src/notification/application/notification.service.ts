@@ -5,7 +5,7 @@ import { instanceToPlain } from 'class-transformer';
 import snakecaseKeys from 'snakecase-keys';
 
 import { FirebaseService } from 'src/services/Firebase/firebase.service';
-import { chunkArray } from 'src/utils/array';
+// import { chunkArray } from 'src/utils/array';
 import { createFactory } from 'src/utils/factory';
 import { IRepository } from 'src/utils/respository';
 import { NotificationEntity } from '../domain/notification.entity';
@@ -38,37 +38,39 @@ export class NotificationService
 
   async findAll(): Promise<NotificationDto[]> {
     const noti = await this.notiRepository.findAll();
-    return noti.map((item) => camelcaseKeys(item));
+    return noti.map((item) => camelcaseKeys(item)) as NotificationDto[];
   }
 
   async findOne(id: string): Promise<NotificationDto> {
     const noti = await this.notiRepository.findOne(id);
-    return camelcaseKeys(noti);
+    return camelcaseKeys(noti) as NotificationDto;
   }
 
   async pushNoti(): Promise<ConsultNotification[]> {
     const pendingNotis = await this.notiRepository.findMany();
+    // if (pendingNotis.length > 0) {
+    //   const tokens = pendingNotis.map((r) => r.device_token_id as string);
 
-    const pushableEntities = pendingNotis
-      .map((raw) => new NotificationEntity(raw))
-      .filter((entity) => entity.isPushable());
+    // const pushableEntities = pendingNotis
+    //   .map((raw) => new NotificationEntity(raw))
+    //   .filter((entity) => entity.isPushable());
 
-    if (pendingNotis.length > 0) {
-      const tokens = pushableEntities.map(
-        (e) => e.getData().device_token || '',
-      );
-      const tokenChunks = chunkArray(tokens || [], 500);
-      await this.notiRepository.updateMany();
+    // if (pendingNotis.length > 0) {
+    //   const tokens = pushableEntities.map(
+    //     (e) => e.getData().device_token || '',
+    //   );
+    //   const tokenChunks = chunkArray(tokens || [], 500);
+    //   await this.notiRepository.updateMany();
 
-      // push 500 token per request
-      for (const chunk of tokenChunks) {
-        await this.firebaseService.sendMulticastNotification(
-          chunk,
-          'test',
-          'test',
-        );
-      }
-    }
+    //   // push 500 token per request
+    //   for (const chunk of tokenChunks) {
+    //     await this.firebaseService.sendMulticastNotification(
+    //       chunk,
+    //       'test',
+    //       'test',
+    //     );
+    //   }
+    // }
     return pendingNotis;
   }
 }

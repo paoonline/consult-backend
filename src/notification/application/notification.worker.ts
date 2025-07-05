@@ -24,7 +24,7 @@ export class NotificationWorker extends BaseWorker implements OnModuleInit {
         consultTransactionId: id,
         description: description,
         title: title,
-        deviceToken: device_token,
+        deviceTokenId: device_token,
       } as NotificationDto;
       await this.notificationService.create(data);
     });
