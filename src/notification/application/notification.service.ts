@@ -10,6 +10,7 @@ import { chunkArray } from 'src/utils/array';
 import { NotificationRepository } from '../infrastructure/notification.repository';
 import { NotificationDto } from './dto/notification.dto';
 import { createFactory } from 'src/utils/factory';
+import { NotificationEntity } from '../domain/notification.entity';
 
 interface IPushNoti {
   pushNoti(): Promise<ConsultNotification[]>;
@@ -29,7 +30,9 @@ export class NotificationService
     const plainData = instanceToPlain(data);
     const snakeData = snakecaseKeys(plainData) as ConsultNotification;
 
-    const noti = await this.notiRepository.create(snakeData);
+    const notiFactory = createFactory(snakeData, NotificationEntity);
+
+    const noti = await this.notiRepository.create(notiFactory.getData());
     return camelcaseKeys(noti);
   }
 

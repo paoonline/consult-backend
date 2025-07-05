@@ -2,13 +2,14 @@ import { Injectable } from '@nestjs/common';
 import { ConsultNotification } from '@prisma/client';
 import { PrismaService } from 'prisma/prisma.service';
 import { IRepository } from 'src/utils/respository';
+import { NotificationInput } from '../application/notification.type';
 
 @Injectable()
 export class NotificationRepository
   implements
     IRepository<
       ConsultNotification, //return
-      ConsultNotification, //params
+      NotificationInput, //params
       null,
       null,
       ConsultNotification //create return
@@ -37,7 +38,7 @@ export class NotificationRepository
     return notification;
   }
 
-  async create(data: ConsultNotification): Promise<ConsultNotification> {
+  async create(data: NotificationInput): Promise<ConsultNotification> {
     return this.prisma.consultNotification.create({
       data,
     });
