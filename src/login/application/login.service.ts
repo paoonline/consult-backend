@@ -32,6 +32,7 @@ export class LoginService
     const newLogin = this.createLoginRecord(id);
     const lastLoginFromDB = await this.loginRepository.findOne(id);
     const newLastLoginBuilder = new LoginBuilder()
+      .setEmail(lastLoginFromDB?.email_id)
       .setLoginDate(lastLoginFromDB?.login_date)
       .build();
 
