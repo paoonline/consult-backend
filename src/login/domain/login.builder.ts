@@ -21,6 +21,6 @@ export class LoginBuilder {
     if (!this.data.email_id) {
       throw new Error('Missing required login fields');
     }
-    return this.data; // ควรใช้ type ที่ตรง
+    return this.data;
   }
 }

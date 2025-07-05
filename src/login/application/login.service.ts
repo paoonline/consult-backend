@@ -21,11 +21,8 @@ export class LoginService
     private readonly customerService: CustomerService,
   ) {}
 
-  createLoginRecord(emailId: string, date?: Date | null): LoginEntity {
-    return createFactory(
-      { email_id: emailId, login_date: date ?? new Date() },
-      LoginEntity,
-    );
+  createLoginRecord(emailId?: string, date?: Date | null): LoginEntity {
+    return createFactory({ email_id: emailId, login_date: date }, LoginEntity);
   }
 
   async create(id: string): Promise<void> {
@@ -37,11 +34,14 @@ export class LoginService
     //   .build();
 
     const newLastLoginBuilder = this.createLoginRecord(
-      lastLoginFromDB?.email_id ?? '',
+      lastLoginFromDB?.email_id,
       lastLoginFromDB?.login_date,
     );
 
-    if (newLogin.isDuplicateOf(newLastLoginBuilder)) {
+    if (
+      newLogin.isDuplicateOf(newLastLoginBuilder) &&
+      newLastLoginBuilder.getData().login_date
+    ) {
       throw new Error('Duplicate login');
     }
 
