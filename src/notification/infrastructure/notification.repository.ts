@@ -79,7 +79,7 @@ export class NotificationRepository
       where: { is_push_noti: false },
       select: { device_token: true },
     });
-    return noti;
+    return noti as ConsultNotification[];
   }
 
   async updateMany(): Promise<number> {
