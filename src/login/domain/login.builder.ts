@@ -18,7 +18,7 @@ export class LoginBuilder {
   }
 
   build(): LoginInput {
-    if (!this.data.login_date || !this.data.email_id) {
+    if (!this.data.email_id) {
       throw new Error('Missing required payment fields');
     }
     return this.data; // ควรใช้ type ที่ตรง
