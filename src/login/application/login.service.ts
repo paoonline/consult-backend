@@ -26,24 +26,23 @@ export class LoginService
   }
 
   async create(id: string): Promise<void> {
-    const newLogin = this.createLoginRecord(id);
-    const lastLoginFromDB = await this.loginRepository.findOne(id);
+    // const newLogin = this.createLoginRecord(id);
+    // const lastLoginFromDB = await this.loginRepository.findOne(id);
     // const newLastLoginBuilder = new LoginBuilder()
     //   .setEmailId(lastLoginFromDB?.email_id)
     //   .setLoginDate(lastLoginFromDB?.login_date)
     //   .build();
 
-    const newLastLoginBuilder = this.createLoginRecord(
-      lastLoginFromDB?.email_id,
-      lastLoginFromDB?.login_date,
-    );
+    // if (lastLoginFromDB) {
+    //   const lastLogin = this.createLoginRecord(
+    //     lastLoginFromDB.email_id,
+    //     lastLoginFromDB.login_date,
+    //   );
 
-    if (
-      newLogin.isDuplicateOf(newLastLoginBuilder) &&
-      newLastLoginBuilder.getData().login_date
-    ) {
-      throw new Error('Duplicate login');
-    }
+    //   if (newLogin.isDuplicateOf(lastLogin)) {
+    //     throw new Error('Duplicate login');
+    //   }
+    // }
 
     await this.loginRepository.create(this.createLoginRecord(id).getData());
   }
@@ -51,13 +50,13 @@ export class LoginService
   async login(email: string, password: string): Promise<string> {
     // find user online
     const newEmail = email.toLowerCase();
-    // const alreadyOnline = await this.sessionService.checkUserOnline(
-    //   `${newEmail}`,
-    // );
+    const alreadyOnline = await this.sessionService.checkUserOnline(
+      `${newEmail}`,
+    );
 
-    // if (alreadyOnline) {
-    //   throw new Error('Session was duplicated');
-    // }
+    if (alreadyOnline) {
+      throw new Error('Session was duplicated');
+    }
 
     // Find the user by email
     const customer = await this.customerService.findFirst(newEmail);
@@ -76,7 +75,7 @@ export class LoginService
 
     // Create a login record
     await this.create(customer.id);
-    // this.sessionService.setUserOnline(newEmail);
+    await this.sessionService.setUserOnline(newEmail);
 
     return this.jwtService.createJwtToken(customer);
   }

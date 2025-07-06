@@ -40,6 +40,9 @@ export class LoginRepository
   }
 
   async findOne(id: string): Promise<login | null> {
-    return await this.prisma.login.findFirst({ where: { id } });
+    return await this.prisma.login.findFirst({
+      where: { email_id: id },
+      orderBy: { login_date: 'desc' },
+    });
   }
 }

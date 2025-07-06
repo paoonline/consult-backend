@@ -1,9 +1,21 @@
 import { Booking } from '@prisma/client';
 
 export class BookingEntity {
-  constructor(private readonly data: Booking) {}
+  constructor(private readonly data: Booking[]) {}
 
-  getData(): Booking {
+  private validateTime(): boolean {
+    const arrTime = new Date(this.data[0].time).getTime();
+    const arrTime1 = new Date(this.data[1].time).getTime();
+
+    const diff = Math.abs(arrTime - arrTime1);
+    if (diff > 60000) {
+      return false;
+    }
+    return true;
+  }
+
+  getData(): Booking[] {
+    if (!this.validateTime()) throw new Error('Time not validate');
     return this.data;
   }
 }

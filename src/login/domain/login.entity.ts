@@ -4,17 +4,22 @@ export type LoginInput = {
 };
 
 export class LoginEntity {
-  constructor(private readonly data: LoginInput) {}
+  constructor(private readonly data: LoginInput) {
+    if (!data.login_date) {
+      this.data.login_date = new Date(); // ✅ set default here
+    }
+  }
 
-  // private getEmail(): string {
-  //   return this.data.email_id;
-  // }
+  private getEmail(): string {
+    return this.data.email_id;
+  }
 
-  private getLoginDate(): Date | undefined {
+  private getLoginDate(): Date {
     return this.data.login_date;
   }
 
   isDuplicateOf(other: LoginEntity): boolean {
+    if (this.getEmail() !== other.getEmail()) return false;
     const dateA = this.getLoginDate();
     const dateB = other.getLoginDate();
     if (!dateA || !dateB) return false;
