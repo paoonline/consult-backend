@@ -46,8 +46,12 @@ export class ApiService {
       const response = await firstValueFrom(response$);
       return response.data;
     } catch (error) {
-      console.error('Error fetching from API:', (error as Error).message);
-      throw error;
+      console.error('Error fetching from API:', {
+        url,
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-member-access
+        error: error.response.data,
+      });
+      throw new Error(error);
     }
   }
 }

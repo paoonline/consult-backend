@@ -3,6 +3,7 @@ import { Booking, Prisma } from '@prisma/client';
 import { PrismaService } from 'prisma/prisma.service';
 import { IRepository } from 'src/utils/respository';
 import { BookingEntity } from '../domain/customer.booking.entity';
+import { IBooking } from '../application/dto/customer.dto';
 @Injectable()
 export class CustomerBookingRepository
   implements IRepository<Booking | string, unknown, unknown, null, string>
@@ -26,6 +27,22 @@ export class CustomerBookingRepository
       where: { id: id },
     });
     return result;
+  }
+
+  async findMany(data: IBooking): Promise<Booking[]> {
+    const startTime = new Date(data.time);
+    const endTime = new Date(data.time);
+    endTime.setHours(endTime.getHours() + 1);
+    const existing = await this.prisma.booking.findMany({
+      where: {
+        customer_detail_id: data.customerDetailId,
+        time: {
+          gte: startTime,
+          lt: endTime,
+        },
+      },
+    });
+    return existing;
   }
 
   async delete(id: string, secondId: string): Promise<string> {

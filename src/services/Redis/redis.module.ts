@@ -11,14 +11,14 @@ const redisUrl = process.env.REDIS_URL ?? '';
     {
       provide: REDIS_CLIENT,
       useFactory: () => {
-        // return new Redis({
-        //   host: 'localhost', // or your Redis host
-        //   port: 6379,
-        //   maxRetriesPerRequest: null, // ✅ Required by BullMQ
-        // }); // Customize connection if needed
-        return new Redis(redisUrl, {
-          maxRetriesPerRequest: null,
-        });
+        return new Redis({
+          host: 'localhost', // or your Redis host
+          port: 6379,
+          maxRetriesPerRequest: null, // ✅ Required by BullMQ
+        }); // Customize connection if needed
+        // return new Redis(redisUrl, {
+        //   maxRetriesPerRequest: null,
+        // });
       },
     },
     RedisService, // Your custom service using redis

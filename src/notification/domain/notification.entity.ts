@@ -15,17 +15,17 @@ export class NotificationEntity {
     return Math.floor(diff / (1000 * 60 * 60 * 24));
   }
 
-  private hasValidDeviceToken(): boolean {
-    if (!this?.data?.device_token_id?.length) return false;
-    return this.data.device_token_id.length > 10; // example validation
-  }
+  // private hasValidDeviceToken(): boolean {
+  //   if (!this?.data?.device_token_id?.length) return false;
+  //   return this.data.device_token_id.length > 10; // example validation
+  // }
 
   private isExpired(): boolean {
     return this.getDaysSinceNoti() > 30;
   }
 
   isPushable(): boolean {
-    return !this.isExpired() && this.hasValidDeviceToken();
+    return !this.isExpired();
   }
 
   getData(): NotificationInput {

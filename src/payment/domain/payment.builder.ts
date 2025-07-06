@@ -1,7 +1,9 @@
 import { PaymentTransactionInput } from '../application/payment.type';
 
 export class PaymentBuilder {
-  private data: Partial<PaymentTransactionInput> = {};
+  private data: Partial<PaymentTransactionInput> = {
+    payment_date: new Date(),
+  };
   setPrice(price: number) {
     if (price <= 0) throw new Error('price must be positive');
     this.data.price = price;

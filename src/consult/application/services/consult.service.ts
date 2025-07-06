@@ -44,6 +44,17 @@ export class ConsultService
       plainData,
     ) as Prisma.ConsultTransactionCreateInput;
 
+    // check consult duplicate id, time
+    const overlappingConsult = await this.consultRepository.findFirst(data);
+
+    if (overlappingConsult) {
+      throw new Error(
+        'This time slot is already booked. Please choose another time.',
+      );
+    }
+
+    //
+
     const [consult, customerConsultDetail] = await Promise.all([
       this.consultRepository.create(createFactory(snakeData, ConsultEntity)),
       this.apiService.getFromApi<{ data: CustomerDetail }>(
@@ -58,50 +69,97 @@ export class ConsultService
       );
     }
 
-    const [bookingRes, paymentRes, notiRes] = await Promise.all([
-      this.apiService.postApi<{ data: IBooking[] }, IBooking[]>(
-        '/customer/booking',
-        token,
-        [
-          ...(data.customerDetailId
-            ? [
-                {
-                  customerDetailId: data.customerDetailId,
-                  time: data.startDate,
-                },
-              ]
-            : []),
-          ...(data.consultDetailId
-            ? [{ customerDetailId: data.consultDetailId, time: data.startDate }]
-            : []),
-        ],
-      ),
-      this.apiService.postApi<{ data: IPaymentDto }, Partial<IPaymentDto>>(
-        '/payment',
-        token,
-        {
-          consultTransactionId: consult.id,
-          customerId: consult.customer_id,
-          consultId: consult.consult_id,
-          price: customerConsultDetail.data.price,
-        },
-      ),
-      this.apiService.postApi<{ data: NotificationDto }, NotificationDto>(
-        '/notification',
-        token,
-        {
-          consultTransactionId: consult.id,
-          description: 'test',
-          title: 'test',
-          deviceTokenId: '1',
-        },
-      ),
-    ]);
+    const bookingPayload = [
+      ...(data.customerDetailId
+        ? [
+            {
+              customerDetailId: data.customerDetailId,
+              time: data.startDate,
+              consultTransactionId: consult.id,
+            },
+          ]
+        : []),
+      ...(data.consultDetailId
+        ? [
+            {
+              customerDetailId: data.consultDetailId,
+              time: data.startDate,
+              consultTransactionId: consult.id,
+            },
+          ]
+        : []),
+    ];
 
-    if (!bookingRes || !paymentRes || !notiRes) {
+    try {
+      const [bookingRes, paymentRes, notiRes] = await Promise.allSettled([
+        this.apiService.postApi<{ data: IBooking[] }, IBooking[]>(
+          '/customer/booking',
+          token,
+          bookingPayload,
+        ),
+        this.apiService.postApi<{ data: IPaymentDto }, Partial<IPaymentDto>>(
+          '/payment',
+          token,
+          {
+            consultTransactionId: consult.id,
+            customerId: consult.customer_id,
+            consultId: consult.consult_id,
+            price: customerConsultDetail.data.price,
+          },
+        ),
+        this.apiService.postApi<{ data: NotificationDto }, NotificationDto>(
+          '/notification',
+          token,
+          {
+            consultTransactionId: consult.id,
+            description: 'test',
+            title: 'test',
+            // deviceTokenId: '1',
+          },
+        ),
+      ]);
+
+      if (
+        bookingRes.status !== 'fulfilled' ||
+        paymentRes.status !== 'fulfilled' ||
+        notiRes.status !== 'fulfilled'
+      ) {
+        // Rollback the consult transaction if any failed
+        await this.consultRepository.delete(consult.id);
+
+        const errorMessages = [
+          bookingRes.status === 'rejected'
+            ? `Booking failed: ${bookingRes.reason}`
+            : null,
+          paymentRes.status === 'rejected'
+            ? `Payment failed: ${paymentRes.reason}`
+            : null,
+          notiRes.status === 'rejected'
+            ? `Notification failed: ${notiRes.reason}`
+            : null,
+        ]
+          .filter(Boolean)
+          .join(', ');
+
+        throw new Error(`Failed to complete consult: ${errorMessages}`);
+      }
+
+      return consult;
+    } catch (err: unknown) {
+      const newErr = err as { code: string; message: string };
+
+      // Prisma unique constraint on Booking will throw P2002
+      if (
+        newErr.code === 'P2002' ||
+        (newErr.message && newErr.message.includes('Unique constraint'))
+      ) {
+        await this.consultRepository.delete(consult.id);
+        throw new Error('Time slot is already booked. Please select another.');
+      }
+
       await this.consultRepository.delete(consult.id);
       throw new Error(
-        `Failed to create booking/payment/notification for consultId: ${data.consultId}`,
+        newErr?.message || 'An error occurred during consult creation.',
       );
     }
     // job noti
@@ -116,7 +174,7 @@ export class ConsultService
     // },
     // x-delay-until
     // await this.kafkaService.sendMessage('NotificationQueue', JSON.stringify({ id: consult.id, description: "test", title: "test", device_token: "1"}));
-    return consult;
+    // return consult;
   }
 
   async findAll(customerId?: string): Promise<Partial<ConsultDto>[]> {

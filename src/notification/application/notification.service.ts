@@ -9,7 +9,7 @@ import { IRepository } from 'src/utils/respository';
 import { NotificationEntity } from '../domain/notification.entity';
 import { NotificationRepository } from '../infrastructure/notification.repository';
 import { NotificationDto } from './dto/notification.dto';
-import { chunkArray } from 'src/utils/array';
+// import { chunkArray } from 'src/utils/array';
 
 interface IPushNoti {
   pushNoti(): Promise<ConsultNotification[]>;
@@ -30,6 +30,13 @@ export class NotificationService
     const snakeData = snakecaseKeys(plainData) as ConsultNotification;
 
     const notiFactory = createFactory(snakeData, NotificationEntity);
+    // const token = await this.prisma.deviceToken.findUnique({
+    //   where: { id: data.deviceTokenId },
+    // });
+
+    // if (!token) {
+    //   throw new Error('DeviceToken not found.');
+    // }
 
     const noti = await this.notiRepository.create(notiFactory.getData());
     return camelcaseKeys(noti);
@@ -47,26 +54,26 @@ export class NotificationService
 
   async pushNoti(): Promise<ConsultNotification[]> {
     const pendingNotis = await this.notiRepository.findMany();
-    const pushableEntities = pendingNotis
-      .map((raw) => new NotificationEntity(raw))
-      .filter((entity) => entity.isPushable());
+    // const pushableEntities = pendingNotis
+    //   .map((raw) => new NotificationEntity(raw))
+    //   .filter((entity) => entity.isPushable());
 
-    if (pendingNotis.length > 0) {
-      const tokens = pushableEntities.map(
-        (e) => e.getData().device_token_id || '',
-      );
-      const tokenChunks = chunkArray(tokens || [], 500);
-      await this.notiRepository.updateMany();
+    // if (pendingNotis.length > 0) {
+    //   const tokens = pushableEntities.map(
+    //     (e) => e.getData().device_token_id || '',
+    //   );
+    //   const tokenChunks = chunkArray(tokens || [], 500);
+    //   await this.notiRepository.updateMany();
 
-      // push 500 token per request
-      for (const chunk of tokenChunks) {
-        await this.firebaseService.sendMulticastNotification(
-          chunk,
-          'test',
-          'test',
-        );
-      }
-    }
+    //   // push 500 token per request
+    //   for (const chunk of tokenChunks) {
+    //     await this.firebaseService.sendMulticastNotification(
+    //       chunk,
+    //       'test',
+    //       'test',
+    //     );
+    //   }
+    // }
     return pendingNotis;
   }
 }

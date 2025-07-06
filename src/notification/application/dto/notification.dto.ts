@@ -10,10 +10,6 @@ export class NotificationDto {
   consultTransactionId: string;
 
   @IsNotEmpty()
-  @MaxLength(100)
-  deviceTokenId: string;
-
-  @IsNotEmpty()
   @MaxLength(255)
   description: string;
 }

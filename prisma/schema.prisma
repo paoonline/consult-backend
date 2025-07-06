@@ -34,29 +34,6 @@ model PaymentTransaction {
   @@map("payment_transaction")
 }
 
-model ConsultTransaction {
-  id          String   @id @default(uuid())
-  customer    Customer @relation("CustomerIsClient", fields: [customer_id], references: [id])
-  customer_id String   @db.VarChar(100)
-  consult     Customer @relation("CustomerIsConsultant", fields: [consult_id], references: [id])
-  consult_id  String   @db.VarChar(100)
-
-  time_list  TimeLimitType
-  end_date   DateTime
-  start_date DateTime
-
-  paymentTransaction PaymentTransaction?
-  note               Note?
-  comment            ConsultComment?
-  consultNotification       ConsultNotification? @relation("TransactionToNotification")
-
-  is_pass      Boolean   @default(false)
-
-  @@index([customer_id])
-  @@index([consult_id])
-  @@map("consult_transaction")
-}
-
 model Customer {
   id              String          @id @default(uuid())
   email           String          @unique @db.VarChar(20)
@@ -90,6 +67,7 @@ model Customer {
   @@map("customer")
 }
 
+//many
 model ConsultNotification {
   id String @id @default(uuid())
 
@@ -98,14 +76,15 @@ model ConsultNotification {
   noti_date   DateTime @default(now())
   is_push_noti Boolean @default(false)
   consult_transaction_id String             @unique
-  consultTransaction       ConsultTransaction  @relation("TransactionToNotification", fields: [consult_transaction_id], references: [id])
-  deviceToken DeviceToken? @relation(fields: [device_token_id], references: [id])
-  device_token_id String
+  consultTransaction       ConsultTransaction  @relation("TransactionToNotification", fields: [consult_transaction_id], references: [id], onDelete: Cascade)
+
+  deviceTokens            DeviceToken[] @relation("NotificationToDeviceToken")
 
   @@index([is_push_noti])
   @@map("notification")
 }
 
+//to one
 model DeviceToken {
   id          String   @id @default(uuid())
   token       String   @unique
@@ -115,7 +94,7 @@ model DeviceToken {
   created_at   DateTime @default(now())
   active      Boolean  @default(true)
 
-  notifications ConsultNotification[]
+  notifications ConsultNotification[] @relation("NotificationToDeviceToken")
 }
 
 
@@ -169,6 +148,34 @@ model Skill {
 
   @@map("skill")
 }
+
+model ConsultTransaction {
+  id          String   @id @default(uuid())
+  customer    Customer @relation("CustomerIsClient", fields: [customer_id], references: [id])
+  customer_id String   @db.VarChar(100)
+  consult     Customer @relation("CustomerIsConsultant", fields: [consult_id], references: [id])
+  consult_id  String   @db.VarChar(100)
+
+  time_list  TimeLimitType
+  end_date   DateTime
+  start_date DateTime
+
+  paymentTransaction PaymentTransaction?
+  note               Note?
+  comment            ConsultComment?
+  consultNotification       ConsultNotification? @relation("TransactionToNotification")
+
+  is_pass      Boolean   @default(false)
+  bookings  Booking[]
+
+  @@unique([consult_id, start_date])
+  @@unique([customer_id, start_date])
+  @@index([customer_id])
+  @@index([consult_id])
+  
+  @@map("consult_transaction")
+}
+
 model Booking {
   id                 String         @id @default(uuid())
   time               DateTime
@@ -176,6 +183,7 @@ model Booking {
   customer_detail_id String
 
   @@map("booking")
+  ConsultTransaction ConsultTransaction[]
 }
 
 enum CustomerType {

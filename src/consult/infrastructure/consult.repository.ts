@@ -3,6 +3,7 @@ import { ConsultTransaction } from '@prisma/client';
 import { PrismaService } from 'prisma/prisma.service';
 import { IRepository } from 'src/utils/respository';
 import { ConsultEntity } from '../domain/consult.entity';
+import { ConsultDto } from '../application/dto/consult.dto';
 
 @Injectable()
 export class ConsultRepository
@@ -41,6 +42,22 @@ export class ConsultRepository
   async findOne(id: string): Promise<ConsultTransaction | null> {
     return this.prisma.consultTransaction.findFirst({
       where: { id },
+    });
+  }
+
+  async findFirst(data: ConsultDto): Promise<ConsultTransaction | null> {
+    const newStartTime = new Date(data.startDate);
+    const newEndTime = new Date(data.endDate);
+    newEndTime.setHours(newEndTime.getHours() + 1);
+
+    return this.prisma.consultTransaction.findFirst({
+      where: {
+        consult_id: data.consultId,
+        AND: [
+          { start_date: { lt: newEndTime } },
+          { end_date: { gt: newStartTime } },
+        ],
+      },
     });
   }
 

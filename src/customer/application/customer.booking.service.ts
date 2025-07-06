@@ -23,6 +23,35 @@ export class CustomerBookingService
   ): Promise<string> {
     const plainData = instanceToPlain(data);
     const snakeData = snakecaseKeys(plainData) as BookingEntity[];
+
+    //check Double booking detected
+    const conflictResults = await Promise.all(
+      data.map(async (item) => {
+        const existing = await this.customerBookingRepository.findMany(item);
+        return {
+          customerDetailId: item.customerDetailId as string,
+          existing,
+        };
+      }),
+    );
+
+    const conflicts = conflictResults
+      .filter((r) => r.existing.length > 0)
+      .reduce(
+        (acc, cur) => {
+          acc[cur.customerDetailId] = cur.existing;
+          return acc;
+        },
+        {} as Record<string, IBooking[]>,
+      );
+
+    if (Object.keys(conflicts).length > 0) {
+      throw new Error(
+        `Double booking detected for: ${Object.keys(conflicts).join(', ')}`,
+      );
+    }
+    //
+
     const result = await this.customerBookingRepository.create(
       createFactory(snakeData, BookingEntity as keyof object, tx),
     );
