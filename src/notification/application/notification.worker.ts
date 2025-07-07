@@ -3,14 +3,14 @@ import Redis from 'ioredis';
 import { REDIS_CLIENT } from 'src/services/Redis/redis.module';
 import { BaseWorker } from 'src/services/Worker/BaseWorker';
 import { NotificationDto } from './dto/notification.dto';
-import { NotificationService } from './notification.service';
+import { CreateNotificationUseCase } from './use-cases/create-notification.use-case';
 // import { NotificationDto } from "src/consult/application/dto/consult.noti.dto";
 
 @Injectable()
 export class NotificationWorker extends BaseWorker implements OnModuleInit {
   constructor(
     @Inject(REDIS_CLIENT) redis: Redis,
-    private readonly notificationService: NotificationService,
+    private readonly createNotificationUseCase: CreateNotificationUseCase,
   ) {
     super('NotificationQueue', redis, async (job) => {
       const { id, description, title, device_token } = job.data as {
@@ -26,7 +26,7 @@ export class NotificationWorker extends BaseWorker implements OnModuleInit {
         title: title,
         deviceTokenId: device_token,
       } as NotificationDto;
-      await this.notificationService.create(data);
+      await this.createNotificationUseCase.execute(data);
     });
   }
 

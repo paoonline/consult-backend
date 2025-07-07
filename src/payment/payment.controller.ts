@@ -11,8 +11,8 @@ import { Response } from 'express';
 
 import { JwtAuthGuard } from 'src/validate/jwt-auth.guard';
 import { IPaymentDto } from './application/dto/payment.dto';
-import { CreatePaymentUseCase } from './application/use-case/create-payment.use-case';
-import { FindPaymentsByCustomerUseCase } from './application/use-case/find-many-payment.use-case';
+import { CreatePaymentUseCase } from './application/use-cases/create-payment.use-case';
+import { FindPaymentsByCustomerUseCase } from './application/use-cases/find-many-payment.use-case';
 
 @Controller('/payment')
 export class PaymentController {

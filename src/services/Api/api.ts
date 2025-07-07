@@ -1,12 +1,13 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 // your.service.ts
 import { HttpService } from '@nestjs/axios';
-import { Injectable } from '@nestjs/common';
+import { Injectable, Logger } from '@nestjs/common';
 import { firstValueFrom } from 'rxjs';
 
 import 'dotenv/config';
 @Injectable()
 export class ApiService {
+  private readonly logger = new Logger(ApiService.name);
   constructor(private readonly httpService: HttpService) {}
 
   async getFromApi<T, P = unknown>(
@@ -46,7 +47,7 @@ export class ApiService {
       const response = await firstValueFrom(response$);
       return response.data;
     } catch (error) {
-      console.error('Error fetching from API:', {
+      this.logger.log('Error fetching from API ', {
         url,
         // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-member-access
         error: error.response.data,

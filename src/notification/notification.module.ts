@@ -2,7 +2,8 @@ import { Module } from '@nestjs/common';
 import { PrismaService } from 'prisma/prisma.service';
 import { FirebaseService } from 'src/services/Firebase/firebase.service';
 // import { KafkaService } from 'src/services/Kafka/kafka.service';
-import { NotificationService } from './application/notification.service';
+import { CreateNotificationUseCase } from './application/use-cases/create-notification.use-case';
+import { PushNotificationUseCase } from './application/use-cases/push-notification.use-case';
 import { NotificationRepository } from './infrastructure/notification.repository';
 import { NotificationController } from './notification.controller';
 
@@ -10,12 +11,13 @@ import { NotificationController } from './notification.controller';
   imports: [],
   controllers: [NotificationController],
   providers: [
-    NotificationService,
     PrismaService,
     NotificationRepository,
     FirebaseService,
+    CreateNotificationUseCase,
+    PushNotificationUseCase,
     // KafkaService,
   ],
-  exports: [NotificationService],
+  exports: [PushNotificationUseCase],
 })
 export class NotificationModule {}

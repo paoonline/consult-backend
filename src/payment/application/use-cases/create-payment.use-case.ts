@@ -7,6 +7,8 @@ import { PaymentBuilder } from 'src/payment/domain/payment.builder';
 import { PaymentEntity } from 'src/payment/domain/payment.entity';
 import { PaymentRepository } from 'src/payment/infrastructure/payment.repository';
 import { IPaymentDto } from '../dto/payment.dto';
+import { PaymentDate } from 'src/payment/domain/value-objects/payment-date.vo';
+import { Price } from 'src/payment/domain/value-objects/price.vo';
 
 @Injectable()
 export class CreatePaymentUseCase {
@@ -25,7 +27,11 @@ export class CreatePaymentUseCase {
       .setCustomerId(snakeData.customer_id!)
       .build();
 
-    const paymentEntity = new PaymentEntity(input);
+    const paymentEntity = new PaymentEntity(
+      input,
+      new Price(input.price),
+      new PaymentDate(input.payment_date),
+    );
 
     const payment = await this.paymentRepository.create(
       paymentEntity.getData(),

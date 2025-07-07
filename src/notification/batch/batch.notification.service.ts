@@ -1,16 +1,18 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { Cron } from '@nestjs/schedule';
-import { NotificationService } from '../application/notification.service';
+import { PushNotificationUseCase } from '../application/use-cases/push-notification.use-case';
 
 @Injectable()
 export class BatchNotificationService {
   private readonly logger = new Logger(BatchNotificationService.name);
-  constructor(private readonly notiService: NotificationService) {}
+  constructor(
+    private readonly pushNotificationUseCase: PushNotificationUseCase,
+  ) {}
 
   // @Cron('55 11 * * *')
   @Cron('55 * * * *')
   async handleBatchCheck() {
     this.logger.log('Running batch check  every at 55 minute ');
-    await this.notiService.pushNoti();
+    await this.pushNotificationUseCase.execute();
   }
 }

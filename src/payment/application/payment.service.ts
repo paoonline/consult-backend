@@ -8,6 +8,8 @@ import { PaymentBuilder } from '../domain/payment.builder';
 import { PaymentEntity } from '../domain/payment.entity';
 import { PaymentRepository } from '../infrastructure/payment.repository';
 import { IPaymentDto } from './dto/payment.dto';
+import { Price } from '../domain/value-objects/price.vo';
+import { PaymentDate } from '../domain/value-objects/payment-date.vo';
 // import { LegacyPaymentInput } from './payment.type';
 // import { LegacyPaymentAdapter } from '../infrastructure/payment.adapter';
 
@@ -28,7 +30,11 @@ export class PaymentService
       .setCustomerId(snakeData.customer_id!)
       .build();
 
-    const paymentEntity = new PaymentEntity(input);
+    const paymentEntity = new PaymentEntity(
+      input,
+      new Price(input.price),
+      new PaymentDate(input.payment_date),
+    );
 
     // const legacyData: LegacyPaymentInput = {
     //   amount: 1000,
