@@ -45,9 +45,7 @@ export class PaymentService
     // const builder = new LegacyPaymentAdapter(legacyData).toBuilder();
     // const newPayment = builder.build();
 
-    const payment = await this.paymentRepository.create(
-      paymentEntity.getData(),
-    );
+    const payment = await this.paymentRepository.create(paymentEntity.getDTO());
     return camelcaseKeys(payment) as IPaymentDto;
   }
 

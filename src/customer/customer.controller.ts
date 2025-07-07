@@ -14,13 +14,15 @@ import { Response } from 'express';
 import { CustomerService } from './application/customer.service';
 import { CustomerDto, IBooking } from './application/dto/customer.dto';
 import { JwtAuthGuard } from 'src/validate/jwt-auth.guard';
-import { CustomerBookingService } from './application/customer.booking.service';
 import { CustomerType } from '@prisma/client';
+import { DeleteBookingUseCase } from './application/use-cases-booking/delete-booking.use-case';
+import { CreateBookingUseCase } from './application/use-cases-booking/create-booking.use-case';
 @Controller('/customer')
 export class CustomerController {
   constructor(
     private readonly customerService: CustomerService,
-    private readonly customerBookingService: CustomerBookingService,
+    private readonly deleteBookingUseCase: DeleteBookingUseCase,
+    private readonly createBookingUseCase: CreateBookingUseCase,
   ) {}
 
   @Post()
@@ -188,7 +190,7 @@ export class CustomerController {
     @Body() data: IBooking[],
   ): Promise<Response<any, Record<string, any>>> {
     try {
-      const customer = await this.customerBookingService.create(data);
+      const customer = await this.createBookingUseCase.execute(data);
       // Send a successful response with the token
       return res.status(200).json({
         status: 200,
@@ -214,7 +216,7 @@ export class CustomerController {
     @Param('secondId') secondId: string,
   ): Promise<Response<any, Record<string, any>>> {
     try {
-      const customer = await this.customerBookingService.delete(id, secondId);
+      const customer = await this.deleteBookingUseCase.execute(id, secondId);
       // Send a successful response with the token
       return res.status(200).json({
         status: 200,

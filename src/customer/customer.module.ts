@@ -5,13 +5,14 @@ import { SessionService } from 'src/services/Session/session.service';
 
 import { SkillModule } from 'src/skillMap/skill-map.module';
 import { CustomerService } from './application/customer.service';
-import { CustomerController } from './customer.controller';
-import { CustomerRepository } from './infrastructure/customer.repository';
 import { CustomerWorker } from './application/customer.worker';
-import { CustomerDetailRepository } from './infrastructure/customer.detail.repository';
 import { CustomerDetailService } from './application/customerDetail.service';
-import { CustomerBookingService } from './application/customer.booking.service';
+import { CreateBookingUseCase } from './application/use-cases-booking/create-booking.use-case';
+import { DeleteBookingUseCase } from './application/use-cases-booking/delete-booking.use-case';
+import { CustomerController } from './customer.controller';
 import { CustomerBookingRepository } from './infrastructure/customer.booking.repository';
+import { CustomerDetailRepository } from './infrastructure/customer.detail.repository';
+import { CustomerRepository } from './infrastructure/customer.repository';
 @Module({
   imports: [RedisModule, SkillModule],
   controllers: [CustomerController],
@@ -25,8 +26,10 @@ import { CustomerBookingRepository } from './infrastructure/customer.booking.rep
     CustomerDetailRepository,
     CustomerDetailService,
     // KafkaService,
-    CustomerBookingService,
     CustomerBookingRepository,
+
+    CreateBookingUseCase,
+    DeleteBookingUseCase,
   ],
   exports: [CustomerService],
 })

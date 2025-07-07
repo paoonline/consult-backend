@@ -4,11 +4,8 @@ import camelcaseKeys from 'camelcase-keys';
 import { instanceToPlain } from 'class-transformer';
 import snakecaseKeys from 'snakecase-keys';
 import { PaymentBuilder } from 'src/payment/domain/payment.builder';
-import { PaymentEntity } from 'src/payment/domain/payment.entity';
 import { PaymentRepository } from 'src/payment/infrastructure/payment.repository';
 import { IPaymentDto } from '../dto/payment.dto';
-import { PaymentDate } from 'src/payment/domain/value-objects/payment-date.vo';
-import { Price } from 'src/payment/domain/value-objects/price.vo';
 
 @Injectable()
 export class CreatePaymentUseCase {
@@ -25,17 +22,9 @@ export class CreatePaymentUseCase {
       .setConsultId(snakeData.consult_id!)
       .setConsultTransactionId(snakeData.consult_transaction_id)
       .setCustomerId(snakeData.customer_id!)
-      .build();
+      .toEntity();
 
-    const paymentEntity = new PaymentEntity(
-      input,
-      new Price(input.price),
-      new PaymentDate(input.payment_date),
-    );
-
-    const payment = await this.paymentRepository.create(
-      paymentEntity.getData(),
-    );
+    const payment = await this.paymentRepository.create(input.getDTO());
     return camelcaseKeys(payment) as IPaymentDto;
   }
 }

@@ -12,16 +12,13 @@ export class PaymentEntity {
     if (this.isSuspicious()) {
       throw new PaymentSuspiciousError();
     }
-    // if (this.isPriceLessThanZero()) {
-    //   throw new PriceBelowZeroError();
-    // }
   }
 
   isSuspicious(): boolean {
     return this.price.isGreaterThan(100000) || this.paymentDate.isOlderThan(30);
   }
 
-  getData(): PaymentTransactionInput {
+  getDTO(): PaymentTransactionInput {
     return {
       ...this.data,
       price: this.price.getValue(),

@@ -1,4 +1,7 @@
 import { PaymentTransactionInput } from '../application/payment.type';
+import { PaymentEntity } from './payment.entity';
+import { PaymentDate } from './value-objects/payment-date.vo';
+import { Price } from './value-objects/price.vo';
 
 export class PaymentBuilder {
   private data: Partial<PaymentTransactionInput> = {
@@ -47,5 +50,14 @@ export class PaymentBuilder {
       throw new Error('Missing required payment fields');
     }
     return this.data as PaymentTransactionInput; // ควรใช้ type ที่ตรง
+  }
+
+  toEntity(): PaymentEntity {
+    const data = this.build();
+    return new PaymentEntity(
+      data,
+      new Price(data.price),
+      new PaymentDate(data.payment_date),
+    );
   }
 }
