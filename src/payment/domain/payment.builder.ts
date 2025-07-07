@@ -11,7 +11,9 @@ export class PaymentBuilder {
   }
 
   setPaymentDate(paymentDate: Date) {
-    if (!paymentDate) throw new Error('paymentDate is required');
+    if (!paymentDate) {
+      return this;
+    }
     this.data.payment_date = paymentDate;
     return this;
   }

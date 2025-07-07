@@ -20,7 +20,7 @@ model PaymentTransaction {
   payment_date DateTime @default(now())
 
   consult_transaction_id String             @unique
-  consultTransaction     ConsultTransaction @relation(fields: [consult_transaction_id], references: [id])
+  consultTransaction     ConsultTransaction @relation(fields: [consult_transaction_id], references: [id], onDelete: Cascade)
 
   customer_id            String?
   customer               Customer?          @relation("CustomerToPayments", fields: [customer_id], references: [id])
@@ -181,9 +181,10 @@ model Booking {
   time               DateTime
   customer_detail    CustomerDetail @relation(fields: [customer_detail_id], references: [id])
   customer_detail_id String
+  consult_transaction_id String
+  consultTransaction   ConsultTransaction  @relation(fields: [consult_transaction_id], references: [id], onDelete: Cascade)
 
   @@map("booking")
-  ConsultTransaction ConsultTransaction[]
 }
 
 enum CustomerType {

@@ -11,11 +11,15 @@ import { Response } from 'express';
 
 import { JwtAuthGuard } from 'src/validate/jwt-auth.guard';
 import { IPaymentDto } from './application/dto/payment.dto';
-import { PaymentService } from './application/payment.service';
+import { CreatePaymentUseCase } from './application/use-case/create-payment.use-case';
+import { FindPaymentsByCustomerUseCase } from './application/use-case/find-many-payment.use-case';
 
 @Controller('/payment')
 export class PaymentController {
-  constructor(private readonly paymentService: PaymentService) {}
+  constructor(
+    private readonly createPaymentUseCase: CreatePaymentUseCase,
+    private readonly findPaymentsByCustomerUseCase: FindPaymentsByCustomerUseCase,
+  ) {}
 
   @Post('/')
   @UseGuards(JwtAuthGuard)
@@ -24,7 +28,7 @@ export class PaymentController {
     @Body() data: IPaymentDto,
   ): Promise<Response<any, Record<string, any>>> {
     try {
-      const notification = await this.paymentService.create(data);
+      const notification = await this.createPaymentUseCase.execute(data);
       // Send a successful response with the token
       return res.status(200).json({
         status: 200,
@@ -49,7 +53,7 @@ export class PaymentController {
     @Param('id') id: string,
   ): Promise<Response<any, Record<string, any>>> {
     try {
-      const customer = await this.paymentService.findMany(id);
+      const customer = await this.findPaymentsByCustomerUseCase.execute(id);
       return res.status(200).json({
         status: 200,
         message: 'successful',
