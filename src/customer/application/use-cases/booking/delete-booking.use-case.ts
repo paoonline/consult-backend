@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { CustomerBookingRepository } from '../../infrastructure/customer.booking.repository';
+import { CustomerBookingRepository } from 'src/customer/infrastructure/customer.booking.repository';
 
 @Injectable()
 export class DeleteBookingUseCase {

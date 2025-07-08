@@ -1,21 +1,17 @@
 import { Injectable } from '@nestjs/common';
-import { CustomerDetail, CustomerType, Prisma } from '@prisma/client';
+import { CustomerType, Prisma } from '@prisma/client';
 import camelcaseKeys from 'camelcase-keys';
+import { PrismaService } from 'prisma/prisma.service';
 import { SessionService } from 'src/services/Session/session.service';
 import { SkillService } from 'src/skillMap/application/skill-map.service';
+import { createFactory } from 'src/utils/factory';
 import { formatSnakeCase } from 'src/utils/format';
 import { IRepository } from 'src/utils/respository';
+import { CustomerEntity } from '../domain/customer.entity';
 import { CustomerRepo } from '../domain/customer.repository.interface';
 import { CustomerRepository } from '../infrastructure/customer.repository';
-import { CustomerDetailService } from './customerDetail.service';
-import {
-  CustomerDto,
-  CustomerDtoResponse,
-  ICustomerDetail,
-} from './dto/customer.dto';
-import { createFactory } from 'src/utils/factory';
-import { CustomerEntity } from '../domain/customer.entity';
-import { PrismaService } from 'prisma/prisma.service';
+import { CustomerDto, CustomerDtoResponse } from './dto/customer.dto';
+import { CreateCustomerDetailUseCase } from './use-cases/customerDetail/create-customer-detail.usecase';
 
 @Injectable()
 export class CustomerService
@@ -32,8 +28,8 @@ export class CustomerService
     private readonly sessionService: SessionService,
     private readonly customerRepository: CustomerRepository,
     private readonly skillService: SkillService,
-    private readonly customerDetailService: CustomerDetailService,
     private readonly prisma: PrismaService,
+    private readonly createCustomerDetailUseCase: CreateCustomerDetailUseCase,
   ) {}
   async create(data: CustomerDto): Promise<CustomerRepo> {
     const newData = {
@@ -77,7 +73,7 @@ export class CustomerService
       }
 
       // Create customer detail
-      await this.customerDetailService.create(
+      await this.createCustomerDetailUseCase.execute(
         {
           customerId: customer.id,
           price: data?.price,
@@ -89,11 +85,6 @@ export class CustomerService
       return customer;
     });
     return result;
-  }
-
-  async findCustomerDetail(id: string): Promise<ICustomerDetail | null> {
-    const result = await this.customerDetailService.findOne(id);
-    return camelcaseKeys(result as CustomerDetail) as ICustomerDetail;
   }
 
   async findAll(

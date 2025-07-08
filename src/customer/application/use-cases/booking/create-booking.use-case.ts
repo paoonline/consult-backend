@@ -2,10 +2,11 @@ import { Injectable } from '@nestjs/common';
 import { Prisma } from '@prisma/client';
 import { instanceToPlain } from 'class-transformer';
 import snakecaseKeys from 'snakecase-keys';
-import { BookingEntity } from '../../domain/customer.booking.entity';
-import { CustomerBookingRepository } from '../../infrastructure/customer.booking.repository';
+import { BookingEntity } from 'src/customer/domain/customer.booking.entity';
+import { CustomerBookingRepository } from 'src/customer/infrastructure/customer.booking.repository';
+
 import { createFactory } from 'src/utils/factory';
-import { IBooking } from '../dto/customer.dto';
+import { IBooking } from '../../dto/customer.dto';
 
 @Injectable()
 export class CreateBookingUseCase {

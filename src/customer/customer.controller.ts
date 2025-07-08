@@ -15,14 +15,16 @@ import { CustomerService } from './application/customer.service';
 import { CustomerDto, IBooking } from './application/dto/customer.dto';
 import { JwtAuthGuard } from 'src/validate/jwt-auth.guard';
 import { CustomerType } from '@prisma/client';
-import { DeleteBookingUseCase } from './application/use-cases-booking/delete-booking.use-case';
-import { CreateBookingUseCase } from './application/use-cases-booking/create-booking.use-case';
+import { DeleteBookingUseCase } from './application/use-cases/booking/delete-booking.use-case';
+import { CreateBookingUseCase } from './application/use-cases/booking/create-booking.use-case';
+import { FindOneCustomerDetailUseCase } from './application/use-cases/customerDetail/find-one-customer-detail.usecase';
 @Controller('/customer')
 export class CustomerController {
   constructor(
     private readonly customerService: CustomerService,
     private readonly deleteBookingUseCase: DeleteBookingUseCase,
     private readonly createBookingUseCase: CreateBookingUseCase,
+    private readonly findOneCustomerDetailUseCase: FindOneCustomerDetailUseCase,
   ) {}
 
   @Post()
@@ -166,7 +168,7 @@ export class CustomerController {
     @Param('id') id: string,
   ): Promise<Response<any, Record<string, any>>> {
     try {
-      const customer = await this.customerService.findCustomerDetail(id);
+      const customer = await this.findOneCustomerDetailUseCase.execute(id);
       return res.status(200).json({
         status: 200,
         message: 'successful',
