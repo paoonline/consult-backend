@@ -3,4 +3,5 @@ export interface IPaymentDto {
   consultTransactionId: string;
   customerId: string;
   consultId: string;
+  paymentDate?: Date;
 }

@@ -20,6 +20,9 @@ export class UpdateCustomerRateUseCase {
       },
       CustomerDetailEntity,
     );
+    if (!entity.isRated()) {
+      throw new Error(' over rate limit > 5');
+    }
 
     const result = await this.customerDetailRepository.update(id, entity);
     return camelcaseKeys(result) as ICustomerDetail;
