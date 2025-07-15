@@ -15,32 +15,32 @@ export class CustomerDetailEntity {
     return this.data.price ?? 0;
   }
 
-  get bookings() {
-    return this.data.bookings || [];
-  }
+  // get bookings() {
+  //   return this.data.bookings || [];
+  // }
 
-  get comments() {
-    return this.data.comments || [];
-  }
+  // get comments() {
+  //   return this.data.comments || [];
+  // }
 
   getData(): ICustomerDetailEntity {
     return this.data;
   }
 
   // Example business logic
-  hasBookings(): boolean {
-    return this.bookings.length > 0;
-  }
+  // hasBookings(): boolean {
+  //   return this.bookings.length > 0;
+  // }
 
-  hasComments(): boolean {
-    return this.comments.length > 0;
-  }
+  // hasComments(): boolean {
+  //   return this.comments.length > 0;
+  // }
 
   isRated(): boolean {
     return (this.data.rate ?? 0) < 5;
   }
 
-  totalSpent(): number {
-    return this.price * this.bookings.length;
-  }
+  // totalSpent(): number {
+  //   return this.price * this.bookings.length;
+  // }
 }

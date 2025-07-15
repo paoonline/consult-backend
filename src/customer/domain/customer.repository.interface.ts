@@ -7,8 +7,8 @@ export interface IUpdateCustomer {
 }
 
 export interface ICustomerDetailEntity {
-  bookings?: never[];
-  comments?: never[];
+  // bookings?: IBooking[];
+  // comments?: ConsultComment[];
   customer_id: string;
   price?: number;
   rate?: number;

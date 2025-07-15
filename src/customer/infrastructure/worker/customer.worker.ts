@@ -3,7 +3,7 @@ import { Inject, Injectable, OnModuleInit } from '@nestjs/common';
 import { Redis } from 'ioredis';
 import { REDIS_CLIENT } from 'src/services/Redis/redis.module';
 import { BaseWorker } from 'src/services/Worker/BaseWorker';
-import { UpdateCustomerRateUseCase } from './use-cases/customerDetail/update-customer-rate.usecase';
+import { UpdateCustomerRateUseCase } from '../../application/use-cases/customerDetail/update-customer-rate.usecase';
 
 @Injectable()
 export class CustomerWorker extends BaseWorker implements OnModuleInit {

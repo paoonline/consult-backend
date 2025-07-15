@@ -2,8 +2,8 @@ import { Inject, Injectable, OnModuleInit } from '@nestjs/common';
 import Redis from 'ioredis';
 import { REDIS_CLIENT } from 'src/services/Redis/redis.module';
 import { BaseWorker } from 'src/services/Worker/BaseWorker';
-import { NotificationDto } from './dto/notification.dto';
-import { CreateNotificationUseCase } from './use-cases/create-notification.use-case';
+import { NotificationDto } from '../../application/dto/notification.dto';
+import { CreateNotificationUseCase } from '../../application/use-cases/create-notification.use-case';
 // import { NotificationDto } from "src/consult/application/dto/consult.noti.dto";
 
 @Injectable()
