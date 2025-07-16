@@ -8,30 +8,30 @@ import { createFactory } from 'src/utils/factory';
 import { formatSnakeCase } from 'src/utils/format';
 import { IRepository } from 'src/utils/respository';
 import { CustomerEntity } from '../domain/customer.entity';
-import { CustomerRepo } from '../domain/customer.repository.interface';
-import { CustomerRepository } from '../infrastructure/customer.repository';
-import { CustomerDto, CustomerDtoResponse } from './dto/customer.dto';
+import { CustomerReponse } from '../domain/customer.repository.interface';
+import { CustomerReponsesitory } from '../infrastructure/customer.repository';
 import { CreateCustomerDetailUseCase } from './use-cases/customerDetail/create-customer-detail.usecase';
+import { CustomerDtoResponse, CustomerDto } from './dto/customer.dto';
 
 @Injectable()
 export class CustomerService
   implements
     IRepository<
-      CustomerRepo | CustomerDtoResponse | null,
+      CustomerReponse | CustomerDtoResponse | null,
       CustomerDto,
       CustomerDto,
       null,
-      CustomerRepo
+      CustomerReponse
     >
 {
   constructor(
     private readonly sessionService: SessionService,
-    private readonly customerRepository: CustomerRepository,
+    private readonly CustomerReponsesitory: CustomerReponsesitory,
     private readonly skillService: SkillService,
     private readonly prisma: PrismaService,
     private readonly createCustomerDetailUseCase: CreateCustomerDetailUseCase,
   ) {}
-  async create(data: CustomerDto): Promise<CustomerRepo> {
+  async create(data: CustomerDto): Promise<CustomerReponse> {
     const newData = {
       ...data,
       skills: undefined,
@@ -58,12 +58,12 @@ export class CustomerService
 
     const result = await this.prisma.$transaction(async (tx) => {
       // Create customer
-      await this.customerRepository.create(
+      await this.CustomerReponsesitory.create(
         createFactory(snakeData, CustomerEntity, tx),
       );
 
       // Retrieve customer (within transaction context)
-      const customer = await this.customerRepository.findFirst(
+      const customer = await this.CustomerReponsesitory.findFirst(
         data.email.toLowerCase(),
         tx,
       );
@@ -90,7 +90,7 @@ export class CustomerService
   async findAll(
     whereCustomerType: CustomerType,
   ): Promise<CustomerDtoResponse[]> {
-    const result = await this.customerRepository.findAll(
+    const result = await this.CustomerReponsesitory.findAll(
       whereCustomerType === CustomerType.CUSTOMER
         ? CustomerType.CONSULT
         : CustomerType.CUSTOMER,
@@ -108,23 +108,23 @@ export class CustomerService
   }
 
   async findOne(email: string): Promise<CustomerDtoResponse> {
-    const result = await this.customerRepository.findOne(email);
+    const result = await this.CustomerReponsesitory.findOne(email);
     return camelcaseKeys(result) as CustomerDtoResponse;
   }
 
   async findFirst(email: string): Promise<CustomerDtoResponse> {
-    const result = await this.customerRepository.findFirst(email);
+    const result = await this.CustomerReponsesitory.findFirst(email);
     return camelcaseKeys(result) as CustomerDtoResponse;
   }
 
-  delete(id: string): Promise<CustomerRepo> {
-    return this.customerRepository.delete(id);
+  delete(id: string): Promise<CustomerReponse> {
+    return this.CustomerReponsesitory.delete(id);
   }
 
   async update(
     id: string,
     data: Omit<CustomerDto, 'email'>,
-  ): Promise<CustomerRepo | null> {
+  ): Promise<CustomerReponse | null> {
     const newData = {
       ...data,
       skills: undefined,
@@ -134,7 +134,7 @@ export class CustomerService
       Omit<CustomerDto, 'email' | 'skills' | 'price'>,
       Prisma.CustomerCreateInput & { price: number }
     >(newData);
-    const customer = await this.customerRepository.findOne(id);
+    const customer = await this.CustomerReponsesitory.findOne(id);
 
     if (!customer) {
       return null; // Return null if the customer isn't found
@@ -152,7 +152,7 @@ export class CustomerService
       skills as Prisma.SkillCreateNestedManyWithoutCustomersInput;
     snakeData.price = data?.price;
 
-    return this.customerRepository.update(
+    return this.CustomerReponsesitory.update(
       id,
       createFactory(snakeData, CustomerEntity),
     );

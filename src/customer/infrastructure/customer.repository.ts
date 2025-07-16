@@ -2,12 +2,13 @@ import { Injectable } from '@nestjs/common';
 import { PrismaService } from 'prisma/prisma.service';
 import { IRepository } from 'src/utils/respository';
 import { CustomerEntity } from '../domain/customer.entity';
-import { CustomerRepo } from '../domain/customer.repository.interface';
+import { CustomerReponse } from '../domain/customer.repository.interface';
 import { CustomerType, Prisma } from '@prisma/client';
 
 @Injectable()
-export class CustomerRepository
-  implements IRepository<Partial<CustomerRepo>, CustomerEntity, CustomerEntity>
+export class CustomerReponsesitory
+  implements
+    IRepository<Partial<CustomerReponse>, CustomerEntity, CustomerEntity>
 {
   constructor(private readonly prisma: PrismaService) {}
   customerId: string;
@@ -16,7 +17,7 @@ export class CustomerRepository
   // consult list
   async findAll(
     whereCustomerType: CustomerType,
-  ): Promise<Partial<CustomerRepo>[]> {
+  ): Promise<Partial<CustomerReponse>[]> {
     const result = await this.prisma.customer.findMany({
       select: {
         id: true,
@@ -69,7 +70,7 @@ export class CustomerRepository
     });
   }
 
-  async update(id: string, data: CustomerEntity): Promise<CustomerRepo> {
+  async update(id: string, data: CustomerEntity): Promise<CustomerReponse> {
     const updated = await this.prisma.customer.update({
       where: { id },
       data: {
@@ -88,7 +89,7 @@ export class CustomerRepository
     return updated;
   }
 
-  async findOne(id: string): Promise<Partial<CustomerRepo>> {
+  async findOne(id: string): Promise<Partial<CustomerReponse>> {
     const result = await this.prisma.customer.findUnique({
       where: { id },
       select: {
@@ -109,21 +110,21 @@ export class CustomerRepository
         },
       },
     });
-    return result as Partial<CustomerRepo>;
+    return result as Partial<CustomerReponse>;
   }
 
   async findFirst(
     email: string,
     tx?: Prisma.TransactionClient,
-  ): Promise<CustomerRepo> {
+  ): Promise<CustomerReponse> {
     const client = tx ?? this.prisma;
     const customer = await client.customer.findUnique({
       where: { email },
     });
-    return customer as CustomerRepo;
+    return customer as CustomerReponse;
   }
 
-  delete(id: string): Promise<CustomerRepo> {
+  delete(id: string): Promise<CustomerReponse> {
     return this.prisma.customer.delete({ where: { id } });
   }
 }

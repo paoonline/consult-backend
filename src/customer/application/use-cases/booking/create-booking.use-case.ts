@@ -6,7 +6,7 @@ import { BookingEntity } from 'src/customer/domain/customer.booking.entity';
 import { CustomerBookingRepository } from 'src/customer/infrastructure/customer.booking.repository';
 
 import { createFactory } from 'src/utils/factory';
-import { IBooking } from '../../dto/customer.dto';
+import { IBooking } from '../../type/customer.interface';
 
 @Injectable()
 export class CreateBookingUseCase {

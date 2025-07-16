@@ -1,13 +1,13 @@
 import { Injectable } from '@nestjs/common';
 import { IRepository } from 'src/utils/respository';
 import { CustomerDetailRepository } from '../infrastructure/customer.detail.repository';
-import { CustomerDetailDto, ICustomerDetail } from './dto/customer.dto';
 import { instanceToPlain } from 'class-transformer';
 import snakecaseKeys from 'snakecase-keys';
 import camelcaseKeys from 'camelcase-keys';
 import { CustomerDetail, Prisma } from '@prisma/client';
 import { CustomerDetailEntity } from '../domain/customerDetail.entity';
 import { createFactory } from 'src/utils/factory';
+import { ICustomerDetail, CustomerDetailDto } from './dto/customer.dto';
 
 @Injectable()
 export class CustomerDetailService

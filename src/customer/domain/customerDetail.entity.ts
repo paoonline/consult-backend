@@ -24,6 +24,8 @@ export class CustomerDetailEntity {
   // }
 
   getData(): ICustomerDetailEntity {
+    if (this.price < 0) throw new Error('Price is lower than 0');
+    if (this.rate > 5) throw new Error('Rate is over 5');
     return this.data;
   }
 

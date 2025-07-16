@@ -12,12 +12,13 @@ import {
 } from '@nestjs/common';
 import { Response } from 'express';
 import { CustomerService } from './application/customer.service';
-import { CustomerDto, IBooking } from './application/dto/customer.dto';
+import { CustomerDto } from './application/dto/customer.dto';
 import { JwtAuthGuard } from 'src/validate/jwt-auth.guard';
 import { CustomerType } from '@prisma/client';
 import { DeleteBookingUseCase } from './application/use-cases/booking/delete-booking.use-case';
 import { CreateBookingUseCase } from './application/use-cases/booking/create-booking.use-case';
 import { FindOneCustomerDetailUseCase } from './application/use-cases/customerDetail/find-one-customer-detail.usecase';
+import { IBooking } from './application/type/customer.interface';
 @Controller('/customer')
 export class CustomerController {
   constructor(

@@ -14,7 +14,7 @@ import { UpdateCustomerRateUseCase } from './application/use-cases/customerDetai
 import { CustomerController } from './customer.controller';
 import { CustomerBookingRepository } from './infrastructure/customer.booking.repository';
 import { CustomerDetailRepository } from './infrastructure/customer.detail.repository';
-import { CustomerRepository } from './infrastructure/customer.repository';
+import { CustomerReponsesitory } from './infrastructure/customer.repository';
 @Module({
   imports: [RedisModule, SkillModule],
   controllers: [CustomerController],
@@ -22,7 +22,7 @@ import { CustomerRepository } from './infrastructure/customer.repository';
     CustomerService,
     PrismaService,
     SessionService,
-    CustomerRepository,
+    CustomerReponsesitory,
     // SkillService,
     CustomerWorker,
     CustomerDetailRepository,

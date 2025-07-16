@@ -8,6 +8,7 @@ import {
   IsString,
   MaxLength,
 } from 'class-validator';
+import { ISkill, IBooking, IConsultComment } from '../type/customer.interface';
 
 export class CustomerDto {
   @IsEmail()
@@ -109,20 +110,4 @@ export interface ICustomerDetail {
   price: number;
   bookings?: IBooking[];
   comments?: IConsultComment[];
-}
-
-interface IConsultComment {
-  description: string;
-  commentDate: Date;
-  rate: number;
-  consultTransactionId: string;
-  customerDetailId: string;
-}
-export interface IBooking {
-  time: Date;
-  customerDetailId?: string;
-}
-
-interface ISkill {
-  name: string;
 }

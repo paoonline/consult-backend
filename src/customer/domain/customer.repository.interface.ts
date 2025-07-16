@@ -1,4 +1,6 @@
 import { Customer } from '@prisma/client';
+import { CustomerDto } from '../application/dto/customer.dto';
+import { ValidationMetadata } from 'class-validator/types/metadata/ValidationMetadata';
 
 export interface IUpdateCustomer {
   skills: { id: string }[];
@@ -14,4 +16,6 @@ export interface ICustomerDetailEntity {
   rate?: number;
 }
 
-export type CustomerRepo = Omit<Customer, 'password'>;
+export type CustomerReponse = Omit<Customer, 'password'>;
+
+export type CustomerInput = Omit<CustomerDto, keyof ValidationMetadata>;

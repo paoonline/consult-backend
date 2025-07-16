@@ -44,6 +44,8 @@ export class ConsultCommentService
         comment.customer_detail_id,
         tx,
       );
+
+      // open redis first -> refactor
       void this.queueJob.addJob('customerDetailQueue', 'sendCustomerDetail', {
         id: comment.customer_detail_id,
         rate: avgResult,

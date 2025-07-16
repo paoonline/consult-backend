@@ -12,7 +12,7 @@ import { IRepository } from 'src/utils/respository';
 import { ConsultDto } from '../dto/consult.dto';
 // import { IConsultMeeting } from 'src/consult/domain/consult.repository.interface';
 // import { KafkaService } from 'src/services/Kafka/kafka.service';
-import { IBooking } from 'src/customer/application/dto/customer.dto';
+import { IBooking } from 'src/customer/application/type/customer.interface';
 import { NotificationDto } from 'src/notification/application/dto/notification.dto';
 import { IPaymentDto } from 'src/payment/application/dto/payment.dto';
 @Injectable()
