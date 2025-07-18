@@ -35,7 +35,11 @@ export class CustomerDetailRepository
         rate: true,
         id: true,
         price: true,
-        bookings: true,
+        bookings: {
+          where: {
+            time: { gte: new Date() },
+          },
+        },
       },
       where: { customer_id: id },
     });

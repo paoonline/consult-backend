@@ -104,7 +104,9 @@ export class CustomerService
         onlineStatus: !!online,
       };
     });
-    return resultMap.map((r) => camelcaseKeys(r)) as CustomerDtoResponse[];
+    return resultMap.map((r) =>
+      camelcaseKeys(r, { deep: true }),
+    ) as CustomerDtoResponse[];
   }
 
   async findOne(email: string): Promise<CustomerDtoResponse> {
@@ -114,7 +116,7 @@ export class CustomerService
 
   async findFirst(email: string): Promise<CustomerDtoResponse> {
     const result = await this.CustomerReponsesitory.findFirst(email);
-    return camelcaseKeys(result) as CustomerDtoResponse;
+    return camelcaseKeys(result, { deep: true }) as CustomerDtoResponse;
   }
 
   delete(id: string): Promise<CustomerReponse> {

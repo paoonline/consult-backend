@@ -29,7 +29,11 @@ export class CustomerReponsesitory
         email: true,
         customer_detail: {
           select: {
-            bookings: true,
+            bookings: {
+              where: {
+                time: { gte: new Date() },
+              },
+            },
             id: true,
             price: true,
             rate: true,
@@ -120,6 +124,9 @@ export class CustomerReponsesitory
     const client = tx ?? this.prisma;
     const customer = await client.customer.findUnique({
       where: { email },
+      include: {
+        customer_detail: true,
+      },
     });
     return customer as CustomerReponse;
   }

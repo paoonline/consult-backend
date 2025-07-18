@@ -30,7 +30,6 @@ export class LoginUseCase {
 
     await this.createLoginRecordUseCase.execute(customer.id);
     await this.sessionService.setUserOnline(newEmail);
-
     return this.jwtService.createJwtToken(customer);
   }
 }

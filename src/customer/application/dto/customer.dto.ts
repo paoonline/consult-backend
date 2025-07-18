@@ -105,6 +105,7 @@ export interface CustomerDetailDto {
 }
 
 export interface ICustomerDetail {
+  id?: string;
   rate?: number;
   customerId?: string;
   price: number;
