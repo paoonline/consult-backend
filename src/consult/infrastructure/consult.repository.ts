@@ -2,7 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { ConsultTransaction } from '@prisma/client';
 import { PrismaService } from 'prisma/prisma.service';
 import { IRepository } from 'src/utils/respository';
-import { ConsultEntity } from '../domain/consult.entity';
+import { ConsultEntity } from '../domain/entity/consult.entity';
 import { ConsultDto } from '../application/dto/consult.dto';
 
 @Injectable()
@@ -48,7 +48,6 @@ export class ConsultRepository
   async findFirst(data: ConsultDto): Promise<ConsultTransaction | null> {
     const newStartTime = new Date(data.startDate);
     const newEndTime = new Date(data.endDate);
-    newEndTime.setHours(newEndTime.getHours() + 1);
 
     return this.prisma.consultTransaction.findFirst({
       where: {

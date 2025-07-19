@@ -5,9 +5,10 @@ import { instanceToPlain } from 'class-transformer';
 import snakecaseKeys from 'snakecase-keys';
 import camelcaseKeys from 'camelcase-keys';
 import { CustomerDetail, Prisma } from '@prisma/client';
-import { CustomerDetailEntity } from '../domain/customerDetail.entity';
+
 import { createFactory } from 'src/utils/factory';
 import { ICustomerDetail, CustomerDetailDto } from './dto/customer.dto';
+import { CustomerDetailEntity } from '../domain/entity/customerDetail.entity';
 
 @Injectable()
 export class CustomerDetailService

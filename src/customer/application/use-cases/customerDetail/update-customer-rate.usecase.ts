@@ -2,9 +2,10 @@ import { Injectable } from '@nestjs/common';
 
 import { createFactory } from 'src/utils/factory';
 import camelcaseKeys from 'camelcase-keys';
-import { CustomerDetailEntity } from 'src/customer/domain/customerDetail.entity';
+
 import { CustomerDetailRepository } from 'src/customer/infrastructure/customer.detail.repository';
 import { ICustomerDetail } from '../../dto/customer.dto';
+import { CustomerDetailEntity } from 'src/customer/domain/entity/customerDetail.entity';
 
 @Injectable()
 export class UpdateCustomerRateUseCase {

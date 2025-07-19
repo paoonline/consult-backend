@@ -2,11 +2,11 @@ import {
   Body,
   Controller,
   Get,
+  Headers,
   Param,
   Patch,
   Post,
   Res,
-  Headers,
   UseGuards,
 } from '@nestjs/common';
 import { Response } from 'express';
@@ -15,16 +15,20 @@ import { JwtAuthGuard } from 'src/validate/jwt-auth.guard';
 import { ConsultCommentDto } from './application/dto/consult.comment.dto';
 import { ConsultDto } from './application/dto/consult.dto';
 import { ConsultNoteDto } from './application/dto/consult.note.dto';
-import { ConsultCommentService } from './application/services/consult.comment.service';
 import { ConsultNoteService } from './application/services/consult.note.service';
 import { ConsultService } from './application/services/consult.service';
+import { CreateConsultCommentUseCase } from './application/use-cases/comment/create-consult-comment.use-case';
+import { FindAllConsultCommentsUseCase } from './application/use-cases/comment/find-all-consult-comments.use-case';
+import { FindOneConsultCommentUseCase } from './application/use-cases/comment/find-one-consult-comment.use-case';
 
 @Controller('/consult')
 export class ConsultController {
   constructor(
     private readonly consultService: ConsultService,
     private readonly noteService: ConsultNoteService,
-    private readonly commentService: ConsultCommentService,
+    private readonly createConsultCommentUseCase: CreateConsultCommentUseCase,
+    private readonly findAllConsultCommentsUseCase: FindAllConsultCommentsUseCase,
+    private readonly findOneConsultCommentUseCase: FindOneConsultCommentUseCase,
   ) {}
 
   @Post()
@@ -205,7 +209,7 @@ export class ConsultController {
     @Res() res: Response,
   ): Promise<Response<any, Record<string, any>>> {
     try {
-      const comment = await this.commentService.findAll();
+      const comment = await this.findAllConsultCommentsUseCase.execute();
       return res.status(200).json({
         status: 200,
         message: 'successful',
@@ -229,7 +233,8 @@ export class ConsultController {
     @Param('commentId') commentId: string,
   ): Promise<Response<any, Record<string, any>>> {
     try {
-      const comment = await this.commentService.findOne(commentId);
+      const comment =
+        await this.findOneConsultCommentUseCase.execute(commentId);
       return res.status(200).json({
         status: 200,
         message: 'successful',
@@ -253,7 +258,7 @@ export class ConsultController {
     @Body() data: ConsultCommentDto,
   ): Promise<Response<any, Record<string, any>>> {
     try {
-      const comment = await this.commentService.create(data);
+      const comment = await this.createConsultCommentUseCase.execute(data);
       // Send a successful response with the token
       return res.status(200).json({
         status: 200,

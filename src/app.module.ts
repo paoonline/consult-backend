@@ -13,6 +13,8 @@ import { NotificationModule } from './notification/notification.module';
 import { PaymentModule } from './payment/payment.module';
 import { SkillModule } from './skillMap/skill-map.module';
 import { JwtStrategy } from './validate/jwt.strategy';
+import { RedisModule } from './services/Redis/redis.module';
+import { AppLogger } from './services/Logger/logger.service';
 
 // require('dotenv').config();
 @Module({
@@ -29,7 +31,9 @@ import { JwtStrategy } from './validate/jwt.strategy';
     SkillModule,
     NotificationModule,
     PaymentModule,
+    RedisModule,
   ],
-  providers: [BatchNotificationService, JwtStrategy, AppGateway],
+  providers: [BatchNotificationService, JwtStrategy, AppGateway, AppLogger],
+  exports: [AppLogger]
 })
 export class AppModule {}

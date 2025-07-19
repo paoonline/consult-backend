@@ -7,7 +7,7 @@ import { SkillService } from 'src/skillMap/application/skill-map.service';
 import { createFactory } from 'src/utils/factory';
 import { formatSnakeCase } from 'src/utils/format';
 import { IRepository } from 'src/utils/respository';
-import { CustomerEntity } from '../domain/customer.entity';
+import { CustomerEntity } from '../domain/entity/customer.entity';
 import { CustomerReponse } from '../domain/customer.repository.interface';
 import { CustomerReponsesitory } from '../infrastructure/customer.repository';
 import { CreateCustomerDetailUseCase } from './use-cases/customerDetail/create-customer-detail.usecase';

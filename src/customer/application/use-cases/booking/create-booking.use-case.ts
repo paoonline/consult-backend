@@ -2,9 +2,8 @@ import { Injectable } from '@nestjs/common';
 import { Prisma } from '@prisma/client';
 import { instanceToPlain } from 'class-transformer';
 import snakecaseKeys from 'snakecase-keys';
-import { BookingEntity } from 'src/customer/domain/customer.booking.entity';
+import { BookingEntity } from 'src/customer/domain/entity/customer.booking.entity';
 import { CustomerBookingRepository } from 'src/customer/infrastructure/customer.booking.repository';
-
 import { createFactory } from 'src/utils/factory';
 import { IBooking } from '../../type/customer.interface';
 
@@ -41,9 +40,9 @@ export class CreateBookingUseCase {
 
     const plainData = instanceToPlain(data);
     const snakeData = snakecaseKeys(plainData) as BookingEntity[];
-    const result = await this.bookingRepo.create(
-      createFactory(snakeData, BookingEntity as keyof object, tx),
-    );
+    const entity = createFactory(snakeData, BookingEntity, tx);
+    entity.assertValidTime();
+    const result = await this.bookingRepo.create(entity);
     return result;
   }
 }

@@ -5,7 +5,7 @@ import { instanceToPlain } from 'class-transformer';
 import snakecaseKeys from 'snakecase-keys';
 import { createFactory } from 'src/utils/factory';
 import { IRepository } from 'src/utils/respository';
-import { BookingEntity } from '../domain/customer.booking.entity';
+import { BookingEntity } from '../domain/entity/customer.booking.entity';
 import { CustomerBookingRepository } from '../infrastructure/customer.booking.repository';
 import { IBooking } from './type/customer.interface';
 

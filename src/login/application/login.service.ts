@@ -1,14 +1,14 @@
+import { login } from '.prisma/client';
 import { Injectable } from '@nestjs/common';
-import { CustomerService } from 'src/customer/application/customer.service';
+import camelcaseKeys from 'camelcase-keys';
+import { FindFirstCustomerUseCase } from 'src/customer/application/use-cases/customer/find-first-customer.usecase';
 import { JwtService } from 'src/services/Jwt/jwt.service';
 import { SessionService } from 'src/services/Session/session.service';
+import { createFactory } from 'src/utils/factory';
 import { IRepository } from 'src/utils/respository';
+import { LoginEntity } from '../domain/login.entity';
 import { LoginRepository } from '../infrastructure/login.repository';
 import { loginLogDto } from './login.dto';
-import { login } from '.prisma/client';
-import camelcaseKeys from 'camelcase-keys';
-import { createFactory } from 'src/utils/factory';
-import { LoginEntity } from '../domain/login.entity';
 // import { LoginBuilder } from '../domain/login.builder';
 @Injectable()
 export class LoginService
@@ -18,7 +18,7 @@ export class LoginService
     private readonly loginRepository: LoginRepository,
     private readonly jwtService: JwtService,
     private readonly sessionService: SessionService,
-    private readonly customerService: CustomerService,
+    private readonly findFirstCustomerUseCase: FindFirstCustomerUseCase,
   ) {}
 
   createLoginRecord(emailId?: string, date?: Date | null): LoginEntity {
@@ -59,7 +59,7 @@ export class LoginService
     }
 
     // Find the user by email
-    const customer = await this.customerService.findFirst(newEmail);
+    const customer = await this.findFirstCustomerUseCase.execute(newEmail);
     if (!customer || !customer.password) {
       throw new Error('Invalid credentials');
     }

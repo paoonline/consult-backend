@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 
-import { CustomerEntity } from 'src/customer/domain/customer.entity';
+import { CustomerEntity } from 'src/customer/domain/entity/customer.entity';
 import { CustomerReponse } from 'src/customer/domain/customer.repository.interface';
 import { CustomerReponsesitory } from 'src/customer/infrastructure/customer.repository';
 import { SessionService } from 'src/services/Session/session.service';

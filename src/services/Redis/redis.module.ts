@@ -1,11 +1,13 @@
 // redis.module.ts
-import { Module } from '@nestjs/common';
+import { Global, Module } from '@nestjs/common';
 import { Redis } from 'ioredis';
 import { RedisService } from './redis.service';
 export const REDIS_CLIENT = 'REDIS_CLIENT';
 import 'dotenv/config';
 
 const redisUrl = process.env.REDIS_URL ?? '';
+
+@Global()
 @Module({
   providers: [
     {

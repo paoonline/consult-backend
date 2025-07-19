@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { CustomerType, Prisma } from '@prisma/client';
 import { PrismaService } from 'prisma/prisma.service';
-import { CustomerEntity } from 'src/customer/domain/customer.entity';
+import { CustomerEntity } from 'src/customer/domain/entity/customer.entity';
 import { CustomerReponse } from 'src/customer/domain/customer.repository.interface';
 import { CustomerBuilder } from 'src/customer/domain/customer/customer.builder';
 import { CustomerReponsesitory } from 'src/customer/infrastructure/customer.repository';

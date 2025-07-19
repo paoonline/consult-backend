@@ -3,7 +3,7 @@ import { ConsultTransaction, CustomerDetail, Prisma } from '@prisma/client';
 import camelcaseKeys from 'camelcase-keys';
 import { instanceToPlain } from 'class-transformer';
 import snakecaseKeys from 'snakecase-keys';
-import { ConsultEntity } from 'src/consult/domain/consult.entity';
+import { ConsultEntity } from 'src/consult/domain/entity/consult.entity';
 import { ConsultRepository } from 'src/consult/infrastructure/consult.repository';
 import { ApiService } from 'src/services/Api/api';
 import { QueueJob } from 'src/services/Queue/queueJob';
@@ -52,7 +52,6 @@ export class ConsultService
         'This time slot is already booked. Please choose another time.',
       );
     }
-
     //
 
     const [consult, customerConsultDetail] = await Promise.all([

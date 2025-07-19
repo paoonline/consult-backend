@@ -2,7 +2,8 @@ import { Injectable } from '@nestjs/common';
 import { CustomerDetail, Prisma } from '@prisma/client';
 import { PrismaService } from 'prisma/prisma.service';
 import { IRepository } from 'src/utils/respository';
-import { CustomerDetailEntity } from '../domain/customerDetail.entity';
+import { CustomerDetailEntity } from '../domain/entity/customerDetail.entity';
+
 @Injectable()
 export class CustomerDetailRepository
   implements

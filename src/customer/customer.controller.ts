@@ -10,19 +10,28 @@ import {
   Res,
   UseGuards,
 } from '@nestjs/common';
-import { Response } from 'express';
-import { CustomerService } from './application/customer.service';
-import { CustomerDto } from './application/dto/customer.dto';
-import { JwtAuthGuard } from 'src/validate/jwt-auth.guard';
 import { CustomerType } from '@prisma/client';
-import { DeleteBookingUseCase } from './application/use-cases/booking/delete-booking.use-case';
-import { CreateBookingUseCase } from './application/use-cases/booking/create-booking.use-case';
-import { FindOneCustomerDetailUseCase } from './application/use-cases/customerDetail/find-one-customer-detail.usecase';
+import { Response } from 'express';
+import { JwtAuthGuard } from 'src/validate/jwt-auth.guard';
+import { CustomerDto } from './application/dto/customer.dto';
 import { IBooking } from './application/type/customer.interface';
+import { CreateBookingUseCase } from './application/use-cases/booking/create-booking.use-case';
+import { DeleteBookingUseCase } from './application/use-cases/booking/delete-booking.use-case';
+import { CreateCustomerUseCase } from './application/use-cases/customer/create-customer.usecase';
+import { DeleteCustomerUseCase } from './application/use-cases/customer/delete-customer.usecase';
+import { FindAllCustomersUseCase } from './application/use-cases/customer/find-all-customers.usecase';
+import { FindOneCustomerUseCase } from './application/use-cases/customer/find-one-customer.usecase';
+import { UpdateCustomerUseCase } from './application/use-cases/customer/update-customer.usecase';
+import { FindOneCustomerDetailUseCase } from './application/use-cases/customerDetail/find-one-customer-detail.usecase';
 @Controller('/customer')
 export class CustomerController {
   constructor(
-    private readonly customerService: CustomerService,
+    private readonly updateCustomerUseCase: UpdateCustomerUseCase,
+    private readonly deleteCustomerUseCase: DeleteCustomerUseCase,
+    private readonly findOneCustomerUseCase: FindOneCustomerUseCase,
+    private readonly findAllCustomersUseCase: FindAllCustomersUseCase,
+    private readonly createCustomerUseCase: CreateCustomerUseCase,
+
     private readonly deleteBookingUseCase: DeleteBookingUseCase,
     private readonly createBookingUseCase: CreateBookingUseCase,
     private readonly findOneCustomerDetailUseCase: FindOneCustomerDetailUseCase,
@@ -34,7 +43,7 @@ export class CustomerController {
     @Body() data: CustomerDto,
   ): Promise<Response<any, Record<string, any>>> {
     try {
-      const customer = await this.customerService.create(data);
+      const customer = await this.createCustomerUseCase.execute(data);
       // Send a successful response with the token
       return res.status(200).json({
         status: 200,
@@ -59,7 +68,7 @@ export class CustomerController {
     @Param('customerType') customerType: CustomerType,
   ): Promise<Response<any, Record<string, any>>> {
     try {
-      const customer = await this.customerService.findAll(customerType);
+      const customer = await this.findAllCustomersUseCase.execute(customerType);
       return res.status(200).json({
         status: 200,
         message: 'successful',
@@ -83,7 +92,7 @@ export class CustomerController {
     @Param('id') id: string,
   ): Promise<Response<any, Record<string, any>>> {
     try {
-      const customer = await this.customerService.findOne(id);
+      const customer = await this.findOneCustomerUseCase.execute(id);
       return res.status(200).json({
         status: 200,
         message: 'successful',
@@ -107,7 +116,7 @@ export class CustomerController {
     @Param('id') id: string,
   ): Promise<Response<any, Record<string, any>>> {
     try {
-      const customer = await this.customerService.delete(id);
+      const customer = await this.deleteCustomerUseCase.execute(id);
       return res.status(200).json({
         status: 200,
         message: 'successful',
@@ -136,7 +145,10 @@ export class CustomerController {
         ...customerDto,
         email: undefined,
       };
-      const updatedCustomer = await this.customerService.update(id, safeData);
+      const updatedCustomer = await this.updateCustomerUseCase.execute(
+        id,
+        safeData,
+      );
 
       if (!updatedCustomer) {
         return res.status(HttpStatus.NOT_FOUND).json({

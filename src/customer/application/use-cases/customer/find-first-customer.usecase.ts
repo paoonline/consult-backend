@@ -9,6 +9,6 @@ export class FindFirstCustomerUseCase {
 
   async execute(email: string): Promise<CustomerDtoResponse> {
     const result = await this.CustomerReponsesitory.findFirst(email);
-    return camelcaseKeys(result) as CustomerDtoResponse;
+    return camelcaseKeys(result, { deep: true }) as CustomerDtoResponse;
   }
 }

@@ -3,7 +3,7 @@ import { Injectable } from '@nestjs/common';
 import camelcaseKeys from 'camelcase-keys';
 import { instanceToPlain } from 'class-transformer';
 import snakecaseKeys from 'snakecase-keys';
-import { CommentEntity } from 'src/consult/domain/comment.entity';
+import { CommentEntity } from 'src/consult/domain/entity/comment.entity';
 import { CommentRepository } from 'src/consult/infrastructure/comment.repository';
 import { QueueJob } from 'src/services/Queue/queueJob';
 import { createFactory } from 'src/utils/factory';

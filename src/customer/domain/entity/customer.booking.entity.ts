@@ -14,8 +14,11 @@ export class BookingEntity {
     return true;
   }
 
-  getData(): Booking[] {
+  assertValidTime(): void {
     if (!this.validateTime()) throw new Error('Time not validate');
+  }
+
+  getData(): Booking[] {
     return this.data;
   }
 }

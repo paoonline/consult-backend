@@ -2,7 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { Note } from '@prisma/client';
 import { PrismaService } from 'prisma/prisma.service';
 import { IRepository } from 'src/utils/respository';
-import { NoteEntity } from '../domain/note.entity';
+import { NoteEntity } from '../domain/entity/note.entity';
 
 @Injectable()
 export class NoteRepository

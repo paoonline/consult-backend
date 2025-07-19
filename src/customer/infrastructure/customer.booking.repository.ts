@@ -2,7 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { Booking, Prisma } from '@prisma/client';
 import { PrismaService } from 'prisma/prisma.service';
 import { IRepository } from 'src/utils/respository';
-import { BookingEntity } from '../domain/customer.booking.entity';
+import { BookingEntity } from '../domain/entity/customer.booking.entity';
 import { IBooking } from '../application/type/customer.interface';
 @Injectable()
 export class CustomerBookingRepository

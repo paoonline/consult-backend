@@ -8,7 +8,7 @@ import { NoteRepository } from 'src/consult/infrastructure/note.repository';
 import { IRepository } from 'src/utils/respository';
 import { ConsultNoteDto } from '../dto/consult.note.dto';
 import { createFactory } from 'src/utils/factory';
-import { NoteEntity } from 'src/consult/domain/note.entity';
+import { NoteEntity } from 'src/consult/domain/entity/note.entity';
 
 @Injectable()
 export class ConsultNoteService

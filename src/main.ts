@@ -1,9 +1,12 @@
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
+import { AppLogger } from './services/Logger/logger.service';
+import { LoggingInterceptor } from './services/Interceptors/logging.interceptor';
 // import { AuthMiddleware } from './validate/auth.middleware';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
+  const logger = app.get(AppLogger);
   // app.enableCors();
 
   app.enableCors({
@@ -22,6 +25,7 @@ async function bootstrap() {
 
   // uncomment for used the prefix api
   app.setGlobalPrefix('api');
+  app.useGlobalInterceptors(new LoggingInterceptor(logger));
   await app.listen(process.env.PORT ?? 3000);
 }
 bootstrap();
