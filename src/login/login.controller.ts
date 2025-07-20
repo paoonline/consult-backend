@@ -42,11 +42,7 @@ export class LoginController {
     } catch (error: unknown) {
       const errMsg =
         error instanceof Error ? error.message : 'Unknown error occurred';
-      return res.status(400).json({
-        status: 400,
-        message: errMsg,
-        data: '',
-      });
+      throw new Error(errMsg);
     }
   }
 

@@ -1,5 +1,5 @@
 import { CustomerType } from '@prisma/client';
-import { CustomerInput } from '../customer.repository.interface';
+import { CustomerInput } from 'src/customer/application/dto/customer';
 
 export class CustomerBuilder {
   private data: Partial<CustomerInput> = {};

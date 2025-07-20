@@ -1,7 +1,6 @@
 import { Injectable } from '@nestjs/common';
 
 import { CustomerEntity } from 'src/customer/domain/entity/customer.entity';
-import { CustomerReponse } from 'src/customer/domain/customer.repository.interface';
 import { CustomerReponsesitory } from 'src/customer/infrastructure/customer.repository';
 import { SessionService } from 'src/services/Session/session.service';
 import { SkillService } from 'src/skillMap/application/skill-map.service';
@@ -9,7 +8,7 @@ import { createFactory } from 'src/utils/factory';
 import { formatSnakeCase } from 'src/utils/format';
 import { CustomerDto } from '../../dto/customer.dto';
 import { Prisma } from '@prisma/client';
-
+import { CustomerReponse } from '../../dto/customer';
 @Injectable()
 export class UpdateCustomerUseCase {
   constructor(

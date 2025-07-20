@@ -2,8 +2,9 @@ import { Injectable } from '@nestjs/common';
 import { PrismaService } from 'prisma/prisma.service';
 import { IRepository } from 'src/utils/respository';
 import { CustomerEntity } from '../domain/entity/customer.entity';
-import { CustomerReponse } from '../domain/customer.repository.interface';
+
 import { CustomerType, Prisma } from '@prisma/client';
+import { CustomerReponse } from '../application/dto/customer';
 
 @Injectable()
 export class CustomerReponsesitory

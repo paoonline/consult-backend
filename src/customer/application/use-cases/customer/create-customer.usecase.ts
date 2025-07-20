@@ -2,7 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { CustomerType, Prisma } from '@prisma/client';
 import { PrismaService } from 'prisma/prisma.service';
 import { CustomerEntity } from 'src/customer/domain/entity/customer.entity';
-import { CustomerReponse } from 'src/customer/domain/customer.repository.interface';
+
 import { CustomerBuilder } from 'src/customer/domain/customer/customer.builder';
 import { CustomerReponsesitory } from 'src/customer/infrastructure/customer.repository';
 import { SessionService } from 'src/services/Session/session.service';
@@ -11,6 +11,7 @@ import { createFactory } from 'src/utils/factory';
 import { CustomerDto } from '../../dto/customer.dto';
 import { CustomerMapper } from '../../mapper/customer.mapper';
 import { CreateCustomerDetailUseCase } from '../customerDetail/create-customer-detail.usecase';
+import { CustomerReponse } from '../../dto/customer';
 
 @Injectable()
 export class CreateCustomerUseCase {

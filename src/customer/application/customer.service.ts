@@ -8,10 +8,11 @@ import { createFactory } from 'src/utils/factory';
 import { formatSnakeCase } from 'src/utils/format';
 import { IRepository } from 'src/utils/respository';
 import { CustomerEntity } from '../domain/entity/customer.entity';
-import { CustomerReponse } from '../domain/customer.repository.interface';
+
 import { CustomerReponsesitory } from '../infrastructure/customer.repository';
 import { CreateCustomerDetailUseCase } from './use-cases/customerDetail/create-customer-detail.usecase';
 import { CustomerDtoResponse, CustomerDto } from './dto/customer.dto';
+import { CustomerReponse } from './dto/customer';
 
 @Injectable()
 export class CustomerService

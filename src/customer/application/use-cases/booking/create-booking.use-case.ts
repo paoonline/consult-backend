@@ -5,7 +5,7 @@ import snakecaseKeys from 'snakecase-keys';
 import { BookingEntity } from 'src/customer/domain/entity/customer.booking.entity';
 import { CustomerBookingRepository } from 'src/customer/infrastructure/customer.booking.repository';
 import { createFactory } from 'src/utils/factory';
-import { IBooking } from '../../type/customer.interface';
+import { IBooking } from '../../dto/customer';
 
 @Injectable()
 export class CreateBookingUseCase {

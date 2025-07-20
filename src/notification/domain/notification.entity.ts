@@ -1,4 +1,4 @@
-import { NotificationInput } from '../application/notification.type';
+import { NotificationInput } from '../application/dto/notification.input';
 
 export class NotificationEntity {
   constructor(private readonly data: NotificationInput) {

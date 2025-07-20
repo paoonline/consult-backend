@@ -1,7 +1,7 @@
-import { ICustomerDetailEntity } from '../customer.repository.interface';
+import { ICustomerDetailInput } from 'src/customer/application/dto/customer';
 
 export class CustomerDetailEntity {
-  constructor(private readonly data: ICustomerDetailEntity) {}
+  constructor(private readonly data: ICustomerDetailInput) {}
 
   get customerId(): string {
     return this.data.customer_id;
@@ -23,7 +23,7 @@ export class CustomerDetailEntity {
   //   return this.data.comments || [];
   // }
 
-  getData(): ICustomerDetailEntity {
+  getData(): ICustomerDetailInput {
     return this.data;
   }
 

@@ -1,4 +1,4 @@
-import { PaymentTransactionInput } from '../application/payment.type';
+import { PaymentTransactionInput } from '../application/dto/payment.input';
 import { PaymentEntity } from './payment.entity';
 import { PaymentDate } from './value-objects/payment-date.vo';
 import { Price } from './value-objects/price.vo';

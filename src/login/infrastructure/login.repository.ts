@@ -2,7 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { login } from '@prisma/client';
 import { PrismaService } from 'prisma/prisma.service';
 import { IRepository } from 'src/utils/respository';
-import { LoginInput } from '../domain/login.entity';
+import { LoginInput } from '../application/dto/login.input';
 // src/
 //   └── user/
 //       ├── domain/

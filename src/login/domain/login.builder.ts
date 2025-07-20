@@ -1,4 +1,4 @@
-import { LoginInput } from './login.entity';
+import { LoginInput } from '../application/dto/login.input';
 
 export class LoginBuilder {
   private data: LoginInput = {

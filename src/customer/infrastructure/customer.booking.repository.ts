@@ -3,7 +3,7 @@ import { Booking, Prisma } from '@prisma/client';
 import { PrismaService } from 'prisma/prisma.service';
 import { IRepository } from 'src/utils/respository';
 import { BookingEntity } from '../domain/entity/customer.booking.entity';
-import { IBooking } from '../application/type/customer.interface';
+import { IBooking } from '../application/dto/customer';
 @Injectable()
 export class CustomerBookingRepository
   implements IRepository<Booking | string, unknown, unknown, null, string>

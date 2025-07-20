@@ -5,7 +5,7 @@ import { IRepository } from 'src/utils/respository';
 import {
   NotificationInput,
   NotificationWithTokens,
-} from '../application/notification.type';
+} from '../application/dto/notification.input';
 
 @Injectable()
 export class NotificationRepository

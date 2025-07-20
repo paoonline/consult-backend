@@ -1,7 +1,4 @@
-export type LoginInput = {
-  email_id: string;
-  login_date: Date;
-};
+import { LoginInput } from '../application/dto/login.input';
 
 export class LoginEntity {
   constructor(private readonly data: LoginInput) {

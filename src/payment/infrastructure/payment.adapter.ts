@@ -1,6 +1,6 @@
 // payment-adapter.ts
 
-import { LegacyPaymentInput } from '../application/payment.type';
+import { LegacyPaymentInput } from '../application/dto/payment.input';
 import { PaymentBuilder } from '../domain/payment.builder';
 
 export class LegacyPaymentAdapter {

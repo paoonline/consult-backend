@@ -14,7 +14,7 @@ import { CustomerType } from '@prisma/client';
 import { Response } from 'express';
 import { JwtAuthGuard } from 'src/validate/jwt-auth.guard';
 import { CustomerDto } from './application/dto/customer.dto';
-import { IBooking } from './application/type/customer.interface';
+
 import { CreateBookingUseCase } from './application/use-cases/booking/create-booking.use-case';
 import { DeleteBookingUseCase } from './application/use-cases/booking/delete-booking.use-case';
 import { CreateCustomerUseCase } from './application/use-cases/customer/create-customer.usecase';
@@ -23,6 +23,7 @@ import { FindAllCustomersUseCase } from './application/use-cases/customer/find-a
 import { FindOneCustomerUseCase } from './application/use-cases/customer/find-one-customer.usecase';
 import { UpdateCustomerUseCase } from './application/use-cases/customer/update-customer.usecase';
 import { FindOneCustomerDetailUseCase } from './application/use-cases/customerDetail/find-one-customer-detail.usecase';
+import { IBooking } from './application/dto/customer';
 @Controller('/customer')
 export class CustomerController {
   constructor(

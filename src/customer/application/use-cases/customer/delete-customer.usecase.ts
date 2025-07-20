@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
-import { CustomerReponse } from 'src/customer/domain/customer.repository.interface';
 import { CustomerReponsesitory } from 'src/customer/infrastructure/customer.repository';
+import { CustomerReponse } from '../../dto/customer';
 
 @Injectable()
 export class DeleteCustomerUseCase {

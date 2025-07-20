@@ -10,7 +10,7 @@ import { NotificationEntity } from '../domain/notification.entity';
 import { NotificationRepository } from '../infrastructure/notification.repository';
 import { NotificationDto } from './dto/notification.dto';
 import { chunkArray } from 'src/utils/array';
-import { IPushNoti } from './notification.type';
+import { IPushNoti } from './dto/notification.input';
 // import { chunkArray } from 'src/utils/array';
 
 @Injectable()

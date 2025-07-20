@@ -36,7 +36,6 @@ export class LoggingInterceptor implements NestInterceptor {
 
     return next.handle().pipe(
       tap(() => {
-        // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
         const statusCode = res.statusCode;
         this.logger.log(
           `✅ [${method}] ${url} - ${statusCode} - ${Date.now() - now}ms`,
@@ -66,10 +65,20 @@ export class LoggingInterceptor implements NestInterceptor {
 
   private safeJson(data: any): string {
     const seen = new WeakSet();
+    const SENSITIVE_KEYS = [
+      'password',
+      'pass',
+      'token',
+      'secret',
+      'authorization',
+    ];
     try {
       return JSON.stringify(
         data,
         function (_key, value) {
+          if (SENSITIVE_KEYS.includes(_key.toLowerCase())) {
+            return '[***]'; // 🔒 masked
+          }
           if (typeof value === 'object' && value !== null) {
             if (seen.has(value)) return '[Circular]';
             seen.add(value);

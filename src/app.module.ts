@@ -34,6 +34,6 @@ import { AppLogger } from './services/Logger/logger.service';
     RedisModule,
   ],
   providers: [BatchNotificationService, JwtStrategy, AppGateway, AppLogger],
-  exports: [AppLogger]
+  exports: [AppLogger],
 })
 export class AppModule {}

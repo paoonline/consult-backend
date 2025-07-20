@@ -1,5 +1,5 @@
 // src/login/application/use-cases/login.use-case.ts
-import { Injectable } from '@nestjs/common';
+import { BadRequestException, Injectable } from '@nestjs/common';
 import { FindFirstCustomerUseCase } from 'src/customer/application/use-cases/customer/find-first-customer.usecase';
 import { JwtService } from 'src/services/Jwt/jwt.service';
 import { SessionService } from 'src/services/Session/session.service';
@@ -17,10 +17,11 @@ export class LoginUseCase {
   async execute(email: string, password: string): Promise<string> {
     const newEmail = email.toLowerCase();
     const alreadyOnline = await this.sessionService.checkUserOnline(newEmail);
-    if (alreadyOnline) throw new Error('Session was duplicated');
+    if (alreadyOnline) throw new BadRequestException('Session was duplicated');
 
     const customer = await this.findFirstCustomerUseCase.execute(newEmail);
-    if (!customer || !customer.password) throw new Error('Invalid credentials');
+    if (!customer || !customer.password)
+      throw new BadRequestException('Invalid credentials');
 
     const isPasswordValid = await this.sessionService.validatePassword(
       password,

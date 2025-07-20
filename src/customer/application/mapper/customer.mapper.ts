@@ -1,6 +1,7 @@
 import { Prisma } from '@prisma/client';
-import { CustomerInput } from 'src/customer/domain/customer.repository.interface';
+
 import { formatSnakeCase } from 'src/utils/format';
+import { CustomerInput } from '../dto/customer';
 
 export class CustomerMapper {
   static toPrisma(

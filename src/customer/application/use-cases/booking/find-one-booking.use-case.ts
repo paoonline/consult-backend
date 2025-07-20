@@ -2,7 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { Booking } from '@prisma/client';
 import camelcaseKeys from 'camelcase-keys';
 import { CustomerBookingRepository } from 'src/customer/infrastructure/customer.booking.repository';
-import { IBooking } from '../../type/customer.interface';
+import { IBooking } from '../../dto/customer';
 
 @Injectable()
 export class FindOneBookingUseCase {

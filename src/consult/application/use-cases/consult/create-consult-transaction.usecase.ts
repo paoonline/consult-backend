@@ -1,6 +1,4 @@
 import { Injectable } from '@nestjs/common';
-import { ConsultTransaction, CustomerDetail, Prisma } from '@prisma/client';
-import camelcaseKeys from 'camelcase-keys';
 import { instanceToPlain } from 'class-transformer';
 import snakecaseKeys from 'snakecase-keys';
 import { ConsultEntity } from 'src/consult/domain/entity/consult.entity';
@@ -8,32 +6,21 @@ import { ConsultRepository } from 'src/consult/infrastructure/consult.repository
 import { ApiService } from 'src/services/Api/api';
 import { QueueJob } from 'src/services/Queue/queueJob';
 import { createFactory } from 'src/utils/factory';
-import { IRepository } from 'src/utils/respository';
-import { ConsultDto } from '../dto/consult.dto';
-// import { IConsultMeeting } from 'src/consult/domain/consult.repository.interface';
-// import { KafkaService } from 'src/services/Kafka/kafka.service';
-
-import { NotificationDto } from 'src/notification/application/dto/notification.dto';
+import { ConsultDto } from '../../dto/consult.dto';
+import { CustomerDetail } from '@prisma/client';
 import { IPaymentDto } from 'src/payment/application/dto/payment.dto';
+import { NotificationDto } from 'src/notification/application/dto/notification.dto';
 import { IBooking } from 'src/customer/application/dto/customer';
+
 @Injectable()
-export class ConsultService
-  implements
-    IRepository<
-      Partial<ConsultDto> | Partial<ConsultDto>[],
-      ConsultDto,
-      unknown,
-      unknown,
-      ConsultTransaction
-    >
-{
+export class CreateConsultTransactionUseCase {
   constructor(
-    private readonly queueJob: QueueJob,
-    private readonly apiService: ApiService,
     private readonly consultRepository: ConsultRepository,
-    // private readonly kafkaService: KafkaService,
+    private readonly apiService: ApiService,
+    private readonly queueJob: QueueJob,
   ) {}
-  async create(data: ConsultDto, token: string): Promise<ConsultTransaction> {
+
+  async execute(data: ConsultDto, token: string) {
     const newData = {
       ...data,
       customerDetailId: undefined,
@@ -41,19 +28,14 @@ export class ConsultService
     };
 
     const plainData = instanceToPlain(newData);
-    const snakeData = snakecaseKeys(
-      plainData,
-    ) as Prisma.ConsultTransactionCreateInput;
+    const snakeData = snakecaseKeys(plainData);
 
-    // check consult duplicate id, time
-    const overlappingConsult = await this.consultRepository.findFirst(data);
-
-    if (overlappingConsult) {
+    const overlapping = await this.consultRepository.findFirst(data);
+    if (overlapping) {
       throw new Error(
         'This time slot is already booked. Please choose another time.',
       );
     }
-    //
 
     const [consult, customerConsultDetail] = await Promise.all([
       this.consultRepository.create(createFactory(snakeData, ConsultEntity)),
@@ -64,6 +46,7 @@ export class ConsultService
     ]);
 
     if (!customerConsultDetail) {
+      await this.consultRepository.delete(consult.id);
       throw new Error(
         `CustomerDetail not found for consultId: ${data.consultId}`,
       );
@@ -114,7 +97,6 @@ export class ConsultService
             consultTransactionId: consult.id,
             description: 'test',
             title: 'test',
-            // deviceTokenId: '1',
           },
         ),
       ]);
@@ -124,9 +106,7 @@ export class ConsultService
         paymentRes.status !== 'fulfilled' ||
         notiRes.status !== 'fulfilled'
       ) {
-        // Rollback the consult transaction if any failed
         await this.consultRepository.delete(consult.id);
-
         const errorMessages = [
           bookingRes.status === 'rejected'
             ? `Booking failed: ${bookingRes.reason}`
@@ -140,7 +120,6 @@ export class ConsultService
         ]
           .filter(Boolean)
           .join(', ');
-
         throw new Error(`Failed to complete consult: ${errorMessages}`);
       }
 
@@ -162,46 +141,19 @@ export class ConsultService
         newErr?.message || 'An error occurred during consult creation.',
       );
     }
-    // job noti
-    // await this.queueJob.addJob('NotificationQueue', 'sendNotification', {
-    //   id: consult.id,
-    //   description: 'test',
-    //   title: 'test',
-    //   device_token: '1',
-    // });
-    // headers: {
-    //   'x-delay-until': deliverAt.toString(),
-    // },
-    // x-delay-until
-    // await this.kafkaService.sendMessage('NotificationQueue', JSON.stringify({ id: consult.id, description: "test", title: "test", device_token: "1"}));
-    // return consult;
   }
 
-  async findAll(customerId?: string): Promise<Partial<ConsultDto>[]> {
-    const transactions = await this.consultRepository.findAll(customerId);
-    return transactions.map((item) => camelcaseKeys(item, { deep: true }));
-  }
-
-  async findMany(customerId?: string): Promise<Partial<ConsultDto>[]> {
-    const transactions = await this.consultRepository.findMany(customerId);
-    return camelcaseKeys(transactions, { deep: true });
-  }
-
-  async update(id: string): Promise<Partial<ConsultDto>> {
-    const result = await this.consultRepository.update(id);
-    return camelcaseKeys(result);
-  }
-
-  // async meeting(
-  //   customerId: string,
-  //   consultId: string,
-  //   token: string,
-  // ): Promise<string> {
-  //   await this.apiService.postApi<{ data: IPaymentDto }, IPaymentDto>(
-  //     `/booking/${customerId}/${consultId}`,
-  //     token,
-  //   );
-
-  //   return 'Success';
-  // }
+  // job noti
+  // await this.queueJob.addJob('NotificationQueue', 'sendNotification', {
+  //   id: consult.id,
+  //   description: 'test',
+  //   title: 'test',
+  //   device_token: '1',
+  // });
+  // headers: {
+  //   'x-delay-until': deliverAt.toString(),
+  // },
+  // x-delay-until
+  // await this.kafkaService.sendMessage('NotificationQueue', JSON.stringify({ id: consult.id, description: "test", title: "test", device_token: "1"}));
+  // return consult;
 }

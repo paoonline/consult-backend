@@ -8,7 +8,7 @@ import {
   IsString,
   MaxLength,
 } from 'class-validator';
-import { ISkill, IBooking, IConsultComment } from '../type/customer.interface';
+import { ISkill, IBooking, IConsultComment } from './customer';
 
 export class CustomerDto {
   @IsEmail()
