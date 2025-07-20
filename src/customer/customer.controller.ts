@@ -3,27 +3,29 @@ import {
   Controller,
   Delete,
   Get,
-  HttpStatus,
+  HttpCode,
   Param,
   Patch,
   Post,
-  Res,
   UseGuards,
+  BadRequestException,
+  NotFoundException,
 } from '@nestjs/common';
 import { CustomerType } from '@prisma/client';
-import { Response } from 'express';
 import { JwtAuthGuard } from 'src/validate/jwt-auth.guard';
-import { CustomerDto } from './application/dto/customer.dto';
 
-import { CreateBookingUseCase } from './application/use-cases/booking/create-booking.use-case';
-import { DeleteBookingUseCase } from './application/use-cases/booking/delete-booking.use-case';
+import { CustomerDto } from './application/dto/customer.dto';
+import { IBooking } from './application/dto/customer';
+
 import { CreateCustomerUseCase } from './application/use-cases/customer/create-customer.usecase';
 import { DeleteCustomerUseCase } from './application/use-cases/customer/delete-customer.usecase';
 import { FindAllCustomersUseCase } from './application/use-cases/customer/find-all-customers.usecase';
 import { FindOneCustomerUseCase } from './application/use-cases/customer/find-one-customer.usecase';
 import { UpdateCustomerUseCase } from './application/use-cases/customer/update-customer.usecase';
+import { CreateBookingUseCase } from './application/use-cases/booking/create-booking.use-case';
+import { DeleteBookingUseCase } from './application/use-cases/booking/delete-booking.use-case';
 import { FindOneCustomerDetailUseCase } from './application/use-cases/customerDetail/find-one-customer-detail.usecase';
-import { IBooking } from './application/dto/customer';
+
 @Controller('/customer')
 export class CustomerController {
   constructor(
@@ -32,221 +34,151 @@ export class CustomerController {
     private readonly findOneCustomerUseCase: FindOneCustomerUseCase,
     private readonly findAllCustomersUseCase: FindAllCustomersUseCase,
     private readonly createCustomerUseCase: CreateCustomerUseCase,
-
     private readonly deleteBookingUseCase: DeleteBookingUseCase,
     private readonly createBookingUseCase: CreateBookingUseCase,
     private readonly findOneCustomerDetailUseCase: FindOneCustomerDetailUseCase,
   ) {}
 
   @Post()
-  async create(
-    @Res() res: Response,
-    @Body() data: CustomerDto,
-  ): Promise<Response<any, Record<string, any>>> {
+  @HttpCode(200)
+  async create(@Body() data: CustomerDto) {
     try {
       const customer = await this.createCustomerUseCase.execute(data);
-      // Send a successful response with the token
-      return res.status(200).json({
+      return {
         status: 200,
         message: 'Create successful',
         data: customer,
-      });
-    } catch (error: unknown) {
-      const errMsg =
-        error instanceof Error ? error.message : 'Unknown error occurred';
-      return res.status(400).json({
-        status: 400,
-        message: errMsg,
-        data: '',
-      });
+      };
+    } catch (error) {
+      throw new BadRequestException(this.getErrorMessage(error));
     }
   }
 
   @Get(':customerType')
   @UseGuards(JwtAuthGuard)
-  async getAllCustomers(
-    @Res() res: Response,
-    @Param('customerType') customerType: CustomerType,
-  ): Promise<Response<any, Record<string, any>>> {
+  async getAllCustomers(@Param('customerType') customerType: CustomerType) {
     try {
-      const customer = await this.findAllCustomersUseCase.execute(customerType);
-      return res.status(200).json({
+      const customers =
+        await this.findAllCustomersUseCase.execute(customerType);
+      return {
         status: 200,
         message: 'successful',
-        data: customer,
-      });
-    } catch (error: unknown) {
-      const errMsg =
-        error instanceof Error ? error.message : 'Unknown error occurred';
-      return res.status(400).json({
-        status: 400,
-        message: errMsg,
-        data: '',
-      });
+        data: customers,
+      };
+    } catch (error) {
+      throw new BadRequestException(this.getErrorMessage(error));
     }
   }
 
-  @Get(':id')
+  @Get('id/:id')
   @UseGuards(JwtAuthGuard)
-  async getCustomerById(
-    @Res() res: Response,
-    @Param('id') id: string,
-  ): Promise<Response<any, Record<string, any>>> {
+  async getCustomerById(@Param('id') id: string) {
     try {
       const customer = await this.findOneCustomerUseCase.execute(id);
-      return res.status(200).json({
+      return {
         status: 200,
         message: 'successful',
         data: customer,
-      });
-    } catch (error: unknown) {
-      const errMsg =
-        error instanceof Error ? error.message : 'Unknown error occurred';
-      return res.status(400).json({
-        status: 400,
-        message: errMsg,
-        data: '',
-      });
+      };
+    } catch (error) {
+      throw new BadRequestException(this.getErrorMessage(error));
     }
   }
 
   @Delete(':id')
   @UseGuards(JwtAuthGuard)
-  async deleteCustomerById(
-    @Res() res: Response,
-    @Param('id') id: string,
-  ): Promise<Response<any, Record<string, any>>> {
+  async deleteCustomerById(@Param('id') id: string) {
     try {
       const customer = await this.deleteCustomerUseCase.execute(id);
-      return res.status(200).json({
+      return {
         status: 200,
         message: 'successful',
         data: customer,
-      });
-    } catch (error: unknown) {
-      const errMsg =
-        error instanceof Error ? error.message : 'Unknown error occurred';
-      return res.status(400).json({
-        status: 400,
-        message: errMsg,
-        data: '',
-      });
+      };
+    } catch (error) {
+      throw new BadRequestException(this.getErrorMessage(error));
     }
   }
 
   @Patch(':id')
   @UseGuards(JwtAuthGuard)
-  async updatCustomer(
+  async updateCustomer(
     @Param('id') id: string,
-    @Res() res: Response,
     @Body() customerDto: CustomerDto,
-  ): Promise<Response<any, Record<string, any>>> {
+  ) {
     try {
       const safeData = {
         ...customerDto,
-        email: undefined,
+        email: undefined, // ไม่อนุญาตให้เปลี่ยน email
       };
+
       const updatedCustomer = await this.updateCustomerUseCase.execute(
         id,
         safeData,
       );
-
       if (!updatedCustomer) {
-        return res.status(HttpStatus.NOT_FOUND).json({
-          status: HttpStatus.NOT_FOUND,
-          message: 'Customer not found',
-          data: null,
-        });
+        throw new NotFoundException('Customer not found');
       }
 
-      return res.status(200).json({
+      return {
         status: 200,
         message: 'successful',
         data: updatedCustomer,
-      });
-    } catch (error: unknown) {
-      const errMsg =
-        error instanceof Error ? error.message : 'Unknown error occurred';
-      return res.status(400).json({
-        status: 400,
-        message: errMsg,
-        data: '',
-      });
+      };
+    } catch (error) {
+      throw new BadRequestException(this.getErrorMessage(error));
     }
   }
 
   @Get('/detail/:id')
   @UseGuards(JwtAuthGuard)
-  async findCustomerDetail(
-    @Res() res: Response,
-    @Param('id') id: string,
-  ): Promise<Response<any, Record<string, any>>> {
+  async findCustomerDetail(@Param('id') id: string) {
     try {
       const customer = await this.findOneCustomerDetailUseCase.execute(id);
-      return res.status(200).json({
+      return {
         status: 200,
         message: 'successful',
         data: customer,
-      });
-    } catch (error: unknown) {
-      const errMsg =
-        error instanceof Error ? error.message : 'Unknown error occurred';
-      return res.status(400).json({
-        status: 400,
-        message: errMsg,
-        data: '',
-      });
+      };
+    } catch (error) {
+      throw new BadRequestException(this.getErrorMessage(error));
     }
   }
 
   @Post('/booking')
   @UseGuards(JwtAuthGuard)
-  async createBooking(
-    @Res() res: Response,
-    @Body() data: IBooking[],
-  ): Promise<Response<any, Record<string, any>>> {
+  async createBooking(@Body() data: IBooking[]) {
     try {
-      const customer = await this.createBookingUseCase.execute(data);
-      // Send a successful response with the token
-      return res.status(200).json({
+      const result = await this.createBookingUseCase.execute(data);
+      return {
         status: 200,
         message: 'Create successful',
-        data: customer,
-      });
-    } catch (error: unknown) {
-      const errMsg =
-        error instanceof Error ? error.message : 'Unknown error occurred';
-      return res.status(400).json({
-        status: 400,
-        message: errMsg,
-        data: '',
-      });
+        data: result,
+      };
+    } catch (error) {
+      throw new BadRequestException(this.getErrorMessage(error));
     }
   }
 
   @Delete('/booking/:id/:secondId')
   @UseGuards(JwtAuthGuard)
   async bookingMeeting(
-    @Res() res: Response,
     @Param('id') id: string,
     @Param('secondId') secondId: string,
-  ): Promise<Response<any, Record<string, any>>> {
+  ) {
     try {
-      const customer = await this.deleteBookingUseCase.execute(id, secondId);
-      // Send a successful response with the token
-      return res.status(200).json({
+      const result = await this.deleteBookingUseCase.execute(id, secondId);
+      return {
         status: 200,
-        message: 'Create successful',
-        data: customer,
-      });
-    } catch (error: unknown) {
-      const errMsg =
-        error instanceof Error ? error.message : 'Unknown error occurred';
-      return res.status(400).json({
-        status: 400,
-        message: errMsg,
-        data: '',
-      });
+        message: 'Delete successful',
+        data: result,
+      };
+    } catch (error) {
+      throw new BadRequestException(this.getErrorMessage(error));
     }
+  }
+
+  private getErrorMessage(error: unknown): string {
+    return error instanceof Error ? error.message : 'Unknown error occurred';
   }
 }

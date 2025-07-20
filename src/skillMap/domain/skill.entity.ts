@@ -2,7 +2,7 @@ export class SkillEntity {
   private readonly name: string;
 
   constructor(rawName: string) {
-    const normalized = rawName.trim().toLowerCase();
+    const normalized = rawName.trim();
 
     if (!normalized) {
       throw new Error('Skill name is required');

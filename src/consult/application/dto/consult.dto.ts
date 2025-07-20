@@ -1,5 +1,6 @@
 import { TimeLimitType } from '@prisma/client';
 import { IsDate, IsNotEmpty, MaxLength } from 'class-validator';
+import { ValidationMetadata } from 'class-validator/types/metadata/ValidationMetadata';
 
 export class ConsultDto {
   @IsNotEmpty()
@@ -31,3 +32,11 @@ export class ConsultDto {
   @MaxLength(100)
   consultDetailId: string;
 }
+
+export type ConsultInput = Omit<ConsultDto, keyof ValidationMetadata>;
+
+export type BookingPayloadItem = {
+  customerDetailId: string;
+  time: Date;
+  consultTransactionId: string;
+};

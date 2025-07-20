@@ -1,4 +1,9 @@
-import { Injectable } from '@nestjs/common';
+import {
+  ConflictException,
+  Injectable,
+  InternalServerErrorException,
+  NotFoundException,
+} from '@nestjs/common';
 import { instanceToPlain } from 'class-transformer';
 import snakecaseKeys from 'snakecase-keys';
 import { ConsultEntity } from 'src/consult/domain/entity/consult.entity';
@@ -11,6 +16,8 @@ import { CustomerDetail } from '@prisma/client';
 import { IPaymentDto } from 'src/payment/application/dto/payment.dto';
 import { NotificationDto } from 'src/notification/application/dto/notification.dto';
 import { IBooking } from 'src/customer/application/dto/customer';
+import { ConsultBuilder } from 'src/consult/application/builder/consult.builder';
+import { BookingPayloadBuilder } from '../../builder/consult-booking-builder';
 
 @Injectable()
 export class CreateConsultTransactionUseCase {
@@ -20,25 +27,39 @@ export class CreateConsultTransactionUseCase {
     private readonly queueJob: QueueJob,
   ) {}
 
-  async execute(data: ConsultDto, token: string) {
-    const newData = {
-      ...data,
-      customerDetailId: undefined,
-      consultDetailId: undefined,
-    };
+  private extractFailedMessages(results: {
+    bookingRes: PromiseSettledResult<any>;
+    paymentRes: PromiseSettledResult<any>;
+    notiRes: PromiseSettledResult<any>;
+  }): string {
+    const { bookingRes, paymentRes, notiRes } = results;
+    return [
+      bookingRes.status === 'rejected'
+        ? `Booking failed: ${bookingRes.reason}`
+        : null,
+      paymentRes.status === 'rejected'
+        ? `Payment failed: ${paymentRes.reason}`
+        : null,
+      notiRes.status === 'rejected'
+        ? `Notification failed: ${notiRes.reason}`
+        : null,
+    ]
+      .filter(Boolean)
+      .join(', ');
+  }
 
-    const plainData = instanceToPlain(newData);
+  async execute(data: ConsultDto, token: string) {
+    const consultBuild = new ConsultBuilder().setFromCreate(data).build();
+    const plainData = instanceToPlain(consultBuild);
     const snakeData = snakecaseKeys(plainData);
 
     const overlapping = await this.consultRepository.findFirst(data);
     if (overlapping) {
-      throw new Error(
-        'This time slot is already booked. Please choose another time.',
-      );
+      throw new ConflictException('This time slot is already booked.');
     }
-
+    const consultEntity = createFactory(snakeData, ConsultEntity);
     const [consult, customerConsultDetail] = await Promise.all([
-      this.consultRepository.create(createFactory(snakeData, ConsultEntity)),
+      this.consultRepository.create(consultEntity),
       this.apiService.getFromApi<{ data: CustomerDetail }>(
         '/customer/detail/' + data.consultId,
         token,
@@ -47,31 +68,17 @@ export class CreateConsultTransactionUseCase {
 
     if (!customerConsultDetail) {
       await this.consultRepository.delete(consult.id);
-      throw new Error(
+      throw new NotFoundException(
         `CustomerDetail not found for consultId: ${data.consultId}`,
       );
     }
 
-    const bookingPayload = [
-      ...(data.customerDetailId
-        ? [
-            {
-              customerDetailId: data.customerDetailId,
-              time: data.startDate,
-              consultTransactionId: consult.id,
-            },
-          ]
-        : []),
-      ...(data.consultDetailId
-        ? [
-            {
-              customerDetailId: data.consultDetailId,
-              time: data.startDate,
-              consultTransactionId: consult.id,
-            },
-          ]
-        : []),
-    ];
+    const bookingPayload = new BookingPayloadBuilder()
+      .setCustomerDetailId(data.customerDetailId)
+      .setConsultDetailId(data.consultDetailId)
+      .setTime(data.startDate)
+      .setConsultTransactionId(consult.id)
+      .build();
 
     try {
       const [bookingRes, paymentRes, notiRes] = await Promise.allSettled([
@@ -107,20 +114,14 @@ export class CreateConsultTransactionUseCase {
         notiRes.status !== 'fulfilled'
       ) {
         await this.consultRepository.delete(consult.id);
-        const errorMessages = [
-          bookingRes.status === 'rejected'
-            ? `Booking failed: ${bookingRes.reason}`
-            : null,
-          paymentRes.status === 'rejected'
-            ? `Payment failed: ${paymentRes.reason}`
-            : null,
-          notiRes.status === 'rejected'
-            ? `Notification failed: ${notiRes.reason}`
-            : null,
-        ]
-          .filter(Boolean)
-          .join(', ');
-        throw new Error(`Failed to complete consult: ${errorMessages}`);
+        const errorMessages = this.extractFailedMessages({
+          bookingRes,
+          paymentRes,
+          notiRes,
+        });
+        throw new InternalServerErrorException(
+          `Failed to complete consult: ${errorMessages}`,
+        );
       }
 
       return consult;
@@ -133,27 +134,29 @@ export class CreateConsultTransactionUseCase {
         (newErr.message && newErr.message.includes('Unique constraint'))
       ) {
         await this.consultRepository.delete(consult.id);
-        throw new Error('Time slot is already booked. Please select another.');
+        throw new ConflictException(
+          'Time slot is already booked. Please select another.',
+        );
       }
 
       await this.consultRepository.delete(consult.id);
-      throw new Error(
+      throw new InternalServerErrorException(
         newErr?.message || 'An error occurred during consult creation.',
       );
     }
   }
-
-  // job noti
-  // await this.queueJob.addJob('NotificationQueue', 'sendNotification', {
-  //   id: consult.id,
-  //   description: 'test',
-  //   title: 'test',
-  //   device_token: '1',
-  // });
-  // headers: {
-  //   'x-delay-until': deliverAt.toString(),
-  // },
-  // x-delay-until
-  // await this.kafkaService.sendMessage('NotificationQueue', JSON.stringify({ id: consult.id, description: "test", title: "test", device_token: "1"}));
-  // return consult;
 }
+
+// job noti
+// await this.queueJob.addJob('NotificationQueue', 'sendNotification', {
+//   id: consult.id,
+//   description: 'test',
+//   title: 'test',
+//   device_token: '1',
+// });
+// headers: {
+//   'x-delay-until': deliverAt.toString(),
+// },
+// x-delay-until
+// await this.kafkaService.sendMessage('NotificationQueue', JSON.stringify({ id: consult.id, description: "test", title: "test", device_token: "1"}));
+// return consult;

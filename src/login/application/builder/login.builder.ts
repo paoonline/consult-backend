@@ -1,4 +1,4 @@
-import { LoginInput } from '../application/dto/login.input';
+import { LoginInput } from '../dto/login.input';
 
 export class LoginBuilder {
   private data: LoginInput = {

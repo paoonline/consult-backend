@@ -1,4 +1,5 @@
 import {
+  BadRequestException,
   Body,
   Controller,
   Get,
@@ -6,19 +7,19 @@ import {
   Param,
   Patch,
   Post,
-  Res,
   UseGuards,
 } from '@nestjs/common';
-import { Response } from 'express';
-
 import { JwtAuthGuard } from 'src/validate/jwt-auth.guard';
 import { ConsultCommentDto } from './application/dto/consult.comment.dto';
 import { ConsultDto } from './application/dto/consult.dto';
 import { ConsultNoteDto } from './application/dto/consult.note.dto';
-import { ConsultService } from './application/services/consult.service';
 import { CreateConsultCommentUseCase } from './application/use-cases/comment/create-consult-comment.use-case';
 import { FindAllConsultCommentsUseCase } from './application/use-cases/comment/find-all-consult-comments.use-case';
 import { FindOneConsultCommentUseCase } from './application/use-cases/comment/find-one-consult-comment.use-case';
+import { CreateConsultTransactionUseCase } from './application/use-cases/consult/create-consult-transaction.usecase';
+import { FindAllConsultTransactionsUseCase } from './application/use-cases/consult/find-all-consult-transactions.usecase';
+import { FindManyConsultTransactionsUseCase } from './application/use-cases/consult/find-many-consult-transactions.usecase';
+import { UpdateMeetingConsultTransactionsUseCase } from './application/use-cases/consult/update-meeting-consult-transactions.usecase';
 import { CreateNoteUseCase } from './application/use-cases/note/create-note.usecase';
 import { FindAllNotesUseCase } from './application/use-cases/note/find-all-notes.usecase';
 import { FindOneNoteUseCase } from './application/use-cases/note/find-one-note.usecase';
@@ -26,7 +27,10 @@ import { FindOneNoteUseCase } from './application/use-cases/note/find-one-note.u
 @Controller('/consult')
 export class ConsultController {
   constructor(
-    private readonly consultService: ConsultService,
+    private readonly updateMeetingConsultTransactionsUseCase: UpdateMeetingConsultTransactionsUseCase,
+    private readonly createConsultTransactionUseCase: CreateConsultTransactionUseCase,
+    private readonly findAllConsultTransactionsUseCase: FindAllConsultTransactionsUseCase,
+    private readonly findManyConsultTransactionsUseCase: FindManyConsultTransactionsUseCase,
 
     private readonly createNoteUseCase: CreateNoteUseCase,
     private readonly findAllNotesUseCase: FindAllNotesUseCase,
@@ -37,248 +41,113 @@ export class ConsultController {
     private readonly findOneConsultCommentUseCase: FindOneConsultCommentUseCase,
   ) {}
 
+  private getErrorMessage(error: unknown): string {
+    return error instanceof Error ? error.message : 'Unknown error occurred';
+  }
+
   @Post()
   @UseGuards(JwtAuthGuard)
   async create(
     @Headers('authorization') authHeader: string,
-    @Res() res: Response,
     @Body() data: ConsultDto,
-  ): Promise<Response<any, Record<string, any>>> {
-    const token = authHeader?.replace('Bearer ', '');
+  ) {
     try {
-      const consult = await this.consultService.create(data, token);
-      // Send a successful response with the token
-      return res.status(200).json({
-        status: 200,
-        message: 'Create successful',
-        data: consult,
-      });
-    } catch (error: unknown) {
-      const errMsg =
-        error instanceof Error ? error.message : 'Unknown error occurred';
-      return res.status(400).json({
-        status: 400,
-        message: errMsg,
-        data: '',
-      });
+      const token = authHeader?.replace('Bearer ', '');
+      return await this.createConsultTransactionUseCase.execute(data, token);
+    } catch (error) {
+      throw new BadRequestException(this.getErrorMessage(error));
     }
   }
 
   @Get(':id')
   @UseGuards(JwtAuthGuard)
-  async getAllCounsultTransaction(
-    @Res() res: Response,
-    @Param('id') id: string,
-  ): Promise<Response<any, Record<string, any>>> {
+  async getAllCounsultTransaction(@Param('id') id: string) {
     try {
-      const consult = await this.consultService.findAll(id);
-      return res.status(200).json({
-        status: 200,
-        message: 'successful',
-        data: consult,
-      });
-    } catch (error: unknown) {
-      const errMsg =
-        error instanceof Error ? error.message : 'Unknown error occurred';
-      return res.status(400).json({
-        status: 400,
-        message: errMsg,
-        data: '',
-      });
+      return await this.findAllConsultTransactionsUseCase.execute(id);
+    } catch (error) {
+      throw new BadRequestException(this.getErrorMessage(error));
     }
   }
 
   @Get('/consult-all/:customerId')
   @UseGuards(JwtAuthGuard)
-  async getCounsultTransactionById(
-    @Res() res: Response,
-    @Param('customerId') customerId?: string,
-  ): Promise<Response<any, Record<string, any>>> {
+  async getCounsultTransactionById(@Param('customerId') customerId: string) {
     try {
-      const consult = await this.consultService.findMany(customerId);
-      return res.status(200).json({
-        status: 200,
-        message: 'successful',
-        data: consult,
-      });
-    } catch (error: unknown) {
-      const errMsg =
-        error instanceof Error ? error.message : 'Unknown error occurred';
-      return res.status(400).json({
-        status: 400,
-        message: errMsg,
-        data: '',
-      });
+      return await this.findManyConsultTransactionsUseCase.execute(customerId);
+    } catch (error) {
+      throw new BadRequestException(this.getErrorMessage(error));
     }
   }
 
   @Patch(':consultId')
   @UseGuards(JwtAuthGuard)
-  async meeting(
-    @Res() res: Response,
-    @Param('consultId') consultId: string,
-  ): Promise<Response<any, Record<string, any>>> {
+  async meeting(@Param('consultId') consultId: string) {
     try {
-      const meeting = await this.consultService.update(consultId);
-      // Send a successful response with the token
-      return res.status(200).json({
-        status: 200,
-        message: 'Meeting successful',
-        data: meeting,
-      });
-    } catch (error: unknown) {
-      const errMsg =
-        error instanceof Error ? error.message : 'Unknown error occurred';
-      return res.status(400).json({
-        status: 400,
-        message: errMsg,
-        data: '',
-      });
+      return await this.updateMeetingConsultTransactionsUseCase.execute(
+        consultId,
+      );
+    } catch (error) {
+      throw new BadRequestException(this.getErrorMessage(error));
     }
   }
 
   @Get('/note')
   @UseGuards(JwtAuthGuard)
-  async getAllNotes(
-    @Res() res: Response,
-  ): Promise<Response<any, Record<string, any>>> {
+  async getAllNotes() {
     try {
-      const note = await this.findAllNotesUseCase.execute();
-      return res.status(200).json({
-        status: 200,
-        message: 'successful',
-        data: note,
-      });
-    } catch (error: unknown) {
-      const errMsg =
-        error instanceof Error ? error.message : 'Unknown error occurred';
-      return res.status(400).json({
-        status: 400,
-        message: errMsg,
-        data: '',
-      });
+      return await this.findAllNotesUseCase.execute();
+    } catch (error) {
+      throw new BadRequestException(this.getErrorMessage(error));
     }
   }
 
   @Get('/note/:noteId')
   @UseGuards(JwtAuthGuard)
-  async getNoteByid(
-    @Res() res: Response,
-    @Param('noteId') noteId: string,
-  ): Promise<Response<any, Record<string, any>>> {
+  async getNoteByid(@Param('noteId') noteId: string) {
     try {
-      const note = await this.findOneNoteUseCase.execute(noteId);
-      return res.status(200).json({
-        status: 200,
-        message: 'successful',
-        data: note,
-      });
-    } catch (error: unknown) {
-      const errMsg =
-        error instanceof Error ? error.message : 'Unknown error occurred';
-      return res.status(400).json({
-        status: 400,
-        message: errMsg,
-        data: '',
-      });
+      return await this.findOneNoteUseCase.execute(noteId);
+    } catch (error) {
+      throw new BadRequestException(this.getErrorMessage(error));
     }
   }
 
   @Post('/note')
   @UseGuards(JwtAuthGuard)
-  async createNote(
-    @Res() res: Response,
-    @Body() data: ConsultNoteDto,
-  ): Promise<Response<any, Record<string, any>>> {
+  async createNote(@Body() data: ConsultNoteDto) {
     try {
-      const note = await this.createNoteUseCase.execute(data);
-      // Send a successful response with the token
-      return res.status(200).json({
-        status: 200,
-        message: 'Create successful',
-        data: note,
-      });
-    } catch (error: unknown) {
-      const errMsg =
-        error instanceof Error ? error.message : 'Unknown error occurred';
-      return res.status(400).json({
-        status: 400,
-        message: errMsg,
-        data: '',
-      });
+      return await this.createNoteUseCase.execute(data);
+    } catch (error) {
+      throw new BadRequestException(this.getErrorMessage(error));
     }
   }
 
   @Get('/comment')
   @UseGuards(JwtAuthGuard)
-  async getAllComment(
-    @Res() res: Response,
-  ): Promise<Response<any, Record<string, any>>> {
+  async getAllComment() {
     try {
-      const comment = await this.findAllConsultCommentsUseCase.execute();
-      return res.status(200).json({
-        status: 200,
-        message: 'successful',
-        data: comment,
-      });
-    } catch (error: unknown) {
-      const errMsg =
-        error instanceof Error ? error.message : 'Unknown error occurred';
-      return res.status(400).json({
-        status: 400,
-        message: errMsg,
-        data: '',
-      });
+      return await this.findAllConsultCommentsUseCase.execute();
+    } catch (error) {
+      throw new BadRequestException(this.getErrorMessage(error));
     }
   }
 
   @Get('/comment/:commentId')
   @UseGuards(JwtAuthGuard)
-  async getCommentByid(
-    @Res() res: Response,
-    @Param('commentId') commentId: string,
-  ): Promise<Response<any, Record<string, any>>> {
+  async getCommentByid(@Param('commentId') commentId: string) {
     try {
-      const comment =
-        await this.findOneConsultCommentUseCase.execute(commentId);
-      return res.status(200).json({
-        status: 200,
-        message: 'successful',
-        data: comment,
-      });
-    } catch (error: unknown) {
-      const errMsg =
-        error instanceof Error ? error.message : 'Unknown error occurred';
-      return res.status(400).json({
-        status: 400,
-        message: errMsg,
-        data: '',
-      });
+      return await this.findOneConsultCommentUseCase.execute(commentId);
+    } catch (error) {
+      throw new BadRequestException(this.getErrorMessage(error));
     }
   }
 
   @Post('/comment')
   @UseGuards(JwtAuthGuard)
-  async createComment(
-    @Res() res: Response,
-    @Body() data: ConsultCommentDto,
-  ): Promise<Response<any, Record<string, any>>> {
+  async createComment(@Body() data: ConsultCommentDto) {
     try {
-      const comment = await this.createConsultCommentUseCase.execute(data);
-      // Send a successful response with the token
-      return res.status(200).json({
-        status: 200,
-        message: 'Create successful',
-        data: comment,
-      });
-    } catch (error: unknown) {
-      const errMsg =
-        error instanceof Error ? error.message : 'Unknown error occurred';
-      return res.status(400).json({
-        status: 400,
-        message: errMsg,
-        data: '',
-      });
+      return await this.createConsultCommentUseCase.execute(data);
+    } catch (error) {
+      throw new BadRequestException(this.getErrorMessage(error));
     }
   }
 }

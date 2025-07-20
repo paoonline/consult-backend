@@ -48,6 +48,12 @@ export class CustomerDto {
 
   @MaxLength(100)
   price: number;
+
+  @IsString()
+  firstName: string;
+
+  @IsString()
+  lastName: string;
 }
 
 export class CustomerDtoResponse {

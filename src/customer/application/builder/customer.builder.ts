@@ -54,17 +54,40 @@ export class CustomerBuilder {
     return this;
   }
 
+  setFirstName(name: string): this {
+    this.data.firstName = name;
+    return this;
+  }
+
+  setLastName(name: string): this {
+    this.data.lastName = name;
+    return this;
+  }
+
+  setFromCreate(obj: CustomerInput): this {
+    this.setEmail(obj.email);
+    this.setPassword(obj.password);
+    this.setJob(obj.job);
+    this.setAddress(obj.address);
+    this.setPhoneNumber(obj.phoneNumber);
+    this.setDescription(obj.description);
+    this.setCustomerType(obj.customerType);
+    this.setFirstName(obj.firstName);
+    this.setLastName(obj.lastName);
+    return this;
+  }
+
   build(): CustomerInput {
     const requiredFields: (keyof CustomerInput)[] = [
       'email',
       'password',
       'job',
       'address',
-      'skills',
       'phoneNumber',
       'description',
       'customerType',
-      'price',
+      'firstName',
+      'lastName',
     ];
 
     for (const field of requiredFields) {

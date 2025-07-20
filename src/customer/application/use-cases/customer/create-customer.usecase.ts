@@ -1,9 +1,9 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { CustomerType, Prisma } from '@prisma/client';
 import { PrismaService } from 'prisma/prisma.service';
 import { CustomerEntity } from 'src/customer/domain/entity/customer.entity';
 
-import { CustomerBuilder } from 'src/customer/domain/customer/customer.builder';
+import { CustomerBuilder } from 'src/customer/application/builder/customer.builder';
 import { CustomerReponsesitory } from 'src/customer/infrastructure/customer.repository';
 import { SessionService } from 'src/services/Session/session.service';
 import { SkillService } from 'src/skillMap/application/skill-map.service';
@@ -24,15 +24,7 @@ export class CreateCustomerUseCase {
   ) {}
 
   async execute(data: CustomerDto): Promise<CustomerReponse> {
-    const input = new CustomerBuilder()
-      .setEmail(data.email)
-      .setPassword(data.password)
-      .setJob(data.job)
-      .setAddress(data.address)
-      .setPhoneNumber(data.phoneNumber)
-      .setDescription(data.description)
-      .setCustomerType(data.customerType)
-      .build();
+    const input = new CustomerBuilder().setFromCreate(data).build();
 
     const hashedPassword = await this.sessionService.hashPassword(
       data.password,
@@ -44,12 +36,11 @@ export class CreateCustomerUseCase {
 
     const skills = await this.skillService.skillMap(data.skills);
     if (skills.length === 0 && data.customerType !== CustomerType.CUSTOMER) {
-      throw new Error('Skill is not match');
+      throw new NotFoundException('Skill is not match');
     }
 
     snakeData.skills =
       skills as Prisma.SkillCreateNestedManyWithoutCustomersInput;
-    snakeData.price = input.price;
 
     const result = await this.prisma.$transaction(async (tx) => {
       await this.CustomerReponsesitory.create(
