@@ -3,7 +3,7 @@ import { CustomerType, Prisma } from '@prisma/client';
 import camelcaseKeys from 'camelcase-keys';
 import { PrismaService } from 'prisma/prisma.service';
 import { SessionService } from 'src/services/Session/session.service';
-import { SkillService } from 'src/skillMap/application/skill-map.service';
+import { SkillService } from 'src/skill/application/skill-map.service';
 import { createFactory } from 'src/utils/factory';
 import { formatSnakeCase } from 'src/utils/format';
 import { IRepository } from 'src/utils/respository';

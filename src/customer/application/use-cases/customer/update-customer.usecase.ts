@@ -3,7 +3,7 @@ import { Injectable, NotFoundException } from '@nestjs/common';
 import { CustomerEntity } from 'src/customer/domain/entity/customer.entity';
 import { CustomerReponsesitory } from 'src/customer/infrastructure/customer.repository';
 import { SessionService } from 'src/services/Session/session.service';
-import { SkillService } from 'src/skillMap/application/skill-map.service';
+import { SkillService } from 'src/skill/application/skill-map.service';
 import { createFactory } from 'src/utils/factory';
 import { formatSnakeCase } from 'src/utils/format';
 import { CustomerDto } from '../../dto/customer.dto';

@@ -6,7 +6,7 @@ import { CustomerEntity } from 'src/customer/domain/entity/customer.entity';
 import { CustomerBuilder } from 'src/customer/application/builder/customer.builder';
 import { CustomerReponsesitory } from 'src/customer/infrastructure/customer.repository';
 import { SessionService } from 'src/services/Session/session.service';
-import { SkillService } from 'src/skillMap/application/skill-map.service';
+import { SkillService } from 'src/skill/application/skill-map.service';
 import { createFactory } from 'src/utils/factory';
 import { CustomerDto } from '../../dto/customer.dto';
 import { CustomerMapper } from '../../mapper/customer.mapper';

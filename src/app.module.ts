@@ -11,7 +11,7 @@ import { LoginModule } from './login/login.module';
 import { BatchNotificationService } from './notification/batch/batch.notification.service';
 import { NotificationModule } from './notification/notification.module';
 import { PaymentModule } from './payment/payment.module';
-import { SkillModule } from './skillMap/skill-map.module';
+import { SkillModule } from './skill/skill-map.module';
 import { JwtStrategy } from './validate/jwt.strategy';
 import { RedisModule } from './services/Redis/redis.module';
 import { AppLogger } from './services/Logger/logger.service';
