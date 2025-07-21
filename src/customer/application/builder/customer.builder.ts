@@ -64,16 +64,18 @@ export class CustomerBuilder {
     return this;
   }
 
-  setFromCreate(obj: CustomerInput): this {
-    this.setEmail(obj.email);
-    this.setPassword(obj.password);
-    this.setJob(obj.job);
-    this.setAddress(obj.address);
-    this.setPhoneNumber(obj.phoneNumber);
-    this.setDescription(obj.description);
-    this.setCustomerType(obj.customerType);
-    this.setFirstName(obj.firstName);
-    this.setLastName(obj.lastName);
+  fromCustomer(obj: CustomerInput, isUpdate?: boolean): this {
+    if (!isUpdate) {
+      this.setEmail(obj.email);
+    }
+    this.setPassword(obj.email)
+      .setJob(obj.job)
+      .setAddress(obj.address)
+      .setPhoneNumber(obj.phoneNumber)
+      .setDescription(obj.description)
+      .setCustomerType(obj.customerType)
+      .setFirstName(obj.firstName)
+      .setLastName(obj.lastName);
     return this;
   }
 

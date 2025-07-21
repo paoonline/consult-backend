@@ -24,7 +24,7 @@ export class CreateCustomerUseCase {
   ) {}
 
   async execute(data: CustomerDto): Promise<CustomerReponse> {
-    const input = new CustomerBuilder().setFromCreate(data).build();
+    const input = new CustomerBuilder().fromCustomer(data).build();
 
     const hashedPassword = await this.sessionService.hashPassword(
       data.password,

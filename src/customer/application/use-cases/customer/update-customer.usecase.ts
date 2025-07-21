@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 
 import { CustomerEntity } from 'src/customer/domain/entity/customer.entity';
 import { CustomerReponsesitory } from 'src/customer/infrastructure/customer.repository';
@@ -9,6 +9,7 @@ import { formatSnakeCase } from 'src/utils/format';
 import { CustomerDto } from '../../dto/customer.dto';
 import { Prisma } from '@prisma/client';
 import { CustomerReponse } from '../../dto/customer';
+import { CustomerBuilder } from '../../builder/customer.builder';
 @Injectable()
 export class UpdateCustomerUseCase {
   constructor(
@@ -19,18 +20,14 @@ export class UpdateCustomerUseCase {
 
   async execute(
     id: string,
-    data: Omit<CustomerDto, 'email'>,
+    data: CustomerDto,
   ): Promise<CustomerReponse | null> {
-    const newData = {
-      ...data,
-      skills: undefined,
-      price: undefined,
-    };
+    const input = new CustomerBuilder().fromCustomer(data, true).build();
 
     const snakeData = formatSnakeCase<
       Omit<CustomerDto, 'email' | 'skills' | 'price'>,
       Prisma.CustomerCreateInput & { price: number }
-    >(newData);
+    >(input);
 
     const customer = await this.CustomerReponsesitory.findOne(id);
     if (!customer) return null;
@@ -48,9 +45,13 @@ export class UpdateCustomerUseCase {
       skills as Prisma.SkillCreateNestedManyWithoutCustomersInput;
     snakeData.price = data?.price;
 
-    return this.CustomerReponsesitory.update(
+    const update = await this.CustomerReponsesitory.update(
       id,
       createFactory(snakeData, CustomerEntity),
     );
+    if (!update) {
+      throw new NotFoundException('Customer not found');
+    }
+    return update;
   }
 }

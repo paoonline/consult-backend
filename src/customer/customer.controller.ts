@@ -1,4 +1,5 @@
 import {
+  BadRequestException,
   Body,
   Controller,
   Delete,
@@ -8,22 +9,21 @@ import {
   Patch,
   Post,
   UseGuards,
-  BadRequestException,
-  NotFoundException,
 } from '@nestjs/common';
 import { CustomerType } from '@prisma/client';
 import { JwtAuthGuard } from 'src/validate/jwt-auth.guard';
 
-import { CustomerDto } from './application/dto/customer.dto';
 import { IBooking } from './application/dto/customer';
+import { CustomerDto } from './application/dto/customer.dto';
 
+import { getErrorMessage } from 'src/utils/error';
+import { CreateBookingUseCase } from './application/use-cases/booking/create-booking.use-case';
+import { DeleteBookingUseCase } from './application/use-cases/booking/delete-booking.use-case';
 import { CreateCustomerUseCase } from './application/use-cases/customer/create-customer.usecase';
 import { DeleteCustomerUseCase } from './application/use-cases/customer/delete-customer.usecase';
 import { FindAllCustomersUseCase } from './application/use-cases/customer/find-all-customers.usecase';
 import { FindOneCustomerUseCase } from './application/use-cases/customer/find-one-customer.usecase';
 import { UpdateCustomerUseCase } from './application/use-cases/customer/update-customer.usecase';
-import { CreateBookingUseCase } from './application/use-cases/booking/create-booking.use-case';
-import { DeleteBookingUseCase } from './application/use-cases/booking/delete-booking.use-case';
 import { FindOneCustomerDetailUseCase } from './application/use-cases/customerDetail/find-one-customer-detail.usecase';
 
 @Controller('/customer')
@@ -50,7 +50,7 @@ export class CustomerController {
         data: customer,
       };
     } catch (error) {
-      throw new BadRequestException(this.getErrorMessage(error));
+      throw new BadRequestException(getErrorMessage(error));
     }
   }
 
@@ -66,7 +66,7 @@ export class CustomerController {
         data: customers,
       };
     } catch (error) {
-      throw new BadRequestException(this.getErrorMessage(error));
+      throw new BadRequestException(getErrorMessage(error));
     }
   }
 
@@ -81,7 +81,7 @@ export class CustomerController {
         data: customer,
       };
     } catch (error) {
-      throw new BadRequestException(this.getErrorMessage(error));
+      throw new BadRequestException(getErrorMessage(error));
     }
   }
 
@@ -96,7 +96,7 @@ export class CustomerController {
         data: customer,
       };
     } catch (error) {
-      throw new BadRequestException(this.getErrorMessage(error));
+      throw new BadRequestException(getErrorMessage(error));
     }
   }
 
@@ -107,26 +107,17 @@ export class CustomerController {
     @Body() customerDto: CustomerDto,
   ) {
     try {
-      const safeData = {
-        ...customerDto,
-        email: undefined, // ไม่อนุญาตให้เปลี่ยน email
-      };
-
       const updatedCustomer = await this.updateCustomerUseCase.execute(
         id,
-        safeData,
+        customerDto,
       );
-      if (!updatedCustomer) {
-        throw new NotFoundException('Customer not found');
-      }
-
       return {
         status: 200,
         message: 'successful',
         data: updatedCustomer,
       };
     } catch (error) {
-      throw new BadRequestException(this.getErrorMessage(error));
+      throw new BadRequestException(getErrorMessage(error));
     }
   }
 
@@ -141,7 +132,7 @@ export class CustomerController {
         data: customer,
       };
     } catch (error) {
-      throw new BadRequestException(this.getErrorMessage(error));
+      throw new BadRequestException(getErrorMessage(error));
     }
   }
 
@@ -156,7 +147,7 @@ export class CustomerController {
         data: result,
       };
     } catch (error) {
-      throw new BadRequestException(this.getErrorMessage(error));
+      throw new BadRequestException(getErrorMessage(error));
     }
   }
 
@@ -174,11 +165,7 @@ export class CustomerController {
         data: result,
       };
     } catch (error) {
-      throw new BadRequestException(this.getErrorMessage(error));
+      throw new BadRequestException(getErrorMessage(error));
     }
-  }
-
-  private getErrorMessage(error: unknown): string {
-    return error instanceof Error ? error.message : 'Unknown error occurred';
   }
 }

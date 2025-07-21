@@ -4,10 +4,13 @@ import {
   NotFoundException,
 } from '@nestjs/common/exceptions';
 import { IConsultInput } from 'src/consult/application/dto/consult.input';
+import { truncateTime } from 'src/utils/time';
 
 export class ConsultEntity {
   constructor(private readonly data: IConsultInput) {
     this.validate();
+    this.data.start_date = truncateTime(this.data.start_date);
+    this.data.end_date = truncateTime(this.data.end_date);
   }
 
   private validate(): void {
@@ -23,6 +26,10 @@ export class ConsultEntity {
 
     if (this.isSelfConsulting()) {
       throw new ConflictException('Cannot create consult with yourself');
+    }
+
+    if (!this.isCheckDateBookMatchDateNow()) {
+      throw new ConflictException('Start date must be before date now');
     }
   }
 
@@ -42,6 +49,11 @@ export class ConsultEntity {
 
   private isSelfConsulting(): boolean {
     return this.data.customer_id === this.data.consult_id;
+  }
+
+  private isCheckDateBookMatchDateNow(): boolean {
+    const start = new Date(this.data.start_date);
+    return start.getTime() >= new Date().getTime();
   }
 
   getData(): IConsultInput {

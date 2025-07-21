@@ -4,6 +4,7 @@ import { PrismaService } from 'prisma/prisma.service';
 import { IRepository } from 'src/utils/respository';
 import { BookingEntity } from '../domain/entity/customer.booking.entity';
 import { IBooking } from '../application/dto/customer';
+import { truncateTime } from 'src/utils/time';
 @Injectable()
 export class CustomerBookingRepository
   implements IRepository<Booking | string, unknown, unknown, null, string>
@@ -30,8 +31,8 @@ export class CustomerBookingRepository
   }
 
   async findMany(data: IBooking): Promise<Booking[]> {
-    const startTime = new Date(data.time);
-    const endTime = new Date(data.time);
+    const startTime = truncateTime(data.time);
+    const endTime = truncateTime(data.time);
     endTime.setHours(endTime.getHours() + 1);
     const existing = await this.prisma.booking.findMany({
       where: {

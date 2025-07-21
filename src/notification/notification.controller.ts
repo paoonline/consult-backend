@@ -1,9 +1,15 @@
-import { Body, Controller, Post, Res, UseGuards } from '@nestjs/common';
-import { Response } from 'express';
+import {
+  BadRequestException,
+  Body,
+  Controller,
+  Post,
+  UseGuards,
+} from '@nestjs/common';
 
 import { JwtAuthGuard } from 'src/validate/jwt-auth.guard';
 import { NotificationDto } from './application/dto/notification.dto';
 import { CreateNotificationUseCase } from './application/use-cases/create-notification.use-case';
+import { getErrorMessage } from 'src/utils/error';
 @Controller('/notification')
 export class NotificationController {
   constructor(
@@ -12,26 +18,16 @@ export class NotificationController {
 
   @Post('/')
   @UseGuards(JwtAuthGuard)
-  async createNotification(
-    @Res() res: Response,
-    @Body() data: NotificationDto,
-  ): Promise<Response<any, Record<string, any>>> {
+  async createNotification(@Body() data: NotificationDto) {
     try {
       const notification = await this.createNotificationUseCase.execute(data);
-      // Send a successful response with the token
-      return res.status(200).json({
+      return {
         status: 200,
         message: 'Create successful',
         data: notification,
-      });
+      };
     } catch (error: unknown) {
-      const errMsg =
-        error instanceof Error ? error.message : 'Unknown error occurred';
-      return res.status(400).json({
-        status: 400,
-        message: errMsg,
-        data: '',
-      });
+      throw new BadRequestException(getErrorMessage(error));
     }
   }
 }

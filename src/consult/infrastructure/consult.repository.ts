@@ -4,6 +4,7 @@ import { PrismaService } from 'prisma/prisma.service';
 import { IRepository } from 'src/utils/respository';
 import { ConsultEntity } from '../domain/entity/consult.entity';
 import { ConsultDto } from '../application/dto/consult.dto';
+import { truncateTime } from 'src/utils/time';
 
 @Injectable()
 export class ConsultRepository
@@ -46,16 +47,15 @@ export class ConsultRepository
   }
 
   async findFirst(data: ConsultDto): Promise<ConsultTransaction | null> {
-    const newStartTime = new Date(data.startDate);
-    const newEndTime = new Date(data.endDate);
+    const newStartTime = truncateTime(data.startDate);
+    const newEndTime = truncateTime(data.endDate);
 
     return this.prisma.consultTransaction.findFirst({
       where: {
         consult_id: data.consultId,
-        AND: [
-          { start_date: { lt: newEndTime } },
-          { end_date: { gt: newStartTime } },
-        ],
+        customer_id: { not: data.customerId },
+        end_date: { lte: newStartTime },
+        start_date: { gte: newEndTime },
       },
     });
   }
@@ -94,9 +94,10 @@ export class ConsultRepository
       where: {
         is_pass: true,
         OR: [{ consult_id: customerId }, { customer_id: customerId }],
-        end_date: {
-          lt: new Date(), // Filter where end_date is in the future
-        },
+        //refactor
+        // end_date: {
+        //   lt: new Date(), // Filter where end_date is in the future
+        // },
       },
       orderBy: {
         start_date: 'asc',

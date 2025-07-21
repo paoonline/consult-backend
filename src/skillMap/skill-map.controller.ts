@@ -1,7 +1,6 @@
-import { Controller, Get, Header, Res } from '@nestjs/common';
-import { Response } from 'express';
-
+import { BadRequestException, Controller, Get, Header } from '@nestjs/common';
 import { SkillService } from './application/skill-map.service';
+import { getErrorMessage } from 'src/utils/error';
 
 @Controller('/skills')
 export class SkillController {
@@ -9,26 +8,16 @@ export class SkillController {
 
   @Get('/')
   @Header('Cache-Control', 'public, max-age=3600')
-  //   @UseGuards(JwtAuthGuard)
-  async create(
-    @Res() res: Response,
-  ): Promise<Response<any, Record<string, any>>> {
+  async findAll() {
     try {
       const skill = await this.skillService.findAll();
-      // Send a successful response with the token
-      return res.status(200).json({
+      return {
         status: 200,
         message: 'successful',
         data: skill,
-      });
+      };
     } catch (error: unknown) {
-      const errMsg =
-        error instanceof Error ? error.message : 'Unknown error occurred';
-      return res.status(400).json({
-        status: 400,
-        message: errMsg,
-        data: '',
-      });
+      throw new BadRequestException(getErrorMessage(error));
     }
   }
 }

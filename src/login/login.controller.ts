@@ -1,19 +1,19 @@
 import {
+  BadRequestException,
   Body,
   Controller,
   Get,
   Param,
   Post,
-  Res,
   UseGuards,
 } from '@nestjs/common';
-import { Response } from 'express';
 import { JwtAuthGuard } from 'src/validate/jwt-auth.guard';
 import { LoginDto } from './application/login.dto';
 import { FindAllLoginLogsUseCase } from './application/use-cases/find-all-login-logs.use-case';
 import { FindOneLoginLogUseCase } from './application/use-cases/find-one-login-log.use-case';
 import { LoginUseCase } from './application/use-cases/login.use-case';
 import { LogoutUseCase } from './application/use-cases/logout.use-case';
+import { getErrorMessage } from 'src/utils/error';
 
 @Controller('/auth')
 export class LoginController {
@@ -25,95 +25,60 @@ export class LoginController {
   ) {}
 
   @Post('/login')
-  async login(
-    @Res() res: Response,
-    @Body() data: LoginDto,
-  ): Promise<Response<any, Record<string, any>>> {
+  async login(@Body() data: LoginDto) {
     try {
-      // Attempt to login and get a token
       const token = await this.loginUseCase.execute(data.email, data.password);
-
-      // Send a successful response with the token
-      return res.status(200).json({
+      return {
         status: 200,
         message: 'Login successful',
         data: token,
-      });
+      };
     } catch (error: unknown) {
-      const errMsg =
-        error instanceof Error ? error.message : 'Unknown error occurred';
-      throw new Error(errMsg);
+      throw new BadRequestException(getErrorMessage(error));
     }
   }
 
   @Get('/login')
   @UseGuards(JwtAuthGuard)
-  async getAllLogins(
-    @Res() res: Response,
-  ): Promise<Response<any, Record<string, any>>> {
+  async getAllLogins() {
     try {
       const login = await this.findAllLoginLogsUseCase.execute();
-      return res.status(200).json({
+      return {
         status: 200,
         message: 'successful',
         data: login,
-      });
+      };
     } catch (error: unknown) {
-      const errMsg =
-        error instanceof Error ? error.message : 'Unknown error occurred';
-      return res.status(400).json({
-        status: 400,
-        message: errMsg,
-        data: '',
-      });
+      throw new BadRequestException(getErrorMessage(error));
     }
   }
 
   @Get('/login/:id')
   @UseGuards(JwtAuthGuard)
-  async getLoginById(
-    @Res() res: Response,
-    @Param('id') id: string,
-  ): Promise<Response<any, Record<string, any>>> {
+  async getLoginById(@Param('id') id: string) {
     try {
       const login = await this.findOneLoginLogUseCase.execute(id);
-      return res.status(200).json({
+      return {
         status: 200,
         message: 'successful',
         data: login,
-      });
+      };
     } catch (error: unknown) {
-      const errMsg =
-        error instanceof Error ? error.message : 'Unknown error occurred';
-      return res.status(400).json({
-        status: 400,
-        message: errMsg,
-        data: '',
-      });
+      throw new BadRequestException(getErrorMessage(error));
     }
   }
 
   @Post('/logout')
-  async logout(
-    @Res() res: Response,
-    @Body() dto: { key: string },
-  ): Promise<Response<any, Record<string, any>>> {
+  async logout(@Body() dto: { key: string }) {
     try {
       await this.logoutUseCase.execute(`online:${dto.key}`);
-
-      return res.status(200).json({
+      return {
         status: 200,
-        message: 'logout successful',
+        message: 'Logout successful',
         data: '',
-      });
+      };
     } catch (error: unknown) {
-      const errMsg =
-        error instanceof Error ? error.message : 'Unknown error occurred';
-      return res.status(400).json({
-        status: 400,
-        message: errMsg,
-        data: '',
-      });
+      throw new BadRequestException(getErrorMessage(error));
     }
   }
 }

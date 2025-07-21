@@ -23,6 +23,7 @@ import { UpdateMeetingConsultTransactionsUseCase } from './application/use-cases
 import { CreateNoteUseCase } from './application/use-cases/note/create-note.usecase';
 import { FindAllNotesUseCase } from './application/use-cases/note/find-all-notes.usecase';
 import { FindOneNoteUseCase } from './application/use-cases/note/find-one-note.usecase';
+import { getErrorMessage } from 'src/utils/error';
 
 @Controller('/consult')
 export class ConsultController {
@@ -41,21 +42,29 @@ export class ConsultController {
     private readonly findOneConsultCommentUseCase: FindOneConsultCommentUseCase,
   ) {}
 
-  private getErrorMessage(error: unknown): string {
-    return error instanceof Error ? error.message : 'Unknown error occurred';
-  }
-
   @Post()
   @UseGuards(JwtAuthGuard)
   async create(
     @Headers('authorization') authHeader: string,
     @Body() data: ConsultDto,
   ) {
+    const token = authHeader?.replace('Bearer ', '');
     try {
-      const token = authHeader?.replace('Bearer ', '');
-      return await this.createConsultTransactionUseCase.execute(data, token);
-    } catch (error) {
-      throw new BadRequestException(this.getErrorMessage(error));
+      const consult = await this.createConsultTransactionUseCase.execute(
+        data,
+        token,
+      );
+      return {
+        status: 200,
+        message: 'Create successful',
+        data: consult,
+      };
+    } catch (error: unknown) {
+      throw new BadRequestException({
+        code: 400,
+        message: getErrorMessage(error),
+        error: 'Custom Error Label',
+      });
     }
   }
 
@@ -63,19 +72,30 @@ export class ConsultController {
   @UseGuards(JwtAuthGuard)
   async getAllCounsultTransaction(@Param('id') id: string) {
     try {
-      return await this.findAllConsultTransactionsUseCase.execute(id);
-    } catch (error) {
-      throw new BadRequestException(this.getErrorMessage(error));
+      const consult = await this.findAllConsultTransactionsUseCase.execute(id);
+      return {
+        status: 200,
+        message: 'successful',
+        data: consult,
+      };
+    } catch (error: unknown) {
+      throw new BadRequestException(getErrorMessage(error));
     }
   }
 
   @Get('/consult-all/:customerId')
   @UseGuards(JwtAuthGuard)
-  async getCounsultTransactionById(@Param('customerId') customerId: string) {
+  async getCounsultTransactionById(@Param('customerId') customerId?: string) {
     try {
-      return await this.findManyConsultTransactionsUseCase.execute(customerId);
-    } catch (error) {
-      throw new BadRequestException(this.getErrorMessage(error));
+      const consult =
+        await this.findManyConsultTransactionsUseCase.execute(customerId);
+      return {
+        status: 200,
+        message: 'successful',
+        data: consult,
+      };
+    } catch (error: unknown) {
+      throw new BadRequestException(getErrorMessage(error));
     }
   }
 
@@ -83,11 +103,15 @@ export class ConsultController {
   @UseGuards(JwtAuthGuard)
   async meeting(@Param('consultId') consultId: string) {
     try {
-      return await this.updateMeetingConsultTransactionsUseCase.execute(
-        consultId,
-      );
-    } catch (error) {
-      throw new BadRequestException(this.getErrorMessage(error));
+      const meeting =
+        await this.updateMeetingConsultTransactionsUseCase.execute(consultId);
+      return {
+        status: 200,
+        message: 'Meeting successful',
+        data: meeting,
+      };
+    } catch (error: unknown) {
+      throw new BadRequestException(getErrorMessage(error));
     }
   }
 
@@ -95,9 +119,14 @@ export class ConsultController {
   @UseGuards(JwtAuthGuard)
   async getAllNotes() {
     try {
-      return await this.findAllNotesUseCase.execute();
-    } catch (error) {
-      throw new BadRequestException(this.getErrorMessage(error));
+      const note = await this.findAllNotesUseCase.execute();
+      return {
+        status: 200,
+        message: 'successful',
+        data: note,
+      };
+    } catch (error: unknown) {
+      throw new BadRequestException(getErrorMessage(error));
     }
   }
 
@@ -105,9 +134,14 @@ export class ConsultController {
   @UseGuards(JwtAuthGuard)
   async getNoteByid(@Param('noteId') noteId: string) {
     try {
-      return await this.findOneNoteUseCase.execute(noteId);
-    } catch (error) {
-      throw new BadRequestException(this.getErrorMessage(error));
+      const note = await this.findOneNoteUseCase.execute(noteId);
+      return {
+        status: 200,
+        message: 'successful',
+        data: note,
+      };
+    } catch (error: unknown) {
+      throw new BadRequestException(getErrorMessage(error));
     }
   }
 
@@ -115,9 +149,14 @@ export class ConsultController {
   @UseGuards(JwtAuthGuard)
   async createNote(@Body() data: ConsultNoteDto) {
     try {
-      return await this.createNoteUseCase.execute(data);
-    } catch (error) {
-      throw new BadRequestException(this.getErrorMessage(error));
+      const note = await this.createNoteUseCase.execute(data);
+      return {
+        status: 200,
+        message: 'Create successful',
+        data: note,
+      };
+    } catch (error: unknown) {
+      throw new BadRequestException(getErrorMessage(error));
     }
   }
 
@@ -125,9 +164,14 @@ export class ConsultController {
   @UseGuards(JwtAuthGuard)
   async getAllComment() {
     try {
-      return await this.findAllConsultCommentsUseCase.execute();
-    } catch (error) {
-      throw new BadRequestException(this.getErrorMessage(error));
+      const comment = await this.findAllConsultCommentsUseCase.execute();
+      return {
+        status: 200,
+        message: 'successful',
+        data: comment,
+      };
+    } catch (error: unknown) {
+      throw new BadRequestException(getErrorMessage(error));
     }
   }
 
@@ -135,9 +179,15 @@ export class ConsultController {
   @UseGuards(JwtAuthGuard)
   async getCommentByid(@Param('commentId') commentId: string) {
     try {
-      return await this.findOneConsultCommentUseCase.execute(commentId);
-    } catch (error) {
-      throw new BadRequestException(this.getErrorMessage(error));
+      const comment =
+        await this.findOneConsultCommentUseCase.execute(commentId);
+      return {
+        status: 200,
+        message: 'successful',
+        data: comment,
+      };
+    } catch (error: unknown) {
+      throw new BadRequestException(getErrorMessage(error));
     }
   }
 
@@ -145,9 +195,14 @@ export class ConsultController {
   @UseGuards(JwtAuthGuard)
   async createComment(@Body() data: ConsultCommentDto) {
     try {
-      return await this.createConsultCommentUseCase.execute(data);
-    } catch (error) {
-      throw new BadRequestException(this.getErrorMessage(error));
+      const comment = await this.createConsultCommentUseCase.execute(data);
+      return {
+        status: 200,
+        message: 'Create successful',
+        data: comment,
+      };
+    } catch (error: unknown) {
+      throw new BadRequestException(getErrorMessage(error));
     }
   }
 }
