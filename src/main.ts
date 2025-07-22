@@ -19,16 +19,10 @@ async function bootstrap() {
     ], // your frontend
     credentials: true,
   });
-  // app.enableCors({
-  //   origin: ['http://localhost:3000'],
-  //   credentials: true,
-  // });
-  // app.use(AuthMiddleware); // Apply middleware globally
 
   // uncomment for used the prefix api
   app.setGlobalPrefix('api');
   app.useGlobalInterceptors(new LoggingInterceptor(logger));
-  app.useLogger(app.get(AppLogger));
   await app.listen(process.env.PORT ?? 3000);
 }
 bootstrap();
