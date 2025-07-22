@@ -5,7 +5,9 @@ import { LoggingInterceptor } from './services/Interceptors/logging.interceptor'
 // import { AuthMiddleware } from './validate/auth.middleware';
 
 async function bootstrap() {
-  const app = await NestFactory.create(AppModule);
+  const app = await NestFactory.create(AppModule, {
+    logger: ['log', 'error', 'warn', 'debug', 'verbose'], // ✅ สำคัญใน production
+  });
   const logger = app.get(AppLogger);
   // app.enableCors();
 
@@ -26,6 +28,7 @@ async function bootstrap() {
   // uncomment for used the prefix api
   app.setGlobalPrefix('api');
   app.useGlobalInterceptors(new LoggingInterceptor(logger));
+  app.useLogger(app.get(AppLogger));
   await app.listen(process.env.PORT ?? 3000);
 }
 bootstrap();
