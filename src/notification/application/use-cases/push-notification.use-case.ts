@@ -1,6 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { ConsultNotification } from '@prisma/client';
-import { NotificationEntity } from 'src/notification/domain/notification.entity';
+import { NotificationEntity } from 'src/notification/domain/entities/notification.entity';
+import { DeviceTokenRepository } from 'src/notification/infrastructure/device-token.repository';
 import { NotificationRepository } from 'src/notification/infrastructure/notification.repository';
 import { FirebaseService } from 'src/services/Firebase/firebase.service';
 import { chunkArray } from 'src/utils/array';
@@ -10,6 +11,7 @@ import { chunkArray } from 'src/utils/array';
 export class PushNotificationUseCase {
   constructor(
     private readonly notiRepository: NotificationRepository,
+    private readonly deviceTokenRepository: DeviceTokenRepository,
     private readonly firebaseService: FirebaseService,
   ) {}
 
@@ -22,7 +24,10 @@ export class PushNotificationUseCase {
 
     for (const noti of pushableEntities) {
       const { title, id = '', description } = noti.getData();
-      const tokens = await this.notiRepository.findDeviceTokens(id);
+      const notificationWithTokens =
+        await this.deviceTokenRepository.findNotificationWithDeviceTokens(id);
+      const tokens =
+        notificationWithTokens?.deviceTokens.map((t) => t.token) ?? [];
 
       const tokenChunks = chunkArray(tokens, 500);
       for (const chunk of tokenChunks) {

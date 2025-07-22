@@ -93,8 +93,10 @@ model DeviceToken {
   customer_id String
   created_at   DateTime @default(now())
   active      Boolean  @default(true)
+  expires_at  DateTime 
 
   notifications ConsultNotification[] @relation("NotificationToDeviceToken")
+  @@map("device_token")
 }
 
 

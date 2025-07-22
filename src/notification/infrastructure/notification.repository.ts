@@ -2,10 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { ConsultNotification } from '@prisma/client';
 import { PrismaService } from 'prisma/prisma.service';
 import { IRepository } from 'src/utils/respository';
-import {
-  NotificationInput,
-  NotificationWithTokens,
-} from '../application/dto/notification.input';
+import { NotificationInput } from '../application/dto/notification.input';
 
 @Injectable()
 export class NotificationRepository
@@ -100,27 +97,5 @@ export class NotificationRepository
         is_push_noti: true,
       },
     });
-  }
-
-  async findDeviceTokens(notificationId: string): Promise<string[]> {
-    const notification: NotificationWithTokens | null =
-      await this.prisma.consultNotification.findUnique({
-        where: { id: notificationId },
-        include: {
-          deviceTokens: {
-            where: { active: true },
-          },
-        },
-      });
-
-    if (!notification) {
-      throw new Error('Notification not found');
-    }
-
-    const result: string[] = (
-      notification.deviceTokens as { token: string }[]
-    ).map((token) => token.token);
-
-    return result;
   }
 }
