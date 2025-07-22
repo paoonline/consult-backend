@@ -15,7 +15,7 @@ export class RegisterDeviceTokenUseCase {
     platform: PlatformType;
     customerId: string;
   }): Promise<DeviceTokenEntity> {
-    const builder = new DeviceTokenBuilder()
+    const entity = new DeviceTokenBuilder()
       .setToken(data.token)
       .setCustomerId(data.customerId)
       .setPlatform(data.platform)
@@ -29,6 +29,6 @@ export class RegisterDeviceTokenUseCase {
       throw new NotFoundException('DeviceToken is duplicate');
     }
 
-    return this.deviceTokenRepository.create(builder);
+    return this.deviceTokenRepository.create(entity);
   }
 }

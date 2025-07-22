@@ -1,4 +1,5 @@
 import { PlatformType, Prisma } from '@prisma/client';
+import { DeviceTokenEntity } from 'src/notification/domain/entities/device-token.entity';
 
 export class DeviceTokenBuilder {
   private data: Partial<Prisma.DeviceTokenUncheckedCreateInput> = {};
@@ -26,7 +27,14 @@ export class DeviceTokenBuilder {
     return this;
   }
 
-  build(): Prisma.DeviceTokenUncheckedCreateInput {
-    return this.data as Prisma.DeviceTokenUncheckedCreateInput;
+  build(): DeviceTokenEntity {
+    return new DeviceTokenEntity(
+      this.data.token ?? '',
+      this.data.platform!,
+      this.data.customer_id!,
+      this.data.created_at ?? new Date(),
+      this.data.expires_at as Date,
+      this.data.active ?? true,
+    );
   }
 }

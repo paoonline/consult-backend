@@ -39,7 +39,7 @@ export class BookingPayloadBuilder {
 
     if (this.consultDetailId) {
       payload.push({
-        customerDetailId: this.consultDetailId, // 👈 same key name
+        customerDetailId: this.consultDetailId,
         time: this.time,
         consultTransactionId: this.consultTransactionId,
       });

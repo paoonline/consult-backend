@@ -16,7 +16,7 @@ export class CreatePaymentUseCase {
       instanceToPlain(data),
     ) as PaymentTransaction;
 
-    const input = new PaymentBuilder()
+    const entity = new PaymentBuilder()
       .setPaymentDate(snakeData.payment_date)
       .setPrice(snakeData.price)
       .setConsultId(snakeData.consult_id!)
@@ -24,7 +24,7 @@ export class CreatePaymentUseCase {
       .setCustomerId(snakeData.customer_id!)
       .toEntity();
 
-    const payment = await this.paymentRepository.create(input.getDTO());
+    const payment = await this.paymentRepository.create(entity);
     return camelcaseKeys(payment) as IPaymentDto;
   }
 }

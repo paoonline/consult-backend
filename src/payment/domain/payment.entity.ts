@@ -18,7 +18,7 @@ export class PaymentEntity {
     return this.price.isGreaterThan(100000) || this.paymentDate.isOlderThan(30);
   }
 
-  getDTO(): PaymentTransactionInput {
+  getData(): PaymentTransactionInput {
     return {
       ...this.data,
       price: this.price.getValue(),

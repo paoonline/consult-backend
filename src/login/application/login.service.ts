@@ -44,7 +44,7 @@ export class LoginService
     //   }
     // }
 
-    await this.loginRepository.create(this.createLoginRecord(id).getData());
+    await this.loginRepository.create(this.createLoginRecord(id));
   }
 
   async login(email: string, password: string): Promise<string> {

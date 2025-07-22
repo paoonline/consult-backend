@@ -1,36 +1,20 @@
 import { Injectable } from '@nestjs/common';
 import { PrismaService } from 'prisma/prisma.service';
 import { IRepository } from 'src/utils/respository';
-import { DeviceTokenEntity } from '../domain/entities/device-token.entity';
-import { Prisma } from '@prisma/client';
 import { NotificationWithTokens } from '../application/dto/notification.input';
+import { DeviceTokenEntity } from '../domain/entities/device-token.entity';
 
 @Injectable()
 export class DeviceTokenRepository
-  implements
-    IRepository<
-      null,
-      Prisma.DeviceTokenUncheckedCreateInput,
-      null,
-      null,
-      DeviceTokenEntity
-    >
+  implements IRepository<null, DeviceTokenEntity, null, null, DeviceTokenEntity>
 {
   constructor(private readonly prisma: PrismaService) {}
 
-  async create(
-    data: Prisma.DeviceTokenUncheckedCreateInput,
-  ): Promise<DeviceTokenEntity> {
-    const created = await this.prisma.deviceToken.create({ data: data });
-
-    return new DeviceTokenEntity(
-      created.token,
-      created.platform,
-      created.customer_id,
-      created.created_at,
-      created.expires_at,
-      created.active,
-    );
+  async create(entity: DeviceTokenEntity): Promise<DeviceTokenEntity> {
+    const created = await this.prisma.deviceToken.create({
+      data: entity.toPrisma(),
+    });
+    return DeviceTokenEntity.fromPrisma(created);
   }
 
   async deactivateExpired(): Promise<void> {
@@ -60,7 +44,7 @@ export class DeviceTokenRepository
             where: {
               active: true,
               expires_at: {
-                lt: new Date(),
+                gt: new Date(),
               },
             },
           },

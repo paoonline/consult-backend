@@ -1,3 +1,4 @@
+import { LoginEntity } from 'src/login/domain/login.entity';
 import { LoginInput } from '../dto/login.input';
 
 export class LoginBuilder {
@@ -17,10 +18,13 @@ export class LoginBuilder {
     return this;
   }
 
-  build(): LoginInput {
+  build(): LoginEntity {
     if (!this.data.email_id) {
       throw new Error('Missing required login fields');
     }
-    return this.data;
+    return new LoginEntity({
+      email_id: this.data.email_id,
+      login_date: this.data.login_date,
+    });
   }
 }

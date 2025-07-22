@@ -12,6 +12,6 @@ export class CreateLoginRecordUseCase {
       { email_id: emailId, login_date: new Date() },
       LoginEntity,
     );
-    await this.loginRepository.create(entity.getData());
+    await this.loginRepository.create(entity);
   }
 }

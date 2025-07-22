@@ -8,10 +8,7 @@ export class BookingEntity {
     const arrTime1 = new Date(this.data[1].time).getTime();
 
     const diff = Math.abs(arrTime - arrTime1);
-    if (diff > 60000) {
-      return false;
-    }
-    return true;
+    return diff < 60000;
   }
 
   assertValidTime(): void {
