@@ -11,6 +11,8 @@ async function bootstrap() {
   const logger = app.get(AppLogger);
   // app.enableCors();
 
+  console.log('✅ Logger active')
+  logger.log('✅ From AppLogger')
   app.enableCors({
     origin: [
       'http://localhost:3001',
@@ -19,6 +21,11 @@ async function bootstrap() {
     ], // your frontend
     credentials: true,
   });
+  // app.enableCors({
+  //   origin: ['http://localhost:3000'],
+  //   credentials: true,
+  // });
+  // app.use(AuthMiddleware); // Apply middleware globally
 
   // uncomment for used the prefix api
   app.setGlobalPrefix('api');

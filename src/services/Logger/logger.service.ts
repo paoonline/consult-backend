@@ -1,7 +1,7 @@
 // src/common/logger/logger.service.ts
-import { LoggerService, Injectable, Logger, Scope } from '@nestjs/common';
+import { Injectable, Logger, LoggerService } from '@nestjs/common';
 
-@Injectable({ scope: Scope.TRANSIENT })
+@Injectable()
 export class AppLogger implements LoggerService {
   private readonly logger = new Logger('HTTP');
 
